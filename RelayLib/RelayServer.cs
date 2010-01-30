@@ -68,9 +68,11 @@ namespace Paneidos.Relay
                     Thread.Sleep(100);
                 }
                 if (!running) break;
+                Console.Error.WriteLine("New client");
                 curCS = new ClientServer(serverSocket.AcceptTcpClient());
                 curCS.ClientTerminated += new ClientServer.ClientTerminatedHandler(curCS_ClientTerminated);
                 pool.Add(curCS);
+                curCS.Start();
             }
             serverSocket.Stop();
             for (int i = pool.Count - 1; i >= 0; i--)
