@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSSH", "SharpSSH\SharpS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConsoleRelay", "ConsoleRelay\ConsoleRelay.csproj", "{7EB3BFBF-D0EF-42FB-A917-E8C9E565FBB4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSSH-NG", "SharpSSH-NG\SharpSSH-NG.csproj", "{FDD95F69-DEBD-4E52-9127-56DA2A6237E0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -25,6 +27,10 @@ Global
 		{7EB3BFBF-D0EF-42FB-A917-E8C9E565FBB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7EB3BFBF-D0EF-42FB-A917-E8C9E565FBB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7EB3BFBF-D0EF-42FB-A917-E8C9E565FBB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FDD95F69-DEBD-4E52-9127-56DA2A6237E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDD95F69-DEBD-4E52-9127-56DA2A6237E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDD95F69-DEBD-4E52-9127-56DA2A6237E0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDD95F69-DEBD-4E52-9127-56DA2A6237E0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

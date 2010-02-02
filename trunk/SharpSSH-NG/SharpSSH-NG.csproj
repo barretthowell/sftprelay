@@ -1,0 +1,132 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FDD95F69-DEBD-4E52-9127-56DA2A6237E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharpSSH.NG</RootNamespace>
+    <AssemblyName>SharpSSH.NG</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Buffer.cs" />
+    <Compile Include="Channel.cs" />
+    <Compile Include="ChannelAgentForwarding.cs" />
+    <Compile Include="ChannelDirectTCPIP.cs" />
+    <Compile Include="ChannelExec.cs" />
+    <Compile Include="ChannelForwardedTCPIP.cs" />
+    <Compile Include="ChannelSession.cs" />
+    <Compile Include="ChannelSftp.cs" />
+    <Compile Include="ChannelShell.cs" />
+    <Compile Include="ChannelSubsystem.cs" />
+    <Compile Include="ChannelX11.cs" />
+    <Compile Include="Cipher.cs" />
+    <Compile Include="CipherNone.cs" />
+    <Compile Include="Compression.cs" />
+    <Compile Include="DH.cs" />
+    <Compile Include="DHG1.cs" />
+    <Compile Include="DHGEX.cs" />
+    <Compile Include="ForwardedTCPIPDaemon.cs" />
+    <Compile Include="GSSContext.cs" />
+    <Compile Include="HASH.cs" />
+    <Compile Include="HostKey.cs" />
+    <Compile Include="HostKeyRepository.cs" />
+    <Compile Include="Identity.cs" />
+    <Compile Include="IdentityFile.cs" />
+    <Compile Include="IO.cs" />
+    <Compile Include="JavaCompat.cs" />
+    <Compile Include="JSch.cs" />
+    <Compile Include="JSchAuthCancelException.cs" />
+    <Compile Include="JSchException.cs" />
+    <Compile Include="JSchPartialAuthException.cs" />
+    <Compile Include="KeyExchange.cs" />
+    <Compile Include="KeyPair.cs" />
+    <Compile Include="KeyPairDSA.cs" />
+    <Compile Include="KeyPairGenDSA.cs" />
+    <Compile Include="KeyPairGenRSA.cs" />
+    <Compile Include="KeyPairRSA.cs" />
+    <Compile Include="KnownHosts.cs" />
+    <Compile Include="Logger.cs" />
+    <Compile Include="MAC.cs" />
+    <Compile Include="Packet.cs" />
+    <Compile Include="PortWatcher.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proxy.cs" />
+    <Compile Include="ProxyHTTP.cs" />
+    <Compile Include="ProxySOCKS4.cs" />
+    <Compile Include="ProxySOCKS5.cs" />
+    <Compile Include="Random.cs" />
+    <Compile Include="Request.cs" />
+    <Compile Include="RequestAgentForwarding.cs" />
+    <Compile Include="RequestEnv.cs" />
+    <Compile Include="RequestExec.cs" />
+    <Compile Include="RequestPtyReg.cs" />
+    <Compile Include="RequestSftp.cs" />
+    <Compile Include="RequestShell.cs" />
+    <Compile Include="RequestSignal.cs" />
+    <Compile Include="RequestSubsystem.cs" />
+    <Compile Include="RequestWindowChange.cs" />
+    <Compile Include="RequestX11.cs" />
+    <Compile Include="ServerSocketFactory.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="SftpATTRS.cs" />
+    <Compile Include="SftpException.cs" />
+    <Compile Include="SftpProgressMonitor.cs" />
+    <Compile Include="SignatureDSA.cs" />
+    <Compile Include="SignatureRSA.cs" />
+    <Compile Include="SocketFactory.cs" />
+    <Compile Include="UIKeyboardInteractive.cs" />
+    <Compile Include="UserAuth.cs" />
+    <Compile Include="UserAuthGSSAPIWithMIC.cs" />
+    <Compile Include="UserAuthKeyboardInteractive.cs" />
+    <Compile Include="UserAuthNone.cs" />
+    <Compile Include="UserAuthPassword.cs" />
+    <Compile Include="UserAuthPublicKey.cs" />
+    <Compile Include="UserInfo.cs" />
+    <Compile Include="Util.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
