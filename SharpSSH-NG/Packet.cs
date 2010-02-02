@@ -46,7 +46,7 @@ namespace SharpSSH.NG
             for(int i=0; i<buffer.index; i++){
             System.err.print(Integer.toHexString(buffer.buffer[i]&0xff)+":");
             }
-            System.err.println("");
+            Console.Error.WriteLine("");
             */
         }
 
@@ -68,10 +68,10 @@ namespace SharpSSH.NG
             /**/
 
             //if(buffer.buffer.length<len+5+9)
-            //  System.err.println("buffer.buffer.length="+buffer.buffer.length+" len+5+9="+(len+5+9));
+            //  Console.Error.WriteLine("buffer.buffer.length="+buffer.buffer.length+" len+5+9="+(len+5+9));
 
             //if(buffer.buffer.length<s)
-            //  System.err.println("buffer.buffer.length="+buffer.buffer.length+" s="+(s));
+            //  Console.Error.WriteLine("buffer.buffer.length="+buffer.buffer.length+" s="+(s));
 
             Array.Copy(buffer.buffer,
                      len + 5 + 9,

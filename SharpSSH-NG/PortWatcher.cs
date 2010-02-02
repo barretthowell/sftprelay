@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
     class PortWatcher
     {
-        private static java.util.Vector pool = new java.util.Vector();
+        private static List<PortWatcher> pool = new List<PortWatcher>();
         private static IPAddress anyLocalAddress = IPAddress.Any;
 
         Session session;
@@ -22,24 +23,18 @@ namespace SharpSSH.NG
 
         static string[] getPortForwarding(Session session)
         {
-            java.util.Vector foo = new java.util.Vector();
+            List<string> foo = new List<string>();
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    PortWatcher p = (PortWatcher)(pool.elementAt(i));
-                    if (p.session == session)
+                    if (pool[i].session == session)
                     {
-                        foo.addElement(p.lport + ":" + p.host + ":" + p.rport);
+                        foo.Add(p.lport + ":" + p.host + ":" + p.rport);
                     }
                 }
             }
-            string[] bar = new string[foo.size()];
-            for (int i = 0; i < foo.size(); i++)
-            {
-                bar[i] = (string)(foo.elementAt(i));
-            }
-            return bar;
+            return foo.ToArray();
         }
         static PortWatcher getPort(Session session, string address, int lport)
         {
@@ -56,13 +51,12 @@ namespace SharpSSH.NG
             {
                 for (int i = 0; i < pool.size(); i++)
                 {
-                    PortWatcher p = (PortWatcher)(pool.elementAt(i));
-                    if (p.session == session && p.lport == lport)
+                    if (pool[i].session == session && pool[i].lport == lport)
                     {
                         if (/*p.boundaddress.isAnyLocalAddress() ||*/
-                               (anyLocalAddress != null && p.boundaddress.equals(anyLocalAddress)) ||
-                           p.boundaddress.equals(addr))
-                            return p;
+                               (anyLocalAddress != null && pool[i].boundaddress.equals(anyLocalAddress)) ||
+                           pool[i].boundaddress.equals(addr))
+                            return pool[i];
                     }
                 }
                 return null;
@@ -75,7 +69,7 @@ namespace SharpSSH.NG
                 throw new JSchException("PortForwardingL: local port " + address + ":" + lport + " is already registered.");
             }
             PortWatcher pw = new PortWatcher(session, address, lport, host, rport, ssf);
-            pool.addElement(pw);
+            pool.Add(pw);
             return pw;
         }
         static void delPort(Session session, string address, int lport)
@@ -86,7 +80,7 @@ namespace SharpSSH.NG
                 throw new JSchException("PortForwardingL: local port " + address + ":" + lport + " is not registered.");
             }
             pw.delete();
-            pool.removeElement(pw);
+            pool.Remove(pw);
         }
         static void delPort(Session session)
         {
@@ -128,7 +122,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
                 string message = "PortForwardingL: local port " + address + ":" + lport + " cannot be bound.";
                 if (e is Throwable)
                     throw new JSchException(message, (Throwable)e);
@@ -144,15 +138,15 @@ namespace SharpSSH.NG
 
         public void run()
         {
-            thread = this;
+            thread = new Thread(this.run);
             try
             {
                 while (thread != null)
                 {
                     TcpClient socket = ss.AcceptTcpClient();
-                    socket.setTcpNoDelay(true);
-                    Stream In = socket.getInputStream();
-                    Stream Out = socket.getOutputStream();
+                    socket.NoDelay=true;
+                    Stream In = socket.getStream();
+                    Stream Out = socket.getStream();
                     ChannelDirectTCPIP channel = new ChannelDirectTCPIP();
                     channel.init();
                     channel.setInputStream(In);
@@ -170,7 +164,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("! "+e);
+                //Console.Error.WriteLine("! "+e);
             }
 
             delete();

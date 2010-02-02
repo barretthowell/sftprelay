@@ -21,7 +21,7 @@ namespace SharpSSH.NG
         protected Buffer buf;
         protected string username;
 
-        public bool start(Session session)
+        public virtual bool start(Session session)
         {
             this.userinfo = session.getUserInfo();
             this.packet = session.packet;

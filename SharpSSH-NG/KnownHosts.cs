@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -17,7 +18,7 @@ namespace SharpSSH.NG
 
         private JSch jsch = null;
         private string known_hosts = null;
-        private java.util.Vector pool = null;
+        private List<HostKey> pool = null;
 
         private MAC hmacsha1 = null;
 
@@ -25,7 +26,7 @@ namespace SharpSSH.NG
             base()
         {
             this.jsch = jsch;
-            pool = new java.util.Vector();
+            pool = new List<HostKey>();
         }
 
         void setKnownHosts(string foo)
@@ -33,14 +34,14 @@ namespace SharpSSH.NG
             try
             {
                 known_hosts = foo;
-                FileInputStream fis = new FileInputStream(foo);
+                FileStream fis = new FileStream(foo);
                 setKnownHosts(fis);
             }
             catch (FileNotFoundException e)
             {
             }
         }
-        void setKnownHosts(InputStream foo)
+        void setKnownHosts(Stream foo)
         {
             pool.removeAllElements();
             StringBuffer sb = new StringBuffer();
@@ -144,8 +145,8 @@ namespace SharpSSH.NG
                         goto loop;
                     }
 
-                    //System.err.println(host);
-                    //System.err.println("|"+key+"|");
+                    //Console.Error.WriteLine(host);
+                    //Console.Error.WriteLine("|"+key+"|");
 
                     HostKey hk = null;
                     hk = new HashedHostKey(host, type,
@@ -175,9 +176,9 @@ namespace SharpSSH.NG
             pool.addElement(hk);
         }
         string getKnownHostsFile() { return known_hosts; }
-        public string getKnownHostsRepositoryID() { return known_hosts; }
+        public override string getKnownHostsRepositoryID() { return known_hosts; }
 
-        public int check(string host, byte[] key)
+        public override int check(string host, byte[] key)
         {
             int result = NOT_INCLUDED;
             if (host == null)
@@ -197,7 +198,7 @@ namespace SharpSSH.NG
                     {
                         if (Util.array_equals(hk.key, key))
                         {
-                            //System.err.println("find!!");
+                            //Console.Error.WriteLine("find!!");
                             return OK;
                         }
                         else
@@ -207,10 +208,10 @@ namespace SharpSSH.NG
                     }
                 }
             }
-            //System.err.println("fail!!");
+            //Console.Error.WriteLine("fail!!");
             return result;
         }
-        public void add(HostKey hostkey, UserInfo userinfo)
+        public override void add(HostKey hostkey, UserInfo userinfo)
         {
             int type = hostkey.type;
             string host = hostkey.getHost();
@@ -284,16 +285,16 @@ namespace SharpSSH.NG
                     {
                         sync(bar);
                     }
-                    catch (Exception e) { System.err.println("sync known_hosts: " + e); }
+                    catch (Exception e) { Console.Error.WriteLine("sync known_hosts: " + e); }
                 }
             }
         }
 
-        public HostKey[] getHostKey()
+        public override HostKey[] getHostKey()
         {
             return getHostKey(null, null);
         }
-        public HostKey[] getHostKey(string host, string type)
+        public override HostKey[] getHostKey(string host, string type)
         {
             lock (pool)
             {
@@ -326,11 +327,11 @@ namespace SharpSSH.NG
                 return foo;
             }
         }
-        public void remove(string host, string type)
+        public override void remove(string host, string type)
         {
             remove(host, type, null);
         }
-        public void remove(string host, string type, byte[] key)
+        public override void remove(string host, string type, byte[] key)
         {
             bool sync = false;
             lock (pool)
@@ -381,7 +382,7 @@ namespace SharpSSH.NG
 
         private static readonly byte[] space = { (byte)0x20 };
         private static readonly byte[] cr = "\n".getBytes();
-        void dump(OutputStream Out)
+        void dump(Stream Out)
         {
             try
             {
@@ -411,7 +412,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                System.err.println(e);
+                Console.Error.WriteLine(e);
             }
         }
         private int getType(byte[] key)
@@ -455,7 +456,7 @@ namespace SharpSSH.NG
                 }
                 catch (Exception e)
                 {
-                    System.err.println("hmacsha1: " + e);
+                    Console.Error.WriteLine("hmacsha1: " + e);
                 }
             }
             return hmacsha1;

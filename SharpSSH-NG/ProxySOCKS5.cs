@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Net.Sockets;
 
 namespace SharpSSH.NG
 {
@@ -10,9 +12,9 @@ namespace SharpSSH.NG
         private static int DEFAULTPORT = 1080;
         private string proxy_host;
         private int proxy_port;
-        private InputStream In;
-        private OutputStream Out;
-        private Socket socket;
+        private Stream In;
+        private Stream Out;
+        private TcpClient socket;
         private string user;
         private string passwd;
 
@@ -306,9 +308,9 @@ namespace SharpSSH.NG
                 throw new JSchException(message);
             }
         }
-        public InputStream getInputStream() { return In; }
-        public OutputStream getOutputStream() { return Out; }
-        public Socket getSocket() { return socket; }
+        public Stream getInputStream() { return In; }
+        public Stream getOutputStream() { return Out; }
+        public TcpClient getSocket() { return socket; }
         public void close()
         {
             try
@@ -328,7 +330,7 @@ namespace SharpSSH.NG
         {
             return DEFAULTPORT;
         }
-        private void fill(InputStream In, byte[] buf, int len)
+        private void fill(Stream In, byte[] buf, int len)
         {
             int s = 0;
             while (s < len)

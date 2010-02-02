@@ -10,7 +10,7 @@ namespace SharpSSH.NG
         private const int SSH_MSG_SERVICE_ACCEPT = 6;
         private string methods = null;
 
-        public bool start(Session session)
+        public override bool start(Session session)
         {
             base.start(session);
 
@@ -101,7 +101,7 @@ namespace SharpSSH.NG
                     byte[] foo = buf.getString();
                     int partial_success = buf.getByte();
                     methods = new string(foo);
-                    //System.err.println("UserAuthNONE: "+methods+
+                    //Console.Error.WriteLine("UserAuthNONE: "+methods+
                     //		   " partial_success:"+(partial_success!=0));
                     //	if(partial_success!=0){
                     //	  throw new JSchPartialAuthException(new string(foo));
@@ -111,7 +111,7 @@ namespace SharpSSH.NG
                 }
                 else
                 {
-                    //      System.err.println("USERAUTH fail ("+command+")");
+                    //      Console.Error.WriteLine("USERAUTH fail ("+command+")");
                     throw new JSchException("USERAUTH fail (" + command + ")");
                 }
             loop:

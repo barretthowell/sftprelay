@@ -9,7 +9,7 @@ namespace SharpSSH.NG
     {
         private const int SSH_MSG_USERAUTH_PASSWD_CHANGEREQ = 60;
 
-        public bool start(Session session)
+        public override bool start(Session session)
         {
             base.start(session);
 
@@ -145,7 +145,7 @@ namespace SharpSSH.NG
                             buf.getInt(); buf.getByte(); buf.getByte();
                             byte[] foo = buf.getString();
                             int partial_success = buf.getByte();
-                            //System.err.println(new string(foo)+
+                            //Console.Error.WriteLine(new string(foo)+
                             //		 " partial_success:"+(partial_success!=0));
                             if (partial_success != 0)
                             {
@@ -155,7 +155,7 @@ namespace SharpSSH.NG
                         }
                         else
                         {
-                            //System.err.println("USERAUTH fail ("+buf.getCommand()+")");
+                            //Console.Error.WriteLine("USERAUTH fail ("+buf.getCommand()+")");
                             //	  throw new JSchException("USERAUTH fail ("+buf.getCommand()+")");
                             return false;
                         }

@@ -19,7 +19,7 @@ namespace SharpSSH.NG
         private const int SSH2_AGENTC_REMOVE_ALL_IDENTITIES = 19;
         private const int SSH2_AGENT_FAILURE = 30;
 
-        bool init = true;
+        bool _init = true;
 
         private Buffer rbuf = null;
         private Buffer wbuf = null;
@@ -44,7 +44,7 @@ namespace SharpSSH.NG
             connected = true;
         }
 
-        public void run()
+        public override void run()
         {
             try
             {

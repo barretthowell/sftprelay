@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
 
 namespace SharpSSH.NG
 {
@@ -15,18 +16,18 @@ namespace SharpSSH.NG
         private static string host = "127.0.0.1";
         private static int port = 6000;
 
-        private bool init = true;
+        private bool _init = true;
 
         static byte[] cookie = null;
         private static byte[] cookie_hex = null;
 
-        private static java.util.Hashtable faked_cookie_pool = new java.util.Hashtable();
-        private static java.util.Hashtable faked_cookie_hex_pool = new java.util.Hashtable();
+        private static Dictionary<Session,byte[]> faked_cookie_pool = new Dictionary<Session,byte[]>();
+        private static Dictionary<Session, byte[]> faked_cookie_hex_pool = new Dictionary<Session,byte[]>();
 
         private static byte[] table ={0x30,0x31,0x32,0x33,0x34,0x35,0x36,0x37,0x38,0x39,
                                0x61,0x62,0x63,0x64,0x65,0x66};
 
-        private Socket socket = null;
+        private TcpClient socket = null;
 
         static int revtable(byte foo)
         {
@@ -66,7 +67,7 @@ namespace SharpSSH.NG
                     for(int i=0; i<foo.length; i++){
                         System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                     }
-                    System.err.println("");
+                    Console.Error.WriteLine("");
                     */
                     faked_cookie_pool.put(session, foo);
                     byte[] bar = new byte[32];
@@ -102,12 +103,12 @@ namespace SharpSSH.NG
               io.setOutputStream(socket.getOutputStream());
             }
             catch(Exception e){
-              //System.err.println(e);
+              //Console.Error.WriteLine(e);
             }
             */
         }
 
-        public void run()
+        public override void run()
         {
 
             try
@@ -158,7 +159,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
             }
             disconnect();
         }
@@ -231,12 +232,12 @@ namespace SharpSSH.NG
           for(int i=0; i<faked_cookie.length; i++){
               System.err.print(Integer.toHexString(faked_cookie[i]&0xff)+":");
           }
-          System.err.println("");
+          Console.Error.WriteLine("");
           System.err.print("bar: ");
           for(int i=0; i<bar.length; i++){
               System.err.print(Integer.toHexString(bar[i]&0xff)+":");
           }
-          System.err.println("");
+          Console.Error.WriteLine("");
                 */
 
                 if (equals(bar, faked_cookie))
@@ -246,7 +247,7 @@ namespace SharpSSH.NG
                 }
                 else
                 {
-                    //System.err.println("wrong cookie");
+                    //Console.Error.WriteLine("wrong cookie");
                     thread = null;
                     eof();
                     io.close();

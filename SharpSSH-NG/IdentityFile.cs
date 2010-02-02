@@ -159,7 +159,7 @@ namespace SharpSSH.NG
                         }
                         else
                         {
-                            //System.err.println("invalid format: "+identity);
+                            //Console.Error.WriteLine("invalid format: "+identity);
                             throw new JSchException("invalid privatekey: " + identity);
                         }
                         i += 3;
@@ -259,10 +259,10 @@ namespace SharpSSH.NG
                     _buf.getInt();  // 0x3f6ff9be
                     _buf.getInt();
                     byte[] _type = _buf.getString();
-                    //System.err.println("type: "+new string(_type)); 
+                    //Console.Error.WriteLine("type: "+new string(_type)); 
                     byte[] _cipher = _buf.getString();
                     string cipher = new string(_cipher);
-                    //System.err.println("cipher: "+cipher); 
+                    //Console.Error.WriteLine("cipher: "+cipher); 
                     if (cipher.equals("3des-cbc"))
                     {
                         _buf.getInt();
@@ -368,7 +368,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("IdentityFile: "+e);
+                //Console.Error.WriteLine("IdentityFile: "+e);
                 if (e is JSchException) throw (JSchException)e;
                 if (e is Throwable)
                     throw new JSchException(e.toString(), (Throwable)e);
@@ -519,19 +519,19 @@ namespace SharpSSH.NG
                 for(i=0;  i<foo.length; i++){
                   System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 System.err.print("Q ");
                 foo=Q_array;
                 for(i=0;  i<foo.length; i++){
                   System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 System.err.print("G ");
                 foo=G_array;
                 for(i=0;  i<foo.length; i++){
                   System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
             */
 
             try
@@ -551,7 +551,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("e "+e);
+                //Console.Error.WriteLine("e "+e);
             }
             return null;
         }
@@ -638,9 +638,9 @@ namespace SharpSSH.NG
                 }
                 index += length;
 
-                //System.err.println("int: len="+length);
+                //Console.Error.WriteLine("int: len="+length);
                 //System.err.print(Integer.toHexString(plain[index-1]&0xff)+":");
-                //System.err.println("");
+                //Console.Error.WriteLine("");
 
                 index++;
                 length = plain[index++] & 0xff;
@@ -653,11 +653,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, n_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: N len="+length);
+                Console.Error.WriteLine("int: N len="+length);
                 for(int i=0; i<n_array.length; i++){
                 System.err.print(Integer.toHexString(n_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
                 index++;
                 length = plain[index++] & 0xff;
@@ -670,11 +670,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, e_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: E len="+length);
+                Console.Error.WriteLine("int: E len="+length);
                 for(int i=0; i<e_array.length; i++){
                 System.err.print(Integer.toHexString(e_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
                 index++;
                 length = plain[index++] & 0xff;
@@ -687,11 +687,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, d_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: D len="+length);
+                Console.Error.WriteLine("int: D len="+length);
                 for(int i=0; i<d_array.length; i++){
                 System.err.print(Integer.toHexString(d_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
 
                 index++;
@@ -705,11 +705,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, p_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: P len="+length);
+                Console.Error.WriteLine("int: P len="+length);
                 for(int i=0; i<p_array.length; i++){
                 System.err.print(Integer.toHexString(p_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
                 index++;
                 length = plain[index++] & 0xff;
@@ -722,11 +722,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, q_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: q len="+length);
+                Console.Error.WriteLine("int: q len="+length);
                 for(int i=0; i<q_array.length; i++){
                 System.err.print(Integer.toHexString(q_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
                 index++;
                 length = plain[index++] & 0xff;
@@ -739,11 +739,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, dmp1_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: dmp1 len="+length);
+                Console.Error.WriteLine("int: dmp1 len="+length);
                 for(int i=0; i<dmp1_array.length; i++){
                 System.err.print(Integer.toHexString(dmp1_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
                 index++;
                 length = plain[index++] & 0xff;
@@ -756,11 +756,11 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, dmq1_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: dmq1 len="+length);
+                Console.Error.WriteLine("int: dmq1 len="+length);
                 for(int i=0; i<dmq1_array.length; i++){
                 System.err.print(Integer.toHexString(dmq1_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
                 index++;
                 length = plain[index++] & 0xff;
@@ -773,16 +773,16 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, iqmp_array, 0, length);
                 index += length;
                 /*
-                System.err.println("int: iqmp len="+length);
+                Console.Error.WriteLine("int: iqmp len="+length);
                 for(int i=0; i<iqmp_array.length; i++){
                 System.err.print(Integer.toHexString(iqmp_array[i]&0xff)+":");
                 }
-                System.err.println("");
+                Console.Error.WriteLine("");
                 */
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
                 return false;
             }
             return true;
@@ -804,7 +804,7 @@ namespace SharpSSH.NG
                         for(int i=0; i<plain.length; i++){
                         System.err.print(Integer.toHexString(plain[i]&0xff)+":");
                         }
-                        System.err.println("");
+                        Console.Error.WriteLine("");
                         */
                     }
                     else if (keytype == FSECURE)
@@ -918,7 +918,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
                 //e.printStackTrace();
                 return false;
             }

@@ -89,8 +89,8 @@ namespace SharpSSH.NG
         private HostKeyRepository known_hosts = null;
         private class DEVNULL : Logger
         {
-            public bool isEnabled(int level) { return false; }
-            public void log(int level, string message) { }
+            public override bool isEnabled(int level) { return false; }
+            public override void log(int level, string message) { }
         }
         static Logger logger = new DEVNULL();
 
