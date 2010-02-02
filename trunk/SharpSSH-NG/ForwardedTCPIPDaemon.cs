@@ -1,10 +1,11 @@
 ﻿using System;
+using System.IO;
 
 namespace SharpSSH.NG
 {
     interface ForwardedTCPIPDaemon
     {
-        void setChannel(ChannelForwardedTCPIP channel, InputStream In, OutputStream Out);
+        void setChannel(ChannelForwardedTCPIP channel, Stream In, Stream Out);
         void setArg(object[] arg);
     }
 }

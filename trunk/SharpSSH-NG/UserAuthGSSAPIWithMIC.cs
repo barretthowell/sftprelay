@@ -25,7 +25,7 @@ namespace SharpSSH.NG
     "gssapi-with-mic.krb5"
   };
 
-        public bool start(Session session)
+        public override bool start(Session session)
         {
             base.start(session);
 
@@ -216,7 +216,7 @@ namespace SharpSSH.NG
                 buf.getInt(); buf.getByte(); buf.getByte();
                 byte[] foo = buf.getString();
                 int partial_success = buf.getByte();
-                //System.err.println(new string(foo)+
+                //Console.Error.WriteLine(new string(foo)+
                 //		 " partial_success:"+(partial_success!=0));
                 if (partial_success != 0)
                 {

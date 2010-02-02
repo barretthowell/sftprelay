@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
@@ -126,7 +127,7 @@ namespace SharpSSH.NG
             return recipient;
         }
 
-        void init()
+        protected virtual void init()
         {
         }
 
@@ -209,11 +210,11 @@ namespace SharpSSH.NG
             }
         }
 
-        public void setXForwarding(bool foo)
+        public virtual void setXForwarding(bool foo)
         {
         }
 
-        public void start() { }
+        public virtual void start() { }
 
         public bool isEOF() { return eof_remote; }
 
@@ -463,7 +464,7 @@ namespace SharpSSH.NG
         }
         void setRemotePacketSize(int foo) { this.rmpsize = foo; }
 
-        public void run()
+        public virtual void run()
         {
         }
 
@@ -500,7 +501,7 @@ namespace SharpSSH.NG
 
         void eof()
         {
-            //System.err.println("EOF!!!! "+this);
+            //Console.Error.WriteLine("EOF!!!! "+this);
             if (close) return;
             if (eof_local) return;
             eof_local = true;
@@ -516,7 +517,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("Channel.eof");
+                //Console.Error.WriteLine("Channel.eof");
                 //e.printStackTrace();
             }
             /*
@@ -562,7 +563,7 @@ namespace SharpSSH.NG
 
         void Close()
         {
-            //System.err.println("close!!!!");
+            //Console.Error.WriteLine("close!!!!");
             if (close) return;
             close = true;
 
@@ -614,9 +615,9 @@ namespace SharpSSH.NG
             }
         }
 
-        public void disconnect()
+        public virtual void disconnect()
         {
-            //System.err.println(this+":disconnect "+io+" "+connected);
+            //Console.Error.WriteLine(this+":disconnect "+io+" "+connected);
             //Thread.dumpStack();
 
             lock (this)

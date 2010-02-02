@@ -79,7 +79,7 @@ namespace SharpSSH.NG
                         buf.getInt(); buf.getByte(); buf.getByte();
                         byte[] foo = buf.getString();
                         int partial_success = buf.getByte();
-                        //	  System.err.println(new string(foo)+
+                        //	  Console.Error.WriteLine(new string(foo)+
                         //			     " partial_success:"+(partial_success!=0));
 
                         if (partial_success != 0)
@@ -150,9 +150,9 @@ namespace SharpSSH.NG
                         // ...
                         // string    response[num-responses] (ISO-10646 UTF-8)
                         //if(response!=null)
-                        //System.err.println("response.length="+response.length);
+                        //Console.Error.WriteLine("response.length="+response.length);
                         //else
-                        //System.err.println("response is null");
+                        //Console.Error.WriteLine("response is null");
                         packet.reset();
                         buf.putByte((byte)SSH_MSG_USERAUTH_INFO_RESPONSE);
                         if (num > 0 &&
@@ -182,7 +182,7 @@ namespace SharpSSH.NG
                             buf.putInt(num);
                             for (int i = 0; i < num; i++)
                             {
-                                //System.err.println("response: |"+new string(response[i])+"| <- replace here with **** if you need");
+                                //Console.Error.WriteLine("response: |"+new string(response[i])+"| <- replace here with **** if you need");
                                 buf.putString(response[i]);
                             }
                         }

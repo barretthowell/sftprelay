@@ -11,7 +11,7 @@ namespace SharpSSH.NG
 
         protected bool agent_forwarding = false;
         protected bool xforwading = false;
-        protected Hashtable env = null;
+        protected Dictionary<byte[],byte[]> env = null;
 
         protected bool pty = false;
 
@@ -45,7 +45,7 @@ namespace SharpSSH.NG
          * @param enable
          * @see RFC4254 6.3.1. Requesting X11 Forwarding
          */
-        public void setXForwarding(bool enable)
+        public override void setXForwarding(bool enable)
         {
             xforwading = enable;
         }
@@ -55,7 +55,7 @@ namespace SharpSSH.NG
          * @see #setEnv(string, string)
          * @see #setEnv(byte[], byte[])
          */
-        public void setEnv(Hashtable env)
+        public void setEnv(Dictionary<byte[],byte[]> env)
         {
             lock (this)
             {
@@ -90,14 +90,15 @@ namespace SharpSSH.NG
         {
             lock (this)
             {
-                getEnv().put(name, value);
+                
+                getEnv().Add(name,value); // .put(name, value);
             }
         }
 
-        private Hashtable getEnv()
+        private Dictionary<byte[],byte[]> getEnv()
         {
             if (env == null)
-                env = new Hashtable();
+                env = new Dictionary<byte[], byte[]>();
             return env;
         }
 
@@ -107,7 +108,7 @@ namespace SharpSSH.NG
          * @param enable
          * @see RFC4254 6.2. Requesting a Pseudo-Terminal
          */
-        public void setPty(bool enable)
+        public virtual void setPty(bool enable)
         {
             pty = enable;
         }
@@ -146,7 +147,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("ChannelSessio.setPtySize: "+e);
+                //Console.Error.WriteLine("ChannelSessio.setPtySize: "+e);
             }
         }
 
@@ -211,30 +212,20 @@ namespace SharpSSH.NG
 
             if (env != null)
             {
-                for (Enumeration _env = env.keys(); _env.hasMoreElements(); )
+                foreach(KeyValuePair<byte[],byte[]> kv in env)
                 {
                     Object name = _env.nextElement();
                     Object value = env.get(name);
                     request = new RequestEnv();
-                    ((RequestEnv)request).setEnv(toByteArray(name),
-                                                 toByteArray(value));
+                    ((RequestEnv)request).setEnv(kv.Key, kv.Value);
                     request.request(_session, this);
                 }
             }
         }
 
-        private byte[] toByteArray(Object o)
+        public override void run()
         {
-            if (o is string)
-            {
-                return ((string)o).getBytes();
-            }
-            return (byte[])o;
-        }
-
-        public void run()
-        {
-            //System.err.println(this+":run >");
+            //Console.Error.WriteLine(this+":run >");
 
             Buffer buf = new Buffer(rmpsize);
             Packet packet = new Packet(buf);
@@ -269,7 +260,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("# ChannelExec.run");
+                //Console.Error.WriteLine("# ChannelExec.run");
                 //e.printStackTrace();
             }
             if (thread != null)
@@ -277,7 +268,7 @@ namespace SharpSSH.NG
                 lock (thread) { thread.notifyAll(); }
             }
             thread = null;
-            //System.err.println(this+":run <");
+            //Console.Error.WriteLine(this+":run <");
         }
     }
 }

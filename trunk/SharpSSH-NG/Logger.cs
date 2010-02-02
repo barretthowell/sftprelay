@@ -17,7 +17,7 @@ namespace SharpSSH.NG
         /*
         public readonly Logger SIMPLE_LOGGER=new Logger(){
             public bool isEnabled(int level){return true;}
-            public void log(int level, string message){System.err.println(message);}
+            public void log(int level, string message){Console.Error.WriteLine(message);}
           };
         readonly Logger DEVNULL=new Logger(){
             public bool isEnabled(int level){return false;}

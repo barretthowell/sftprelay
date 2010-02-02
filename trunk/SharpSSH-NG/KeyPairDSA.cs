@@ -21,7 +21,7 @@ namespace SharpSSH.NG
         {
         }
 
-        void generate(int key_size)
+        protected override void generate(int key_size)
         {
             this.key_size = key_size;
             try
@@ -39,7 +39,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println("KeyPairDSA: "+e); 
+                //Console.Error.WriteLine("KeyPairDSA: "+e); 
                 if (e is Throwable)
                     throw new JSchException(e.toString(), (Throwable)e);
                 throw new JSchException(e.toString());
@@ -49,10 +49,10 @@ namespace SharpSSH.NG
         private static readonly byte[] begin = "-----BEGIN DSA PRIVATE KEY-----".getBytes();
         private static readonly byte[] end = "-----END DSA PRIVATE KEY-----".getBytes();
 
-        byte[] getBegin() { return begin; }
-        byte[] getEnd() { return end; }
+        protected override byte[] getBegin() { return begin; }
+        protected override byte[] getEnd() { return end; }
 
-        byte[] getPrivateKey()
+        protected override byte[] getPrivateKey()
         {
             int content =
               1 + countLength(1) + 1 +                           // INTEGER
@@ -77,7 +77,7 @@ namespace SharpSSH.NG
             return plain;
         }
 
-        bool parse(byte[] plain)
+        protected override bool parse(byte[] plain)
         {
             try
             {
@@ -177,14 +177,14 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
                 //e.printStackTrace();
                 return false;
             }
             return true;
         }
 
-        public byte[] getPublicKeyBlob()
+        public override byte[] getPublicKeyBlob()
         {
             byte[] foo = base.getPublicKeyBlob();
             if (foo != null) return foo;
@@ -205,11 +205,11 @@ namespace SharpSSH.NG
         }
 
         private static readonly byte[] sshdss = "ssh-dss".getBytes();
-        byte[] getKeyTypeName() { return sshdss; }
-        public int getKeyType() { return DSA; }
+        protected override byte[] getKeyTypeName() { return sshdss; }
+        public override int getKeyType() { return DSA; }
 
-        public int getKeySize() { return key_size; }
-        public void dispose()
+        public override int getKeySize() { return key_size; }
+        public override void dispose()
         {
             base.dispose();
             Util.bzero(prv_array);

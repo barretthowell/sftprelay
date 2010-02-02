@@ -55,7 +55,7 @@ namespace SharpSSH.NG
           for(int i=0; i<foo.length; i++){
             if((foo[i]&0xf0)==0)System.err.print("0");
             System.err.print(Integer.toHexString(foo[i]&0xff));
-            if(i%16==15){System.err.println(""); continue;}
+            if(i%16==15){Console.Error.WriteLine(""); continue;}
             if(i%2==1)System.err.print(" ");
           }
         } 
@@ -63,7 +63,7 @@ namespace SharpSSH.NG
 
         protected static string[] guess(byte[] I_S, byte[] I_C)
         {
-            //System.err.println("guess: ");
+            //Console.Error.WriteLine("guess: ");
             string[] guess = new string[PROPOSAL_MAX];
             Buffer sb = new Buffer(I_S); sb.setOffSet(17);
             Buffer cb = new Buffer(I_C); cb.setOffSet(17);
@@ -73,29 +73,29 @@ namespace SharpSSH.NG
                 byte[] sp = sb.getString();  // server proposal
                 byte[] cp = cb.getString();  // client proposal
 
-                //System.err.println("server-proposal: |"+new string(sp)+"|");
-                //System.err.println("client-proposal: |"+new string(cp)+"|");
+                //Console.Error.WriteLine("server-proposal: |"+new string(sp)+"|");
+                //Console.Error.WriteLine("client-proposal: |"+new string(cp)+"|");
 
                 int j = 0;
                 int k = 0;
-            //System.err.println(new string(cp));
+            //Console.Error.WriteLine(new string(cp));
                 while (j < cp.length)
                 {
                     while (j < cp.length && cp[j] != ',') j++;
                     if (k == j) return null;
                     string algorithm = new string(cp, k, j - k);
-                    //System.err.println("algorithm: "+algorithm);
+                    //Console.Error.WriteLine("algorithm: "+algorithm);
                     int l = 0;
                     int m = 0;
                     while (l < sp.length)
                     {
                         while (l < sp.length && sp[l] != ',') l++;
                         if (m == l) return null;
-                        //System.err.println("  "+new string(sp, m, l-m));
+                        //Console.Error.WriteLine("  "+new string(sp, m, l-m));
                         if (algorithm.equals(new string(sp, m, l - m)))
                         {
                             guess[i] = algorithm;
-                            //System.err.println("  "+algorithm);
+                            //Console.Error.WriteLine("  "+algorithm);
                             goto loop;
                         }
                         l++;
@@ -111,7 +111,7 @@ namespace SharpSSH.NG
                 }
                 else if (guess[i] == null)
                 {
-                    //System.err.println("  fail");
+                    //Console.Error.WriteLine("  fail");
                     return null;
                 }
             }
@@ -131,7 +131,7 @@ namespace SharpSSH.NG
             }
 
             //    for(int i=0; i<PROPOSAL_MAX; i++){
-            //      System.err.println("guess: ["+guess[i]+"]");
+            //      Console.Error.WriteLine("guess: ["+guess[i]+"]");
             //    }
 
             return guess;
@@ -145,7 +145,7 @@ namespace SharpSSH.NG
                 Class c = Class.forName(session.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
             }
-            catch (Exception e) { System.err.println("getFingerPrint: " + e); }
+            catch (Exception e) { Console.Error.WriteLine("getFingerPrint: " + e); }
             return Util.getFingerPrint(hash, getHostKey());
         }
         byte[] getK() { return K; }

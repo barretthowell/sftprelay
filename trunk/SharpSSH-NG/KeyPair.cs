@@ -35,11 +35,11 @@ namespace SharpSSH.NG
             return kpair;
         }
 
-        internal abstract void generate(int key_size);
+        protected abstract void generate(int key_size);
 
-        internal abstract byte[] getBegin();
-        internal abstract byte[] getEnd();
-        internal abstract int getKeySize();
+        protected abstract byte[] getBegin();
+        protected abstract byte[] getEnd();
+        public abstract int getKeySize();
 
         JSch jsch = null;
         private Cipher cipher;
@@ -56,7 +56,7 @@ namespace SharpSSH.NG
         static byte[][] header ={"Proc-Type: 4,ENCRYPTED".getBytes(),
 			  "DEK-Info: DES-EDE3-CBC,".getBytes()};
 
-        internal abstract byte[] getPrivateKey();
+        protected abstract byte[] getPrivateKey();
 
         public void writePrivateKey(Stream Out)
         {
@@ -107,10 +107,10 @@ namespace SharpSSH.NG
 
         private static byte[] space = " ".getBytes();
 
-        internal abstract byte[] getKeyTypeName();
+        protected abstract byte[] getKeyTypeName();
         public abstract int getKeyType();
 
-        public byte[] getPublicKeyBlob() { return publickeyblob; }
+        public virtual byte[] getPublicKeyBlob() { return publickeyblob; }
 
         public void writePublicKey(Stream Out, string comment)
         {
@@ -215,13 +215,13 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
             }
             Util.bzero(key);
             return encoded;
         }
 
-        internal abstract bool parse(byte[] data);
+        protected abstract bool parse(byte[] data);
 
         private byte[] decrypt(byte[] data, byte[] passphrase, byte[] iv)
         {
@@ -242,7 +242,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
             }
             return null;
         }
@@ -304,7 +304,7 @@ namespace SharpSSH.NG
                     Class c = Class.forName(jsch.getConfig("random"));
                     random = (Random)(c.newInstance());
                 }
-                catch (Exception e) { System.err.println("connect: random " + e); }
+                catch (Exception e) { Console.Error.WriteLine("connect: random " + e); }
             }
             return random;
         }
@@ -383,7 +383,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                System.err.println(e);
+                Console.Error.WriteLine(e);
             }
             return key;
         }
@@ -494,7 +494,7 @@ namespace SharpSSH.NG
                         }
                         else
                         {
-                            //System.err.println("invalid format: "+identity);
+                            //Console.Error.WriteLine("invalid format: "+identity);
                             throw new JSchException("invalid privatekey: " + prvkey);
                         }
                         i += 3;
@@ -576,10 +576,10 @@ namespace SharpSSH.NG
                     _buf.getInt();  // 0x3f6ff9be
                     _buf.getInt();
                     byte[] _type = _buf.getString();
-                    //System.err.println("type: "+new string(_type)); 
+                    //Console.Error.WriteLine("type: "+new string(_type)); 
                     byte[] _cipher = _buf.getString();
                     string cipher = new string(_cipher);
-                    //System.err.println("cipher: "+cipher); 
+                    //Console.Error.WriteLine("cipher: "+cipher); 
                     if (cipher.equals("3des-cbc"))
                     {
                         _buf.getInt();
@@ -740,7 +740,7 @@ namespace SharpSSH.NG
             return (byte)(c - 10 + 'A');
         }
 
-        public void dispose()
+        public virtual void dispose()
         {
             Util.bzero(passphrase);
         }

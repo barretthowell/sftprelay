@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -32,7 +33,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                System.err.println(e);
+                Console.Error.WriteLine(e);
             }
         }
 
@@ -75,7 +76,7 @@ namespace SharpSSH.NG
                           !eof_remote)
                     {
                         //Thread.sleep(500);
-                        Thread.sleep(50);
+                        Thread.Sleep(50);
                         retry--;
                     }
                 }
@@ -101,8 +102,8 @@ namespace SharpSSH.NG
 
                 if (io.In != null)
                 {
-                    thread = new Thread(this);
-                    thread.setName("DirectTCPIP thread " + _session.getHost());
+                    thread = new Thread(this.run);
+                    thread.Name = "DirectTCPIP thread " + _session.getHost();
                     if (_session.daemon_thread)
                     {
                         thread.setDaemon(_session.daemon_thread);
@@ -161,14 +162,14 @@ namespace SharpSSH.NG
             {
             }
             disconnect();
-            //System.err.println("connect end");
+            //Console.Error.WriteLine("connect end");
         }
 
-        public void setInputStream(InputStream In)
+        public void setInputStream(Stream In)
         {
             io.setInputStream(In);
         }
-        public void setOutputStream(OutputStream Out)
+        public void setOutputStream(Stream Out)
         {
             io.setOutputStream(Out);
         }

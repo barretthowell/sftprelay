@@ -250,7 +250,7 @@ namespace SharpSSH.NG
                          buf.buffer[2] != 'H' || buf.buffer[3] != '-')))
                     {
                         // It must not start with 'SSH-'
-                        //System.err.println(new string(buf.buffer, 0, i);
+                        //Console.Error.WriteLine(new string(buf.buffer, 0, i);
                         continue;
                     }
 
@@ -265,7 +265,7 @@ namespace SharpSSH.NG
                 }
 
                 V_S = new byte[i]; Array.Copy(buf.buffer, 0, V_S, 0, i);
-                //System.err.println("V_S: ("+i+") ["+new string(V_S)+"]");
+                //Console.Error.WriteLine("V_S: ("+i+") ["+new string(V_S)+"]");
 
                 if (JSch.getLogger().isEnabled(Logger.INFO))
                 {
@@ -299,7 +299,7 @@ namespace SharpSSH.NG
                         bool result = kex.next(buf);
                         if (!result)
                         {
-                            //System.err.println("verify: "+result);
+                            //Console.Error.WriteLine("verify: "+result);
                             in_kex = false;
                             throw new JSchException("verify: " + result);
                         }
@@ -326,7 +326,7 @@ namespace SharpSSH.NG
 
                 // receive SSH_MSG_NEWKEYS(21)
                 buf = read(buf);
-                //System.err.println("read: 21 ? "+buf.getCommand());
+                //Console.Error.WriteLine("read: 21 ? "+buf.getCommand());
                 if (buf.getCommand() == SSH_MSG_NEWKEYS)
                 {
 
@@ -387,7 +387,7 @@ namespace SharpSSH.NG
                 {
 
                 loop:
-                    //System.err.println("methods: "+methods);
+                    //Console.Error.WriteLine("methods: "+methods);
 
                     while (!auth &&
                           cmethoda != null && methodi < cmethoda.Length)
@@ -408,7 +408,7 @@ namespace SharpSSH.NG
                             continue;
                         }
 
-                        //System.err.println("  method: "+method);
+                        //Console.Error.WriteLine("  method: "+method);
 
                         if (JSch.getLogger().isEnabled(Logger.INFO))
                         {
@@ -466,7 +466,7 @@ namespace SharpSSH.NG
                                 smethods = ee.getMethods();
                                 smethoda = Util.split(smethods, ",");
                                 methodi = 0;
-                                //System.err.println("PartialAuth: "+methods);
+                                //Console.Error.WriteLine("PartialAuth: "+methods);
                                 auth_cancel = false;
                                 goto loop;
                             }
@@ -476,7 +476,7 @@ namespace SharpSSH.NG
                             }
                             catch (Exception ee)
                             {
-                                //System.err.println("ee: "+ee); // SSH_MSG_DISCONNECT: 2 Too many authentication failures
+                                //Console.Error.WriteLine("ee: "+ee); // SSH_MSG_DISCONNECT: 2 Too many authentication failures
                                 goto outloop;
                             }
                         }
@@ -693,7 +693,7 @@ namespace SharpSSH.NG
                 chost = hostKeyAlias;
             }
 
-            //System.err.println("shkc: "+shkc);
+            //Console.Error.WriteLine("shkc: "+shkc);
 
             byte[] K_S = kex.getHostKey();
             string key_type = kex.getKeyType();
@@ -771,7 +771,7 @@ namespace SharpSSH.NG
                 {
                     throw new JSchException("reject HostKey: " + host);
                 }
-                //System.err.println("finger-print: "+key_fprint);
+                //Console.Error.WriteLine("finger-print: "+key_fprint);
                 if (userinfo != null)
                 {
                     bool foo = userinfo.promptYesNo(
@@ -860,8 +860,8 @@ namespace SharpSSH.NG
         // encode will bin invoked in write with synchronization.
         public void encode(Packet packet)
         {
-            //System.err.println("encode: "+packet.buffer.getCommand());
-            //System.err.println("        "+packet.buffer.index);
+            //Console.Error.WriteLine("encode: "+packet.buffer.getCommand());
+            //Console.Error.WriteLine("        "+packet.buffer.index);
             //if(packet.buffer.getCommand()==96){
             //Thread.dumpStack();
             //}
@@ -992,13 +992,13 @@ namespace SharpSSH.NG
                     }
                     else
                     {
-                        System.err.println("fail in inflater");
+                        Console.Error.WriteLine("fail in inflater");
                         break;
                     }
                 }
 
                 int type = buf.getCommand() & 0xff;
-                //System.err.println("read: "+type);
+                //Console.Error.WriteLine("read: "+type);
                 if (type == SSH_MSG_DISCONNECT)
                 {
                     buf.rewind();
@@ -1034,7 +1034,7 @@ namespace SharpSSH.NG
                         byte always_display=(byte)buf.getByte();
                         byte[] message=buf.getString();
                         byte[] language_tag=buf.getString();
-                        System.err.println("SSH_MSG_DEBUG:"+
+                        Console.Error.WriteLine("SSH_MSG_DEBUG:"+
                                    " "+new string(message)+
                                    " "+new string(language_tag));
                     */
@@ -1205,7 +1205,7 @@ namespace SharpSSH.NG
                 if (e is JSchException)
                     throw e;
                 throw new JSchException(e.toString(), e);
-                //System.err.println("updatekeys: "+e); 
+                //Console.Error.WriteLine("updatekeys: "+e); 
             }
         }
         /*[System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]*/
@@ -1299,11 +1299,11 @@ namespace SharpSSH.NG
 
         public void write(Packet packet)
         {
-            // System.err.println("in_kex="+in_kex+" "+(packet.buffer.getCommand()));
+            // Console.Error.WriteLine("in_kex="+in_kex+" "+(packet.buffer.getCommand()));
             while (in_kex)
             {
                 byte command = packet.buffer.getCommand();
-                //System.err.println("command: "+command);
+                //Console.Error.WriteLine("command: "+command);
                 if (command == SSH_MSG_KEXINIT ||
                    command == SSH_MSG_NEWKEYS ||
                    command == SSH_MSG_KEXDH_INIT ||
@@ -1386,12 +1386,12 @@ namespace SharpSSH.NG
                     switch (msgType)
                     {
                         case SSH_MSG_KEXINIT:
-                            //System.err.println("KEXINIT");
+                            //Console.Error.WriteLine("KEXINIT");
                             kex = receive_kexinit(buf);
                             break;
 
                         case SSH_MSG_NEWKEYS:
-                            //System.err.println("NEWKEYS");
+                            //Console.Error.WriteLine("NEWKEYS");
                             send_newkeys();
                             receive_newkeys(buf, kex);
                             kex = null;
@@ -1420,7 +1420,7 @@ namespace SharpSSH.NG
                             }
                             catch (Exception e)
                             {
-                                //System.err.println(e);
+                                //Console.Error.WriteLine(e);
                                 try { channel.disconnect(); }
                                 catch (Exception ee) { }
                                 break;
@@ -1445,7 +1445,7 @@ namespace SharpSSH.NG
                             channel = Channel.getChannel(i, this);
                             buf.getInt();                   // data_type_code == 1
                             foo = buf.getString(start, length);
-                            //System.err.println("stderr: "+new string(foo,start[0],length[0]));
+                            //Console.Error.WriteLine("stderr: "+new string(foo,start[0],length[0]));
                             if (channel == null)
                             {
                                 break;
@@ -1565,7 +1565,7 @@ namespace SharpSSH.NG
                                 {
                                     i = buf.getInt();             // exit-status
                                     channel.setExitStatus(i);
-                                    //	    System.err.println("exit-stauts: "+i);
+                                    //	    Console.Error.WriteLine("exit-stauts: "+i);
                                     //          channel.close();
                                     reply_type = (byte)SSH_MSG_CHANNEL_SUCCESS;
                                 }
@@ -1590,7 +1590,7 @@ namespace SharpSSH.NG
                            !("x11".equals(ctyp) && x11_forwarding) &&
                            !("auth-agent@openssh.com".equals(ctyp) && agent_forwarding))
                             {
-                                //System.err.println("Session.run: CHANNEL OPEN "+ctyp); 
+                                //Console.Error.WriteLine("Session.run: CHANNEL OPEN "+ctyp); 
                                 //throw new IOException("Session.run: CHANNEL OPEN "+ctyp);
                                 packet.reset();
                                 buf.putByte((byte)SSH_MSG_CHANNEL_OPEN_FAILURE);
@@ -1660,7 +1660,7 @@ namespace SharpSSH.NG
                             }
                             break;
                         default:
-                            //System.err.println("Session.run: unsupported type "+msgType); 
+                            //Console.Error.WriteLine("Session.run: unsupported type "+msgType); 
                             throw new IOException("Unknown SSH message type " + msgType);
                     }
                 }
@@ -1672,7 +1672,7 @@ namespace SharpSSH.NG
                     JSch.getLogger().log(Logger.INFO,
                                          "Caught an exception, leaving main loop due to " + e.getMessage());
                 }
-                //System.err.println("# Session.run");
+                //Console.Error.WriteLine("# Session.run");
                 //e.printStackTrace();
             }
             try
@@ -1681,12 +1681,12 @@ namespace SharpSSH.NG
             }
             catch (NullPointerException e)
             {
-                //System.err.println("@1");
+                //Console.Error.WriteLine("@1");
                 //e.printStackTrace();
             }
             catch (Exception e)
             {
-                //System.err.println("@2");
+                //Console.Error.WriteLine("@2");
                 //e.printStackTrace();
             }
             isConnected = false;
@@ -1695,7 +1695,7 @@ namespace SharpSSH.NG
         public void disconnect()
         {
             if (!isConnected) return;
-            //System.err.println(this+": disconnect");
+            //Console.Error.WriteLine(this+": disconnect");
             //Thread.dumpStack();
             if (JSch.getLogger().isEnabled(Logger.INFO))
             {
@@ -1921,7 +1921,7 @@ namespace SharpSSH.NG
                     catch (Exception ee)
                     {
                         throw new JSchException(ee.toString(), ee);
-                        //System.err.println(foo+" isn't accessible.");
+                        //Console.Error.WriteLine(foo+" isn't accessible.");
                     }
                 }
             }
@@ -1948,7 +1948,7 @@ namespace SharpSSH.NG
                     catch (Exception ee)
                     {
                         throw new JSchException(ee.toString(), ee);
-                        //System.err.println(foo+" isn't accessible.");
+                        //Console.Error.WriteLine(foo+" isn't accessible.");
                     }
                 }
             }

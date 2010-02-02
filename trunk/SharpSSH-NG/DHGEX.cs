@@ -43,7 +43,7 @@ namespace SharpSSH.NG
         private byte[] e;
         //private byte[] f;
 
-        public void init(Session session,
+        public override void init(Session session,
                  byte[] V_S, byte[] V_C, byte[] I_S, byte[] I_C)
         {
             this.session = session;
@@ -60,7 +60,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                System.err.println(e);
+                Console.Error.WriteLine(e);
             }
 
             buf = new Buffer();
@@ -74,7 +74,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //      System.err.println(e);
+                //      Console.Error.WriteLine(e);
                 throw e;
             }
 
@@ -96,7 +96,7 @@ namespace SharpSSH.NG
             state = SSH_MSG_KEX_DH_GEX_GROUP;
         }
 
-        public bool next(Buffer _buf)
+        public override bool next(Buffer _buf)
         {
             int i, j;
             switch (state)
@@ -110,7 +110,7 @@ namespace SharpSSH.NG
                     j = _buf.getByte();
                     if (j != SSH_MSG_KEX_DH_GEX_GROUP)
                     {
-                        System.err.println("type: must be SSH_MSG_KEX_DH_GEX_GROUP " + j);
+                        Console.Error.WriteLine("type: must be SSH_MSG_KEX_DH_GEX_GROUP " + j);
                         return false;
                     }
 
@@ -118,11 +118,11 @@ namespace SharpSSH.NG
                     g = _buf.getMPInt();
                     /*
               for(int iii=0; iii<p.length; iii++){
-              System.err.println("0x"+Integer.toHexString(p[iii]&0xff)+",");
+              Console.Error.WriteLine("0x"+Integer.toHexString(p[iii]&0xff)+",");
               }
-              System.err.println("");
+              Console.Error.WriteLine("");
               for(int iii=0; iii<g.length; iii++){
-              System.err.println("0x"+Integer.toHexString(g[iii]&0xff)+",");
+              Console.Error.WriteLine("0x"+Integer.toHexString(g[iii]&0xff)+",");
               }
                     */
                     dh.setP(p);
@@ -163,7 +163,7 @@ namespace SharpSSH.NG
                     j = _buf.getByte();
                     if (j != SSH_MSG_KEX_DH_GEX_REPLY)
                     {
-                        System.err.println("type: must be SSH_MSG_KEX_DH_GEX_REPLY " + j);
+                        Console.Error.WriteLine("type: must be SSH_MSG_KEX_DH_GEX_REPLY " + j);
                         return false;
                     }
 
@@ -253,7 +253,7 @@ namespace SharpSSH.NG
                         }
                         catch (Exception e)
                         {
-                            System.err.println(e);
+                            Console.Error.WriteLine(e);
                         }
 
                         sig.setPubKey(ee, n);
@@ -303,7 +303,7 @@ namespace SharpSSH.NG
                         }
                         catch (Exception e)
                         {
-                            System.err.println(e);
+                            Console.Error.WriteLine(e);
                         }
 
                         sig.setPubKey(f, p, q, g);
@@ -319,7 +319,7 @@ namespace SharpSSH.NG
                     }
                     else
                     {
-                        System.err.println("unknown alg");
+                        Console.Error.WriteLine("unknown alg");
                     }
                     state = STATE_END;
                     return result;
@@ -327,12 +327,12 @@ namespace SharpSSH.NG
             return false;
         }
 
-        public string getKeyType()
+        public override string getKeyType()
         {
             if (type == DSS) return "DSA";
             return "RSA";
         }
 
-        public int getState() { return state; }
+        public override int getState() { return state; }
     }
 }

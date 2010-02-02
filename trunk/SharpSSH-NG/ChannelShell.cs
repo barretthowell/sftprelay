@@ -13,7 +13,7 @@ namespace SharpSSH.NG
             pty = true;
         }
 
-        public void start()
+        public override void start()
         {
             Session _session = getSession();
             try
@@ -43,7 +43,7 @@ namespace SharpSSH.NG
             }
         }
 
-        void init()
+        protected override void init()
         {
             io.setInputStream(getSession().In);
             io.setOutputStream(getSession().Out);

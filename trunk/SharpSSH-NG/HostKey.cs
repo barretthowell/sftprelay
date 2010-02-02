@@ -59,7 +59,7 @@ namespace SharpSSH.NG
                 Class c = Class.forName(jsch.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
             }
-            catch (Exception e) { System.err.println("getFingerPrint: " + e); }
+            catch (Exception e) { Console.Error.WriteLine("getFingerPrint: " + e); }
             return Util.getFingerPrint(hash, key);
         }
 

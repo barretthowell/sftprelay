@@ -44,7 +44,7 @@ namespace SharpSSH.NG
         static private bool glob(byte[] pattern, int pattern_index,
                         byte[] name, int name_index)
         {
-            //System.err.println("glob: "+new string(pattern)+", "+pattern_index+" "+new string(name)+", "+name_index);
+            //Console.Error.WriteLine("glob: "+new string(pattern)+", "+pattern_index+" "+new string(name)+", "+name_index);
 
             int patternlen = pattern.Length;
             if (patternlen == 0)

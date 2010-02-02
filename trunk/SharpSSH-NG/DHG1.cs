@@ -56,7 +56,7 @@ namespace SharpSSH.NG
         private Buffer buf;
         private Packet packet;
 
-        public void init(Session session,
+        public override void init(Session session,
                  byte[] V_S, byte[] V_C, byte[] I_S, byte[] I_C)
         {
             this.session = session;
@@ -75,7 +75,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                System.err.println(e);
+                Console.Error.WriteLine(e);
             }
 
             buf = new Buffer();
@@ -89,7 +89,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
                 throw e;
             }
 
@@ -119,7 +119,7 @@ namespace SharpSSH.NG
             state = SSH_MSG_KEXDH_REPLY;
         }
 
-        public bool next(Buffer _buf)
+        public override bool next(Buffer _buf)
         {
             int i, j;
 
@@ -136,7 +136,7 @@ namespace SharpSSH.NG
                     j = _buf.getByte();
                     if (j != 31)
                     {
-                        System.err.println("type: must be 31 " + j);
+                        Console.Error.WriteLine("type: must be 31 " + j);
                         return false;
                     }
 
@@ -155,7 +155,7 @@ namespace SharpSSH.NG
                 System.err.print(Integer.toHexString(sig_of_H[ii]&0xff));
                 System.err.print(": ");
               }
-              System.err.println("");
+              Console.Error.WriteLine("");
                     */
 
                     dh.setF(f);
@@ -223,7 +223,7 @@ namespace SharpSSH.NG
                         }
                         catch (Exception e)
                         {
-                            System.err.println(e);
+                            Console.Error.WriteLine(e);
                         }
 
                         sig.setPubKey(ee, n);
@@ -273,7 +273,7 @@ namespace SharpSSH.NG
                         }
                         catch (Exception e)
                         {
-                            System.err.println(e);
+                            Console.Error.WriteLine(e);
                         }
                         sig.setPubKey(f, p, q, g);
                         sig.update(H);
@@ -288,7 +288,7 @@ namespace SharpSSH.NG
                     }
                     else
                     {
-                        System.err.println("unknown alg");
+                        Console.Error.WriteLine("unknown alg");
                     }
                     state = STATE_END;
                     return result;
@@ -296,12 +296,12 @@ namespace SharpSSH.NG
             return false;
         }
 
-        public string getKeyType()
+        public override string getKeyType()
         {
             if (type == DSS) return "DSA";
             return "RSA";
         }
 
-        public int getState() { return state; }
+        public override int getState() { return state; }
     }
 }

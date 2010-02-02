@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using System.Threading;
+using System.Net.Sockets;
 
 namespace SharpSSH.NG
 {
+    //FIXME: Dirty dirty code
     class ChannelForwardedTCPIP : Channel
     {
-        static java.util.Vector pool = new java.util.Vector();
+        static List<object> pool = new List<object>();
 
         private const int LOCAL_WINDOW_SIZE_MAX = 0x20000;
         //private const int LOCAL_WINDOW_SIZE_MAX=0x100000;
@@ -16,7 +20,7 @@ namespace SharpSSH.NG
         private const int TIMEOUT = 10 * 1000;
 
         SocketFactory factory = null;
-        private Socket socket = null;
+        private TcpClient socket = null;
         private ForwardedTCPIPDaemon daemon = null;
         string target;
         int lport;
@@ -32,7 +36,7 @@ namespace SharpSSH.NG
             connected = true;
         }
 
-        public void run()
+        public override void run()
         {
             try
             {
@@ -41,14 +45,17 @@ namespace SharpSSH.NG
                     Class c = Class.forName(target);
                     daemon = (ForwardedTCPIPDaemon)c.newInstance();
 
+                    MemoryStream Out = new MemoryStream(32 * 1024);
+                    /*
                     PipedOutputStream Out = new PipedOutputStream();
                     io.setInputStream(new PassiveInputStream(Out
                                                              , 32 * 1024
                                                              ), false);
-
+                    */
+                    io.setInputStream(Out);
                     daemon.setChannel(this, getInputStream(), Out);
-                    Object[] foo = getPort(getSession(), rport);
-                    daemon.setArg((Object[])foo[3]);
+                    object[] foo = getPort(getSession(), rport);
+                    daemon.setArg((object[])foo[3]);
 
                     new Thread(daemon).start();
                 }
@@ -71,7 +78,7 @@ namespace SharpSSH.NG
                 return;
             }
 
-            thread = Thread.currentThread();
+            thread = Thread.CurrentThread;
             Buffer buf = new Buffer(rmpsize);
             Packet packet = new Packet(buf);
             int i = 0;
@@ -102,7 +109,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //System.err.println(e);
+                //Console.Error.WriteLine(e);
             }
             //thread=null;
             //eof();
@@ -120,10 +127,10 @@ namespace SharpSSH.NG
             int orgport = buf.getInt();
 
             /*
-            System.err.println("addr: "+new string(addr));
-            System.err.println("port: "+port);
-            System.err.println("orgaddr: "+new string(orgaddr));
-            System.err.println("orgport: "+orgport);
+            Console.Error.WriteLine("addr: "+new string(addr));
+            Console.Error.WriteLine("port: "+port);
+            Console.Error.WriteLine("orgaddr: "+new string(orgaddr));
+            Console.Error.WriteLine("orgport: "+orgport);
             */
 
             Session _session = null;
@@ -140,13 +147,13 @@ namespace SharpSSH.NG
             {
                 for (int i = 0; i < pool.size(); i++)
                 {
-                    Object[] foo = (Object[])(pool.elementAt(i));
+                    object[] foo = (object[])(pool[i]);
                     if (foo[0] != _session) continue;
-                    if (((Integer)foo[1]).intValue() != port) continue;
+                    if (((int)foo[1]) != port) continue;
                     this.rport = port;
                     this.target = (string)foo[2];
-                    if (foo[3] == null || (foo[3] is Object[])) { this.lport = -1; }
-                    else { this.lport = ((Integer)foo[3]).intValue(); }
+                    if (foo[3] == null || (foo[3] is object[])) { this.lport = -1; }
+                    else { this.lport = ((int)foo[3]); }
                     if (foo.length >= 6)
                     {
                         this.factory = ((SocketFactory)foo[5]);
@@ -155,20 +162,20 @@ namespace SharpSSH.NG
                 }
                 if (target == null)
                 {
-                    //System.err.println("??");
+                    //Console.Error.WriteLine("??");
                 }
             }
         }
 
-        static Object[] getPort(Session session, int rport)
+        static object[] getPort(Session session, int rport)
         {
             lock (pool)
             {
                 for (int i = 0; i < pool.size(); i++)
                 {
-                    Object[] bar = (Object[])(pool.elementAt(i));
+                    object[] bar = (object[])(pool[i]);
                     if (bar[0] != session) continue;
-                    if (((Integer)bar[1]).intValue() != rport) continue;
+                    if (((int)bar[1]) != rport) continue;
                     return bar;
                 }
                 return null;
@@ -177,23 +184,18 @@ namespace SharpSSH.NG
 
         static string[] getPortForwarding(Session session)
         {
-            java.util.Vector foo = new java.util.Vector();
+            List<string> foo = new List<string>();
             lock (pool)
             {
                 for (int i = 0; i < pool.size(); i++)
                 {
-                    Object[] bar = (Object[])(pool.elementAt(i));
+                    object[] bar = (object[])(pool[i]);
                     if (bar[0] != session) continue;
-                    if (bar[3] == null) { foo.addElement(bar[1] + ":" + bar[2] + ":"); }
-                    else { foo.addElement(bar[1] + ":" + bar[2] + ":" + bar[3]); }
+                    if (bar[3] == null) { foo.Add(bar[1] + ":" + bar[2] + ":"); }
+                    else { foo.Add(bar[1] + ":" + bar[2] + ":" + bar[3]); }
                 }
             }
-            string[] bar = new string[foo.size()];
-            for (int i = 0; i < foo.size(); i++)
-            {
-                bar[i] = (string)(foo.elementAt(i));
-            }
-            return bar;
+            return foo.ToArray();
         }
 
         static string normalize(string address)
@@ -212,12 +214,12 @@ namespace SharpSSH.NG
                 {
                     throw new JSchException("PortForwardingR: remote port " + port + " is already registered.");
                 }
-                Object[] foo = new Object[6];
-                foo[0] = session; foo[1] = new Integer(port);
-                foo[2] = target; foo[3] = new Integer(lport);
+                object[] foo = new object[6];
+                foo[0] = session; foo[1] = port;
+                foo[2] = target; foo[3] = lport;
                 foo[4] = address_to_bind;
                 foo[5] = factory;
-                pool.addElement(foo);
+                pool.Add(foo);
             }
         }
         static void addPort(Session session, string _address_to_bind, int port, string daemon, Object[] arg)
@@ -229,11 +231,11 @@ namespace SharpSSH.NG
                 {
                     throw new JSchException("PortForwardingR: remote port " + port + " is already registered.");
                 }
-                Object[] foo = new Object[5];
-                foo[0] = session; foo[1] = new Integer(port);
+                object[] foo = new object[5];
+                foo[0] = session; foo[1] = port;
                 foo[2] = daemon; foo[3] = arg;
                 foo[4] = address_to_bind;
-                pool.addElement(foo);
+                pool.Add(foo);
             }
         }
         static void delPort(ChannelForwardedTCPIP c)
@@ -258,17 +260,17 @@ namespace SharpSSH.NG
         {
             lock (pool)
             {
-                Object[] foo = null;
+                object[] foo = null;
                 for (int i = 0; i < pool.size(); i++)
                 {
-                    Object[] bar = (Object[])(pool.elementAt(i));
+                    object[] bar = (object[])(pool[i]);
                     if (bar[0] != session) continue;
-                    if (((Integer)bar[1]).intValue() != rport) continue;
+                    if (((int)bar[1]) != rport) continue;
                     foo = bar;
                     break;
                 }
                 if (foo == null) return;
-                pool.removeElement(foo);
+                pool.Remove(foo);
                 if (address_to_bind == null)
                 {
                     address_to_bind = (string)foo[4];
@@ -311,7 +313,7 @@ namespace SharpSSH.NG
                 rport = new int[pool.size()];
                 for (int i = 0; i < pool.size(); i++)
                 {
-                    Object[] bar = (Object[])(pool.elementAt(i));
+                    object[] bar = (object[])(pool[i]);
                     if (bar[0] == session)
                     {
                         rport[count++] = ((Integer)bar[1]).intValue();

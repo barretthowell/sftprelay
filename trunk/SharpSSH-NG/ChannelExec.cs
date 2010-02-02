@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -9,7 +10,7 @@ namespace SharpSSH.NG
     {
         byte[] command = new byte[0];
 
-        public void start()
+        public override void start()
         {
             Session _session = getSession();
             try
@@ -47,21 +48,21 @@ namespace SharpSSH.NG
             this.command = command;
         }
 
-        void init()
+        protected override void init()
         {
             io.setInputStream(getSession().In);
             io.setOutputStream(getSession().Out);
         }
 
-        public void setErrStream(java.io.OutputStream Out)
+        public void setErrStream(Stream Out)
         {
             setExtOutputStream(Out);
         }
-        public void setErrStream(java.io.OutputStream Out, bool dontclose)
+        public void setErrStream(Stream Out, bool dontclose)
         {
             setExtOutputStream(Out, dontclose);
         }
-        public java.io.InputStream getErrStream()
+        public Stream getErrStream()
         {
             return getExtInputStream();
         }

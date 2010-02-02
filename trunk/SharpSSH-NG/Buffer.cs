@@ -216,14 +216,14 @@ namespace SharpSSH.NG
             System.err.print(chars[(foo>>4)&0xf]);
             System.err.print(chars[foo&0xf]);
                 if(i%16==15){
-                  System.err.println("");
+                  Console.Error.WriteLine("");
               continue;
             }
                 if(i>0 && i%2==1){
                   System.err.print(" ");
             }
             }
-            System.err.println("");
+            Console.Error.WriteLine("");
           }
           static void dump(byte[] b){
             dump(b, 0, b.length);
@@ -232,7 +232,7 @@ namespace SharpSSH.NG
             for(int i=s; i<s+l; i++){
               System.err.print(Integer.toHexString(b[i]&0xff)+":");
             }
-            System.err.println("");
+            Console.Error.WriteLine("");
           }
         */
     }

@@ -2,20 +2,20 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SharpSSH.NG
 {
     class ChannelSubsystem : ChannelSession
     {
-        bool xforwading = false;
-        bool pty = false;
+        //bool pty = false;
         bool want_reply = true;
         string subsystem = "";
-        public void setXForwarding(bool foo) { xforwading = true; }
-        public void setPty(bool foo) { pty = foo; }
+        public override void setXForwarding(bool foo) { xforwading = true; }
+        public override void setPty(bool foo) { pty = foo; }
         public void setWantReply(bool foo) { want_reply = foo; }
         public void setSubsystem(string foo) { subsystem = foo; }
-        public void start()
+        public override void start()
         {
             Session _session = getSession();
             try
@@ -43,7 +43,7 @@ namespace SharpSSH.NG
             }
             if (io.In != null)
             {
-                thread = new Thread(this);
+                thread = new Thread(this.run);
                 thread.setName("Subsystem for " + _session.host);
                 if (_session.daemon_thread)
                 {
@@ -53,17 +53,17 @@ namespace SharpSSH.NG
             }
         }
 
-        void init()
+        protected override void init()
         {
             io.setInputStream(getSession().In);
             io.setOutputStream(getSession().Out);
         }
 
-        public void setErrStream(java.io.OutputStream Out)
+        public void setErrStream(Stream Out)
         {
             setExtOutputStream(Out);
         }
-        public java.io.InputStream getErrStream()
+        public Stream getErrStream()
         {
             return getExtInputStream();
         }

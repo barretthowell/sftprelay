@@ -8,7 +8,7 @@ namespace SharpSSH.NG
     class UserAuthPublicKey : UserAuth
     {
 
-        public bool start(Session session)
+        public override bool start(Session session)
         {
             base.start(session);
 
@@ -33,7 +33,7 @@ namespace SharpSSH.NG
                     Identity identity = (Identity)(identities.elementAt(i));
                     byte[] pubkeyblob = identity.getPublicKeyBlob();
 
-                    //System.err.println("UserAuthPublicKey: "+identity+" "+pubkeyblob);
+                    //Console.Error.WriteLine("UserAuthPublicKey: "+identity+" "+pubkeyblob);
 
                     if (pubkeyblob != null)
                     {
@@ -86,7 +86,7 @@ namespace SharpSSH.NG
                             }
                             else
                             {
-                                //System.err.println("USERAUTH fail ("+command+")");
+                                //Console.Error.WriteLine("USERAUTH fail ("+command+")");
                                 //throw new JSchException("USERAUTH fail ("+command+")");
                                 break;
                             }
@@ -100,7 +100,7 @@ namespace SharpSSH.NG
                         }
                     }
 
-                    //System.err.println("UserAuthPublicKey: identity.isEncrypted()="+identity.isEncrypted());
+                    //Console.Error.WriteLine("UserAuthPublicKey: identity.isEncrypted()="+identity.isEncrypted());
 
                     int count = 5;
                     while (true)
@@ -135,12 +135,12 @@ namespace SharpSSH.NG
 
                     Util.bzero(passphrase);
                     passphrase = null;
-                    //System.err.println("UserAuthPublicKey: identity.isEncrypted()="+identity.isEncrypted());
+                    //Console.Error.WriteLine("UserAuthPublicKey: identity.isEncrypted()="+identity.isEncrypted());
 
                     if (identity.isEncrypted()) continue;
                     if (pubkeyblob == null) pubkeyblob = identity.getPublicKeyBlob();
 
-                    //System.err.println("UserAuthPublicKey: pubkeyblob="+pubkeyblob);
+                    //Console.Error.WriteLine("UserAuthPublicKey: pubkeyblob="+pubkeyblob);
 
                     if (pubkeyblob == null) continue;
 
@@ -212,7 +212,7 @@ namespace SharpSSH.NG
                             buf.getInt(); buf.getByte(); buf.getByte();
                             byte[] foo = buf.getString();
                             int partial_success = buf.getByte();
-                            //System.err.println(new string(foo)+
+                            //Console.Error.WriteLine(new string(foo)+
                             //                   " partial_success:"+(partial_success!=0));
                             if (partial_success != 0)
                             {
@@ -220,7 +220,7 @@ namespace SharpSSH.NG
                             }
                             break;
                         }
-                        //System.err.println("USERAUTH fail ("+command+")");
+                        //Console.Error.WriteLine("USERAUTH fail ("+command+")");
                         //throw new JSchException("USERAUTH fail ("+command+")");
                         break;
                     loop2:
