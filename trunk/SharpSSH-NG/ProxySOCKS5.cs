@@ -111,7 +111,7 @@ namespace SharpSSH.NG
                                          | 1  |   1    |
                                          +----+--------+
                 */
-                //In.read(buf, 0, 2);
+                //In.Read(buf, 0, 2);
                 fill(In, buf, 2);
 
                 bool check = false;
@@ -167,7 +167,7 @@ namespace SharpSSH.NG
                            `failure' (STATUS value other than X'00') status, it MUST close the
                            connection.
                         */
-                        //In.read(buf, 0, 2);
+                        //In.Read(buf, 0, 2);
                         fill(In, buf, 2);
                         if (buf[1] == 0)
                             check = true;
@@ -177,7 +177,7 @@ namespace SharpSSH.NG
 
                 if (!check)
                 {
-                    try { socket.close(); }
+                    try { socket.Close(); }
                     catch (Exception eee)
                     {
                     }
@@ -261,12 +261,12 @@ namespace SharpSSH.NG
                     o  BND.PORT       server bound port in network octet order
                 */
 
-                //In.read(buf, 0, 4);
+                //In.Read(buf, 0, 4);
                 fill(In, buf, 4);
 
                 if (buf[1] != 0)
                 {
-                    try { socket.close(); }
+                    try { socket.Close(); }
                     catch (Exception eee)
                     {
                     }
@@ -276,17 +276,17 @@ namespace SharpSSH.NG
                 switch (buf[3] & 0xff)
                 {
                     case 1:
-                        //In.read(buf, 0, 6);
+                        //In.Read(buf, 0, 6);
                         fill(In, buf, 6);
                         break;
                     case 3:
-                        //In.read(buf, 0, 1);
+                        //In.Read(buf, 0, 1);
                         fill(In, buf, 1);
-                        //In.read(buf, 0, buf[0]+2);
+                        //In.Read(buf, 0, buf[0]+2);
                         fill(In, buf, (buf[0] & 0xff) + 2);
                         break;
                     case 4:
-                        //In.read(buf, 0, 18);
+                        //In.Read(buf, 0, 18);
                         fill(In, buf, 18);
                         break;
                     default:
@@ -298,7 +298,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                try { if (socket != null)socket.close(); }
+                try { if (socket != null)socket.Close(); }
                 catch (Exception eee)
                 {
                 }
@@ -309,13 +309,13 @@ namespace SharpSSH.NG
         public Stream getInputStream() { return In; }
         public Stream getOutputStream() { return Out; }
         public TcpClient getSocket() { return socket; }
-        public void close()
+        public void Close()
         {
             try
             {
-                if (In != null) In.close();
-                if (Out != null) Out.close();
-                if (socket != null) socket.close();
+                if (In != null) In.Close();
+                if (Out != null) Out.Close();
+                if (socket != null) socket.Close();
             }
             catch (Exception e)
             {
@@ -333,7 +333,7 @@ namespace SharpSSH.NG
             int s = 0;
             while (s < len)
             {
-                int i = In.read(buf, s, len - s);
+                int i = In.Read(buf, s, len - s);
                 if (i <= 0)
                 {
                     throw new JSchException("ProxySOCKS5: stream is closed");

@@ -9,7 +9,7 @@ namespace SharpSSH.NG
     {
         byte[] name = new byte[0];
         byte[] value = new byte[0];
-        void setEnv(byte[] name, byte[] value)
+        internal void setEnv(byte[] name, byte[] value)
         {
             this.name = name;
             this.value = value;

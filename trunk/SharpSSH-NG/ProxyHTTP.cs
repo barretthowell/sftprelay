@@ -85,11 +85,11 @@ namespace SharpSSH.NG
 
                 int foo = 0;
 
-                StringBuffer sb = new StringBuffer();
+                StringBuilder sb = new StringBuilder();
                 while (foo >= 0)
                 {
-                    foo = In.read(); if (foo != 13) { sb.append((char)foo); continue; }
-                    foo = In.read(); if (foo != 10) { continue; }
+                    foo = In.Read(); if (foo != 13) { sb.append((char)foo); continue; }
+                    foo = In.Read(); if (foo != 10) { continue; }
                     break;
                 }
                 if (foo < 0)
@@ -117,10 +117,10 @@ namespace SharpSSH.NG
 
                 /*
                 while(foo>=0){
-                  foo=In.read(); if(foo!=13) continue;
-                  foo=In.read(); if(foo!=10) continue;
-                  foo=In.read(); if(foo!=13) continue;      
-                  foo=In.read(); if(foo!=10) continue;
+                  foo=In.Read(); if(foo!=13) continue;
+                  foo=In.Read(); if(foo!=10) continue;
+                  foo=In.Read(); if(foo!=13) continue;      
+                  foo=In.Read(); if(foo!=10) continue;
                   break;
                 }
                 */
@@ -131,8 +131,8 @@ namespace SharpSSH.NG
                     count = 0;
                     while (foo >= 0)
                     {
-                        foo = In.read(); if (foo != 13) { count++; continue; }
-                        foo = In.read(); if (foo != 10) { continue; }
+                        foo = In.Read(); if (foo != 13) { count++; continue; }
+                        foo = In.Read(); if (foo != 10) { continue; }
                         break;
                     }
                     if (foo < 0)
@@ -144,7 +144,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                try { if (socket != null)socket.close(); }
+                try { if (socket != null)socket.Close(); }
                 catch (Exception eee)
                 {
                 }
@@ -155,13 +155,13 @@ namespace SharpSSH.NG
         public Stream getInputStream() { return In; }
         public Stream getOutputStream() { return Out; }
         public TcpClient getSocket() { return socket; }
-        public void close()
+        public void Close()
         {
             try
             {
-                if (In != null) In.close();
-                if (Out != null) Out.close();
-                if (socket != null) socket.close();
+                if (In != null) In.Close();
+                if (Out != null) Out.Close();
+                if (socket != null) socket.Close();
             }
             catch (Exception e)
             {

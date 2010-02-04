@@ -86,7 +86,7 @@ namespace SharpSSH.NG
             catch (Exception ee) { }
         }
 
-        public void close()
+        public void Close()
         {
             try
             {
@@ -108,15 +108,15 @@ namespace SharpSSH.NG
         /*
         public void finalize() {
           try{
-            if(In!=null) In.close();
+            if(In!=null) In.Close();
           }
           catch(Exception ee){}
           try{
-            if(Out!=null) Out.close();
+            if(Out!=null) Out.Close();
           }
           catch(Exception ee){}
           try{
-            if(out_ext!=null) out_ext.close();
+            if(out_ext!=null) out_ext.Close();
           }
           catch(Exception ee){}
         }

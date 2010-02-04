@@ -7,7 +7,7 @@ namespace SharpSSH.NG
 {
     class RequestSftp : Request
     {
-        RequestSftp()
+        internal RequestSftp()
         {
             setReply(true);
         }

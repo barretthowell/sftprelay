@@ -275,7 +275,7 @@ namespace Tamir.Streams
 		 * @exception  IOException  if the pipe is broken.
 		 */
 		[MethodImpl(MethodImplOptions.Synchronized)]
-		public virtual  int read()  
+		public override int read()  
 		{
 			if (!connected) 
 			{

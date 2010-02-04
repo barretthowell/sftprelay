@@ -11,7 +11,7 @@ namespace SharpSSH.NG
         int height_rows = 24;
         int width_pixels = 640;
         int height_pixels = 480;
-        void setSize(int col, int row, int wp, int hp)
+        internal void setSize(int col, int row, int wp, int hp)
         {
             this.width_columns = col;
             this.height_rows = row;

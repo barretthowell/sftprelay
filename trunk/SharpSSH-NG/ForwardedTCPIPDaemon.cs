@@ -7,5 +7,6 @@ namespace SharpSSH.NG
     {
         void setChannel(ChannelForwardedTCPIP channel, Stream In, Stream Out);
         void setArg(object[] arg);
+        void run();
     }
 }

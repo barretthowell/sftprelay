@@ -14,7 +14,7 @@ namespace SharpSSH.NG
             pty = true;
         }
 
-        public override void start()
+        public override void Start()
         {
             Session _session = getSession();
             try

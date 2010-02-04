@@ -96,7 +96,7 @@
     <Compile Include="RequestAgentForwarding.cs" />
     <Compile Include="RequestEnv.cs" />
     <Compile Include="RequestExec.cs" />
-    <Compile Include="RequestPtyReg.cs" />
+    <Compile Include="RequestPtyReq.cs" />
     <Compile Include="RequestSftp.cs" />
     <Compile Include="RequestShell.cs" />
     <Compile Include="RequestSignal.cs" />

@@ -50,7 +50,7 @@ namespace SharpSSH.NG
                 bool firsttime = true;
                 while (true)
                 {
-                    buf = session.read(buf);
+                    buf = session.Read(buf);
                     int command = buf.getCommand() & 0xff;
 
                     if (command == SSH_MSG_USERAUTH_SUCCESS)

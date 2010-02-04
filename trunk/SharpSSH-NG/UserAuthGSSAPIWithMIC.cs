@@ -54,7 +54,7 @@ namespace SharpSSH.NG
             int command;
             while (true)
             {
-                buf = session.read(buf);
+                buf = session.Read(buf);
                 command = buf.getCommand() & 0xff;
 
                 if (command == SSH_MSG_USERAUTH_FAILURE)
@@ -146,7 +146,7 @@ namespace SharpSSH.NG
 
                 if (!context.isEstablished())
                 {
-                    buf = session.read(buf);
+                    buf = session.Read(buf);
                     command = buf.getCommand() & 0xff;
                     if (command == SSH_MSG_USERAUTH_GSSAPI_ERROR)
                     {
@@ -155,7 +155,7 @@ namespace SharpSSH.NG
                         // string    message
                         // string    language tag
 
-                        buf = session.read(buf);
+                        buf = session.Read(buf);
                         command = buf.getCommand() & 0xff;
                         //return false;
                     }
@@ -163,7 +163,7 @@ namespace SharpSSH.NG
                     {
                         // string error token
 
-                        buf = session.read(buf);
+                        buf = session.Read(buf);
                         command = buf.getCommand() & 0xff;
                         //return false;
                     }
@@ -204,7 +204,7 @@ namespace SharpSSH.NG
 
             context.dispose();
 
-            buf = session.read(buf);
+            buf = session.Read(buf);
             command = buf.getCommand() & 0xff;
 
             if (command == SSH_MSG_USERAUTH_SUCCESS)

@@ -151,7 +151,7 @@ namespace SharpSSH.NG
                 int s = 0;
                 while (s < len)
                 {
-                    int i = In.read(buf, s, len - s);
+                    int i = In.Read(buf, s, len - s);
                     if (i <= 0)
                     {
                         throw new JSchException("ProxySOCKS4: stream is closed");
@@ -164,7 +164,7 @@ namespace SharpSSH.NG
                 }
                 if (buf[1] != 90)
                 {
-                    try { socket.close(); }
+                    try { socket.Close(); }
                     catch (Exception eee)
                     {
                     }
@@ -172,13 +172,15 @@ namespace SharpSSH.NG
                     throw new JSchException(message);
                 }
             }
+                /*
             catch (RuntimeException e)
             {
                 throw e;
             }
+                 */
             catch (Exception e)
             {
-                try { if (socket != null)socket.close(); }
+                try { if (socket != null)socket.Close(); }
                 catch (Exception eee)
                 {
                 }
@@ -188,13 +190,13 @@ namespace SharpSSH.NG
         public Stream getInputStream() { return In; }
         public Stream getOutputStream() { return Out; }
         public TcpClient getSocket() { return socket; }
-        public void close()
+        public void Close()
         {
             try
             {
-                if (In != null) In.close();
-                if (Out != null) Out.close();
-                if (socket != null) socket.close();
+                if (In != null) In.Close();
+                if (Out != null) Out.Close();
+                if (socket != null) socket.Close();
             }
             catch (Exception e)
             {

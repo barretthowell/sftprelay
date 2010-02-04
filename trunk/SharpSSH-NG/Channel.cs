@@ -81,8 +81,8 @@ namespace SharpSSH.NG
             }
         }
 
-        int id;
-        int recipient = -1;
+        protected int id;
+        protected int recipient = -1;
         protected byte[] type = "foo".getBytes();
         internal int lwsize_max = 0x100000;
         //int lwsize_max=0x20000;  // 32*1024*4
@@ -200,7 +200,7 @@ namespace SharpSSH.NG
                     throw new JSchException("channel is not opened.");
                 }
                 connected = true;
-                start();
+                Start();
             }
             catch (Exception e)
             {
@@ -215,7 +215,7 @@ namespace SharpSSH.NG
         {
         }
 
-        public virtual void start() { }
+        public virtual void Start() { }
 
         public bool isEOF() { return eof_remote; }
 
@@ -371,8 +371,8 @@ namespace SharpSSH.NG
                 }
                 catch (Exception e)
                 {
-                    close();
-                    throw new IOException(e.ToString());
+                    Close();
+                    throw new IOException(e.Message,e);
                 }
 
             }
@@ -382,7 +382,7 @@ namespace SharpSSH.NG
                 {
                     try
                     {
-                        init();
+                        channel.init();
                     }
                     catch (IOException e)
                     {
@@ -396,7 +396,7 @@ namespace SharpSSH.NG
                 }
                 if (dataLen > 0)
                 {
-                    flush();
+                    Flush();
                 }
                 channel.eof();
                 closed = true;
@@ -461,7 +461,7 @@ namespace SharpSSH.NG
         {
             this.rwsize += foo;
             if (notifyme > 0)
-                notifyAll();
+               Monitor.PulseAll(this.thread);
         }
         internal void setRemotePacketSize(int foo) { this.rmpsize = foo; }
 
@@ -500,7 +500,7 @@ namespace SharpSSH.NG
             catch (NullReferenceException e) { }
         }
 
-        void eof()
+        protected void eof()
         {
             //Console.Error.WriteLine("EOF!!!! "+this);
             if (close) return;
@@ -562,7 +562,7 @@ namespace SharpSSH.NG
            to the actual destination, if possible.
         */
 
-        void Close()
+        protected void Close()
         {
             //Console.Error.WriteLine("close!!!!");
             if (close) return;
@@ -642,7 +642,7 @@ namespace SharpSSH.NG
                 {
                     if (io != null)
                     {
-                        io.close();
+                        io.Close();
                     }
                 }
                 catch (Exception e)

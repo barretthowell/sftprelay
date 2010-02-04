@@ -87,13 +87,13 @@ namespace SharpSSH.NG
         bool x11_forwarding = false;
         bool agent_forwarding = false;
 
-        Stream In = null;
-        Stream Out = null;
+        internal Stream In = null;
+        internal Stream Out = null;
 
         internal static Random random;
 
-        Buffer buf;
-        Packet packet;
+        internal Buffer buf;
+        internal Packet packet;
 
         SocketFactory socket_factory = null;
 
@@ -114,9 +114,9 @@ namespace SharpSSH.NG
         string username = null;
         byte[] password = null;
 
-        JSch jsch;
+        internal JSch jsch;
 
-        Session(JSch jsch)
+        internal Session(JSch jsch)
             : base()
         {
 
@@ -277,7 +277,7 @@ namespace SharpSSH.NG
 
                 send_kexinit();
 
-                buf = read(buf);
+                buf = Read(buf);
                 if (buf.getCommand() != SSH_MSG_KEXINIT)
                 {
                     throw new JSchException("invalid protocol: " + buf.getCommand());
@@ -293,7 +293,7 @@ namespace SharpSSH.NG
 
                 while (true)
                 {
-                    buf = read(buf);
+                    buf = Read(buf);
                     if (kex.getState() == buf.getCommand())
                     {
                         bool result = kex.next(buf);
@@ -325,7 +325,7 @@ namespace SharpSSH.NG
                 send_newkeys();
 
                 // receive SSH_MSG_NEWKEYS(21)
-                buf = read(buf);
+                buf = Read(buf);
                 //Console.Error.WriteLine("read: 21 ? "+buf.getCommand());
                 if (buf.getCommand() == SSH_MSG_NEWKEYS)
                 {
@@ -907,7 +907,7 @@ namespace SharpSSH.NG
 
         private int s2ccipher_size = 8;
         private int c2scipher_size = 8;
-        public Buffer read(Buffer buf)
+        public Buffer Read(Buffer buf)
         {
             int j = 0;
             while (true)
@@ -1357,7 +1357,7 @@ namespace SharpSSH.NG
                 {
                     try
                     {
-                        buf = read(buf);
+                        buf = Read(buf);
                         stimeout = 0;
                     }
                     catch (IOException/*SocketTimeoutException*/ ee)
@@ -1508,7 +1508,7 @@ namespace SharpSSH.NG
                             channel = Channel.getChannel(i, this);
                             if (channel != null)
                             {
-                                //	      channel.close();
+                                //	      channel.Close();
                                 channel.disconnect();
                             }
                             /*
@@ -1566,7 +1566,7 @@ namespace SharpSSH.NG
                                     i = buf.getInt();             // exit-status
                                     channel.setExitStatus(i);
                                     //	    Console.Error.WriteLine("exit-stauts: "+i);
-                                    //          channel.close();
+                                    //          channel.Close();
                                     reply_type = (byte)SSH_MSG_CHANNEL_SUCCESS;
                                 }
                                 if (reply)
@@ -1748,7 +1748,7 @@ namespace SharpSSH.NG
                 {
                     lock (proxy)
                     {
-                        proxy.close();
+                        proxy.Close();
                     }
                     proxy = null;
                 }
@@ -1961,7 +1961,7 @@ namespace SharpSSH.NG
         public void setProxy(Proxy proxy) { this.proxy = proxy; }
         public void setHost(string host) { this.host = host; }
         public void setPort(int port) { this.port = port; }
-        void setUserName(string username) { this.username = username; }
+        internal void setUserName(string username) { this.username = username; }
         public void setUserInfo(UserInfo userinfo) { this.userinfo = userinfo; }
         public UserInfo getUserInfo() { return userinfo; }
         public void setInputStream(Stream In) { this.In = In; }

@@ -138,7 +138,7 @@ namespace SharpSSH.NG
                       io != null &&
                       io.In != null)
                 {
-                    i = io.In.read(buf.buffer,
+                    i = io.In.Read(buf.buffer,
                          14,
                          buf.buffer.Length - 14
                          - 32 - 20 // padding and mac
@@ -250,7 +250,7 @@ namespace SharpSSH.NG
                     //Console.Error.WriteLine("wrong cookie");
                     thread = null;
                     eof();
-                    io.close();
+                    io.Close();
                     disconnect();
                 }
                 init = false;
