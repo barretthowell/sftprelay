@@ -23,12 +23,12 @@ namespace SharpSSH.NG
         {
             int port = DEFAULTPORT;
             string host = proxy_host;
-            if (proxy_host.indexOf(':') != -1)
+            if (proxy_host.IndexOf(':') != -1)
             {
                 try
                 {
-                    host = proxy_host.substring(0, proxy_host.indexOf(':'));
-                    port = Integer.parseInt(proxy_host.substring(proxy_host.indexOf(':') + 1));
+                    host = proxy_host.Substring(0, proxy_host.IndexOf(':'));
+                    port = int.Parse(proxy_host.Substring(proxy_host.IndexOf(':') + 1));
                 }
                 catch (Exception e)
                 {
@@ -60,21 +60,21 @@ namespace SharpSSH.NG
                 else
                 {
                     socket = socket_factory.createSocket(proxy_host, proxy_port);
-                    In = socket_factory.getInputStream(socket);
-                    Out = socket_factory.getOutputStream(socket);
+                    In = socket_factory.GetStream(socket);
+                    Out = socket_factory.GetStream(socket);
                 }
                 if (timeout > 0)
                 {
                     socket.setSoTimeout(timeout);
                 }
-                socket.setTcpNoDelay(true);
+                socket.NoDelay = true;
 
-                Out.write(("CONNECT " + host + ":" + port + " HTTP/1.0\r\n").getBytes());
+                Out.Write(("CONNECT " + host + ":" + port + " HTTP/1.0\r\n").getBytes());
 
                 if (user != null && passwd != null)
                 {
                     byte[] code = (user + ":" + passwd).getBytes();
-                    code = Util.toBase64(code, 0, code.length);
+                    code = Util.toBase64(code, 0, code.Length);
                     Out.write("Proxy-Authorization: Basic ".getBytes());
                     Out.write(code);
                     Out.write("\r\n".getBytes());
@@ -97,15 +97,15 @@ namespace SharpSSH.NG
                     throw new IOException();
                 }
 
-                string response = sb.toString();
+                string response = sb.ToString();
                 string reason = "Unknow reason";
                 int code = -1;
                 try
                 {
-                    foo = response.indexOf(' ');
-                    int bar = response.indexOf(' ', foo + 1);
-                    code = Integer.parseInt(response.substring(foo + 1, bar));
-                    reason = response.substring(bar + 1);
+                    foo = response.IndexOf(' ');
+                    int bar = response.IndexOf(' ', foo + 1);
+                    code = int.Parse(response.Substring(foo + 1, bar - (foo+1)));
+                    reason = response.Substring(bar + 1);
                 }
                 catch (Exception e)
                 {
@@ -148,10 +148,8 @@ namespace SharpSSH.NG
                 catch (Exception eee)
                 {
                 }
-                string message = "ProxyHTTP: " + e.toString();
-                if (e is Throwable)
-                    throw new JSchException(message, (Throwable)e);
-                throw new JSchException(message);
+                string message = "ProxyHTTP: " + e.ToString();
+                throw new JSchException(message,e);
             }
         }
         public Stream getInputStream() { return In; }

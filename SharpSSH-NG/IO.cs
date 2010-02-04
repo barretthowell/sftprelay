@@ -8,28 +8,28 @@ namespace SharpSSH.NG
 {
     class IO
     {
-        Stream In;
-        Stream Out;
-        Stream out_ext;
+        internal Stream In;
+        internal Stream Out;
+        internal Stream out_ext;
 
         private bool in_dontclose = false;
         private bool out_dontclose = false;
         private bool out_ext_dontclose = false;
 
-        void setOutputStream(Stream Out) { this.Out = Out; }
-        void setOutputStream(Stream Out, bool dontclose)
+        internal void setOutputStream(Stream Out) { this.Out = Out; }
+        internal void setOutputStream(Stream Out, bool dontclose)
         {
             this.out_dontclose = dontclose;
             setOutputStream(Out);
         }
-        void setExtOutputStream(Stream Out) { this.out_ext = Out; }
-        void setExtOutputStream(Stream Out, bool dontclose)
+        internal void setExtOutputStream(Stream Out) { this.out_ext = Out; }
+        internal void setExtOutputStream(Stream Out, bool dontclose)
         {
             this.out_ext_dontclose = dontclose;
             setExtOutputStream(Out);
         }
-        void setInputStream(Stream In) { this.In = In; }
-        void setInputStream(Stream In, bool dontclose)
+        internal void setInputStream(Stream In) { this.In = In; }
+        internal void setInputStream(Stream In, bool dontclose)
         {
             this.in_dontclose = dontclose;
             setInputStream(In);
@@ -40,28 +40,28 @@ namespace SharpSSH.NG
             Out.Write(p.buffer.buffer, 0, p.buffer.index);
             Out.Flush();
         }
-        void put(byte[] array, int begin, int length)
+        internal void put(byte[] array, int begin, int length)
         {
             Out.Write(array, begin, length);
             Out.Flush();
         }
-        void put_ext(byte[] array, int begin, int length)
+        internal void put_ext(byte[] array, int begin, int length)
         {
             out_ext.Write(array, begin, length);
             out_ext.Flush();
         }
 
-        int getByte()
+        internal int getByte()
         {
             return In.ReadByte();
         }
 
-        void getByte(byte[] array)
+        internal void getByte(byte[] array)
         {
             getByte(array, 0, array.Length);
         }
 
-        void getByte(byte[] array, int begin, int length)
+        internal void getByte(byte[] array, int begin, int length)
         {
             do
             {
@@ -76,7 +76,7 @@ namespace SharpSSH.NG
             while (length > 0);
         }
 
-        void out_close()
+        internal void out_close()
         {
             try
             {

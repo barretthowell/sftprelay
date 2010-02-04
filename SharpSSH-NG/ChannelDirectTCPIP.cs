@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
@@ -17,7 +18,7 @@ namespace SharpSSH.NG
         string originator_IP_address = "127.0.0.1";
         int originator_port = 0;
 
-        ChannelDirectTCPIP() :
+        internal ChannelDirectTCPIP() :
             base()
         {
             setLocalWindowSizeMax(LOCAL_WINDOW_SIZE_MAX);
@@ -42,7 +43,7 @@ namespace SharpSSH.NG
             try
             {
                 Session _session = getSession();
-                if (!_session.isConnected())
+                if (!_session.Connected)
                 {
                     throw new JSchException("session is down");
                 }
@@ -71,11 +72,11 @@ namespace SharpSSH.NG
                 try
                 {
                     while (this.getRecipient() == -1 &&
-                          _session.isConnected() &&
+                          _session.Connected &&
                           retry > 0 &&
                           !eof_remote)
                     {
-                        //Thread.sleep(500);
+                        //Thread.Sleep(500);
                         Thread.Sleep(50);
                         retry--;
                     }
@@ -83,7 +84,7 @@ namespace SharpSSH.NG
                 catch (Exception ee)
                 {
                 }
-                if (!_session.isConnected())
+                if (!_session.Connected)
                 {
                     throw new JSchException("session is down");
                 }
@@ -106,9 +107,9 @@ namespace SharpSSH.NG
                     thread.Name = "DirectTCPIP thread " + _session.getHost();
                     if (_session.daemon_thread)
                     {
-                        thread.setDaemon(_session.daemon_thread);
+                        thread.IsBackground=_session.daemon_thread;
                     }
-                    thread.start();
+                    thread.Start();
                 }
             }
             catch (Exception e)
@@ -140,7 +141,7 @@ namespace SharpSSH.NG
                 {
                     i = io.In.read(buf.buffer,
                                  14,
-                                 buf.buffer.length - 14
+                                 buf.buffer.Length - 14
                                  - 32 - 20 // padding and mac
                                  );
 

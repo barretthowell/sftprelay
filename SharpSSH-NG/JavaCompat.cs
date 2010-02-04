@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net.Sockets;
+using System.Net;
 
 namespace SharpSSH.NG
 {
@@ -29,6 +31,39 @@ namespace SharpSSH.NG
             {
                 return false;
             }
+        }
+        public static string RemoteHost(this Socket socket)
+        {
+            if (socket.RemoteEndPoint is IPEndPoint)
+            {
+                IPEndPoint ipep = (IPEndPoint)socket.RemoteEndPoint;
+                return ipep.Address.ToString();
+            }
+            throw new InvalidCastException();
+
+        }
+        private static DateTime Jan1st1970 = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        public static long CurrentTimeMillis()
+        {
+            return (long)((DateTime.UtcNow - Jan1st1970).TotalMilliseconds);
+        }
+        public static void setSoTimeout(this TcpClient t, int timeout)
+        {
+            t.ReceiveTimeout = timeout;
+            t.SendTimeout = timeout;
+        }
+        public static int RemotePort(this Socket socket)
+        {
+            if (socket.RemoteEndPoint is IPEndPoint)
+            {
+                IPEndPoint ipep = (IPEndPoint)socket.RemoteEndPoint;
+                return ipep.Port;
+            }
+            throw new InvalidCastException();
+        }
+        public static object newInstance(this Type t)
+        {
+            return Activator.CreateInstance(t);
         }
     }
 }

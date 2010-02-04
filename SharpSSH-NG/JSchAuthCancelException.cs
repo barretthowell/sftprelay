@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    public class JSchAuthCancelException
+    public class JSchAuthCancelException:Exception
     {
         
         public JSchAuthCancelException()

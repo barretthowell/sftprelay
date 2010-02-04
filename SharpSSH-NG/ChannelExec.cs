@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
@@ -22,20 +23,18 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is JSchException) throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException("ChannelExec", (Throwable)e);
-                throw new JSchException("ChannelExec");
+                throw new JSchException("ChannelExec",e);
             }
 
             if (io.In != null)
             {
-                thread = new Thread(this);
-                thread.setName("Exec thread " + _session.getHost());
+                thread = new Thread(this.run);
+                thread.Name="Exec thread " + _session.getHost();
                 if (_session.daemon_thread)
                 {
-                    thread.setDaemon(_session.daemon_thread);
+                    thread.IsBackground=_session.daemon_thread;
                 }
-                thread.start();
+                thread.Start();
             }
         }
 
@@ -48,7 +47,7 @@ namespace SharpSSH.NG
             this.command = command;
         }
 
-        protected override void init()
+        internal override void init()
         {
             io.setInputStream(getSession().In);
             io.setOutputStream(getSession().Out);

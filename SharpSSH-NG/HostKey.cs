@@ -10,14 +10,14 @@ namespace SharpSSH.NG
         private static readonly byte[] sshdss = "ssh-dss".getBytes();
         private static readonly byte[] sshrsa = "ssh-rsa".getBytes();
 
-        protected const int GUESS = 0;
+        internal const int GUESS = 0;
         public const int SSHDSS = 1;
         public const int SSHRSA = 2;
-        const int UNKNOWN = 3;
+        internal const int UNKNOWN = 3;
 
-        protected string host;
-        protected int type;
-        protected byte[] key;
+        internal string host;
+        internal int type;
+        internal byte[] key;
 
         public HostKey(string host, byte[] key)
         {
@@ -43,20 +43,20 @@ namespace SharpSSH.NG
         public string getHost() { return host; }
         public string getType()
         {
-            if (type == SSHDSS) { return new string(sshdss); }
-            if (type == SSHRSA) { return new string(sshrsa); }
+            if (type == SSHDSS) { return Encoding.UTF8.GetString(sshdss); }
+            if (type == SSHRSA) { return Encoding.UTF8.GetString(sshrsa); }
             return "UNKNOWN";
         }
         public string getKey()
         {
-            return new string(Util.toBase64(key, 0, key.Length));
+            return Encoding.UTF8.GetString(Util.toBase64(key, 0, key.Length));
         }
         public string getFingerPrint(JSch jsch)
         {
             HASH hash = null;
             try
             {
-                Class c = Class.forName(jsch.getConfig("md5"));
+                Type c = Type.GetType(jsch.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
             }
             catch (Exception e) { Console.Error.WriteLine("getFingerPrint: " + e); }

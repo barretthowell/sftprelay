@@ -54,7 +54,7 @@ namespace SharpSSH.NG
 
             try
             {
-                Class c = Class.forName(session.getConfig("sha-1"));
+                Type c = Type.GetType(session.getConfig("sha-1"));
                 sha = (HASH)(c.newInstance());
                 sha.init();
             }
@@ -68,7 +68,7 @@ namespace SharpSSH.NG
 
             try
             {
-                Class c = Class.forName(session.getConfig("dh"));
+                Type c = Type.GetType(session.getConfig("dh"));
                 dh = (com.jcraft.jsch.DH)(c.newInstance());
                 dh.init();
             }
@@ -117,11 +117,11 @@ namespace SharpSSH.NG
                     p = _buf.getMPInt();
                     g = _buf.getMPInt();
                     /*
-              for(int iii=0; iii<p.length; iii++){
+              for(int iii=0; iii<p.Length; iii++){
               Console.Error.WriteLine("0x"+Integer.toHexString(p[iii]&0xff)+",");
               }
               Console.Error.WriteLine("");
-              for(int iii=0; iii<g.length; iii++){
+              for(int iii=0; iii<g.Length; iii++){
               Console.Error.WriteLine("0x"+Integer.toHexString(g[iii]&0xff)+",");
               }
                     */
@@ -174,7 +174,7 @@ namespace SharpSSH.NG
                     // impint q of dsa
                     // impint g of dsa
                     // impint pub_key of dsa
-                    //System.err.print("K_S: "); dump(K_S, 0, K_S.length);
+                    //System.err.print("K_S: "); dump(K_S, 0, K_S.Length);
 
                     byte[] f = _buf.getMPInt();
                     byte[] sig_of_H = _buf.getString();
@@ -210,21 +210,21 @@ namespace SharpSSH.NG
 
                     byte[] foo = new byte[buf.getLength()];
                     buf.getByte(foo);
-                    sha.update(foo, 0, foo.length);
+                    sha.update(foo, 0, foo.Length);
 
                     H = sha.digest();
 
-                    // System.err.print("H -> "); dump(H, 0, H.length);
+                    // System.err.print("H -> "); dump(H, 0, H.Length);
 
                     i = 0;
                     j = 0;
                     j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
                   ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
-                    string alg = new string(K_S, i, j);
+                    string alg = Encoding.UTF8.GetString(K_S, i, j);
                     i += j;
 
                     bool result = false;
-                    if (alg.equals("ssh-rsa"))
+                    if (alg.Equals("ssh-rsa"))
                     {
                         byte[] tmp;
                         byte[] ee;
@@ -247,7 +247,7 @@ namespace SharpSSH.NG
                         SignatureRSA sig = null;
                         try
                         {
-                            Class c = Class.forName(session.getConfig("signature.rsa"));
+                            Type c = Type.GetType(session.getConfig("signature.rsa"));
                             sig = (SignatureRSA)(c.newInstance());
                             sig.init();
                         }
@@ -267,7 +267,7 @@ namespace SharpSSH.NG
                         }
 
                     }
-                    else if (alg.equals("ssh-dss"))
+                    else if (alg.Equals("ssh-dss"))
                     {
                         byte[] q = null;
                         byte[] tmp;
@@ -297,7 +297,7 @@ namespace SharpSSH.NG
                         SignatureDSA sig = null;
                         try
                         {
-                            Class c = Class.forName(session.getConfig("signature.dss"));
+                            Type c = Type.GetType(session.getConfig("signature.dss"));
                             sig = (SignatureDSA)(c.newInstance());
                             sig.init();
                         }

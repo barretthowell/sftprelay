@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
@@ -22,7 +23,7 @@ namespace SharpSSH.NG
         protected int thp = 480;
         protected byte[] terminal_mode = null;
 
-        ChannelSession()
+        internal ChannelSession()
             : base()
         {
             type = _session;
@@ -239,7 +240,7 @@ namespace SharpSSH.NG
                 {
                     i = io.In.read(buf.buffer,
                                  14,
-                                 buf.buffer.length - 14
+                                 buf.buffer.Length - 14
                                  - 32 - 20 // padding and mac
                          );
                     if (i == 0) continue;
@@ -265,7 +266,7 @@ namespace SharpSSH.NG
             }
             if (thread != null)
             {
-                lock (thread) { thread.notifyAll(); }
+                lock (thread) { Monitor.PulseAll(this); }
             }
             thread = null;
             //Console.Error.WriteLine(this+":run <");

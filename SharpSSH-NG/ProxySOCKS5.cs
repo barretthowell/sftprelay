@@ -22,12 +22,12 @@ namespace SharpSSH.NG
         {
             int port = DEFAULTPORT;
             string host = proxy_host;
-            if (proxy_host.indexOf(':') != -1)
+            if (proxy_host.IndexOf(':') != -1)
             {
                 try
                 {
-                    host = proxy_host.substring(0, proxy_host.indexOf(':'));
-                    port = Integer.parseInt(proxy_host.substring(proxy_host.indexOf(':') + 1));
+                    host = proxy_host.Substring(0, proxy_host.IndexOf(':'));
+                    port = int.Parse(proxy_host.Substring(proxy_host.IndexOf(':') + 1));
                 }
                 catch (Exception e)
                 {
@@ -61,13 +61,13 @@ namespace SharpSSH.NG
                 {
                     socket = socket_factory.createSocket(proxy_host, proxy_port);
                     In = socket_factory.getInputStream(socket);
-                    Out = socket_factory.getOutputStream(socket);
+                    Out = socket_factory.GetStream(socket);
                 }
                 if (timeout > 0)
                 {
                     socket.setSoTimeout(timeout);
                 }
-                socket.setTcpNoDelay(true);
+                socket.NoDelay=true;
 
                 byte[] buf = new byte[1024];
                 int index = 0;
@@ -144,12 +144,12 @@ namespace SharpSSH.NG
                         */
                         index = 0;
                         buf[index++] = 1;
-                        buf[index++] = (byte)(user.length());
-                        Array.Copy(user.getBytes(), 0, buf, index, user.length());
-                        index += user.length();
-                        buf[index++] = (byte)(passwd.length());
-                        Array.Copy(passwd.getBytes(), 0, buf, index, passwd.length());
-                        index += passwd.length();
+                        buf[index++] = (byte)(user.Length);
+                        Array.Copy(user.getBytes(), 0, buf, index, user.Length);
+                        index += user.Length;
+                        buf[index++] = (byte)(passwd.Length);
+                        Array.Copy(passwd.getBytes(), 0, buf, index, passwd.Length);
+                        index += passwd.Length;
 
                         Out.write(buf, 0, index);
 
@@ -216,7 +216,7 @@ namespace SharpSSH.NG
                 buf[index++] = 0;
 
                 byte[] hostb = host.getBytes();
-                int len = hostb.length;
+                int len = hostb.Length;
                 buf[index++] = 3;      // DOMAINNAME
                 buf[index++] = (byte)(len);
                 Array.Copy(hostb, 0, buf, index, len);
@@ -302,10 +302,8 @@ namespace SharpSSH.NG
                 catch (Exception eee)
                 {
                 }
-                string message = "ProxySOCKS5: " + e.toString();
-                if (e is Throwable)
-                    throw new JSchException(message, (Throwable)e);
-                throw new JSchException(message);
+                string message = "ProxySOCKS5: " + e.ToString();
+                throw new JSchException(message,e);
             }
         }
         public Stream getInputStream() { return In; }

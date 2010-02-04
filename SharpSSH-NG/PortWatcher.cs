@@ -13,15 +13,15 @@ namespace SharpSSH.NG
         private static List<PortWatcher> pool = new List<PortWatcher>();
         private static IPAddress anyLocalAddress = IPAddress.Any;
 
-        Session session;
-        int lport;
-        int rport;
-        string host;
-        IPAddress boundaddress;
-        Thread thread;
-        TcpListener ss;
+        internal Session session;
+        internal int lport;
+        internal int rport;
+        internal string host;
+        internal IPAddress boundaddress;
+        internal Thread thread;
+        internal TcpListener ss;
 
-        static string[] getPortForwarding(Session session)
+        internal static string[] getPortForwarding(Session session)
         {
             List<string> foo = new List<string>();
             lock (pool)
@@ -36,33 +36,33 @@ namespace SharpSSH.NG
             }
             return foo.ToArray();
         }
-        static PortWatcher getPort(Session session, string address, int lport)
+        internal static PortWatcher getPort(Session session, string address, int lport)
         {
             IPAddress addr;
             try
             {
-                addr = IPAddress.Parse(address); // InetAddress.getByName(address);
+                addr = Dns.GetHostEntry(address).AddressList[0]; // IPAddress.Parse(address); // InetAddress.getByName(address);
             }
-            catch (FormatException uhe)
+            catch (Exception uhe)
             {
                 throw new JSchException("PortForwardingL: invalid address " + address + " specified.", uhe);
             }
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
                     if (pool[i].session == session && pool[i].lport == lport)
                     {
                         if (/*p.boundaddress.isAnyLocalAddress() ||*/
-                               (anyLocalAddress != null && pool[i].boundaddress.equals(anyLocalAddress)) ||
-                           pool[i].boundaddress.equals(addr))
+                               (anyLocalAddress != null && pool[i].boundaddress.Equals(anyLocalAddress)) ||
+                           pool[i].boundaddress.Equals(addr))
                             return pool[i];
                     }
                 }
                 return null;
             }
         }
-        static PortWatcher addPort(Session session, string address, int lport, string host, int rport, ServerSocketFactory ssf)
+        internal static PortWatcher addPort(Session session, string address, int lport, string host, int rport, ServerSocketFactory ssf)
         {
             if (getPort(session, address, lport) != null)
             {
@@ -72,7 +72,7 @@ namespace SharpSSH.NG
             pool.Add(pw);
             return pw;
         }
-        static void delPort(Session session, string address, int lport)
+        internal static void delPort(Session session, string address, int lport)
         {
             PortWatcher pw = getPort(session, address, lport);
             if (pw == null)
@@ -82,15 +82,15 @@ namespace SharpSSH.NG
             pw.delete();
             pool.Remove(pw);
         }
-        static void delPort(Session session)
+        internal static void delPort(Session session)
         {
             lock (pool)
             {
-                PortWatcher[] foo = new PortWatcher[pool.size()];
+                PortWatcher[] foo = new PortWatcher[pool.Count];
                 int count = 0;
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    PortWatcher p = (PortWatcher)(pool.elementAt(i));
+                    PortWatcher p = pool[i];
                     if (p.session == session)
                     {
                         p.delete();
@@ -100,7 +100,7 @@ namespace SharpSSH.NG
                 for (int i = 0; i < count; i++)
                 {
                     PortWatcher p = foo[i];
-                    pool.removeElement(p);
+                    pool.Remove(p);
                 }
             }
         }
@@ -115,22 +115,20 @@ namespace SharpSSH.NG
             this.rport = rport;
             try
             {
-                boundaddress = InetAddress.getByName(address);
+                boundaddress = Dns.GetHostEntry(address).AddressList[0];
                 ss = (factory == null) ?
-                  new ServerSocket(lport, 0, boundaddress) :
+                  new TcpListener(boundaddress,lport) :
                   factory.createServerSocket(lport, 0, boundaddress);
             }
             catch (Exception e)
             {
                 //Console.Error.WriteLine(e);
                 string message = "PortForwardingL: local port " + address + ":" + lport + " cannot be bound.";
-                if (e is Throwable)
-                    throw new JSchException(message, (Throwable)e);
-                throw new JSchException(message);
+                throw new JSchException(message,e);
             }
             if (lport == 0)
             {
-                int assigned = ss.getLocalPort();
+                int assigned = ((IPEndPoint)ss.LocalEndpoint).Port;
                 if (assigned != -1)
                     this.lport = assigned;
             }
@@ -154,8 +152,8 @@ namespace SharpSSH.NG
                     session.addChannel(channel);
                     ((ChannelDirectTCPIP)channel).setHost(host);
                     ((ChannelDirectTCPIP)channel).setPort(rport);
-                    ((ChannelDirectTCPIP)channel).setOrgIPAddress(socket.getInetAddress().getHostAddress());
-                    ((ChannelDirectTCPIP)channel).setOrgPort(socket.getPort());
+                    ((ChannelDirectTCPIP)channel).setOrgIPAddress(socket.Client.RemoteHost());
+                    ((ChannelDirectTCPIP)channel).setOrgPort(socket.Client.RemotePort());
                     channel.connect();
                     if (channel.exitstatus != -1)
                     {
@@ -175,7 +173,7 @@ namespace SharpSSH.NG
             thread = null;
             try
             {
-                if (ss != null) ss.close();
+                if (ss != null) ss.Close();
                 ss = null;
             }
             catch (Exception e)

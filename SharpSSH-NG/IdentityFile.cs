@@ -62,7 +62,7 @@ namespace SharpSSH.NG
                 int len = 0;
                 while (true)
                 {
-                    int i = fis.read(prvkey, len, prvkey.length - len);
+                    int i = fis.read(prvkey, len, prvkey.Length - len);
                     if (i <= 0)
                         break;
                     len += i;
@@ -73,9 +73,7 @@ namespace SharpSSH.NG
             {
                 try { if (fis != null) fis.close(); }
                 catch (Exception ee) { }
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
 
             string _pubfile = pubfile;
@@ -92,7 +90,7 @@ namespace SharpSSH.NG
                 int len = 0;
                 while (true)
                 {
-                    int i = fis.read(pubkey, len, pubkey.length - len);
+                    int i = fis.read(pubkey, len, pubkey.Length - len);
                     if (i <= 0)
                         break;
                     len += i;
@@ -106,9 +104,7 @@ namespace SharpSSH.NG
                 if (pubfile != null)
                 {
                     // The pubfile is explicitry given, but not accessible.
-                    if (e is Throwable)
-                        throw new JSchException(e.toString(), (Throwable)e);
-                    throw new JSchException(e.toString());
+                    throw new JSchException(e.Message,e);
                 }
             }
             return newInstance(prvfile, prvkey, pubkey, jsch);
@@ -132,17 +128,17 @@ namespace SharpSSH.NG
             this.jsch = jsch;
             try
             {
-                Class c;
-                c = Class.forName((string)jsch.getConfig("3des-cbc"));
+                Type c;
+                c = Type.GetType((string)jsch.getConfig("3des-cbc"));
                 cipher = (Cipher)(c.newInstance());
                 key = new byte[cipher.getBlockSize()];   // 24
                 iv = new byte[cipher.getIVSize()];       // 8
-                c = Class.forName((string)jsch.getConfig("md5"));
+                c = Type.GetType((string)jsch.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
                 hash.init();
 
                 byte[] buf = prvkey;
-                int len = buf.length;
+                int len = buf.Length;
 
                 int i = 0;
                 while (i < len)
@@ -171,7 +167,7 @@ namespace SharpSSH.NG
                         i += 8;
                         if (Session.checkCipher((string)jsch.getConfig("aes256-cbc")))
                         {
-                            c = Class.forName((string)jsch.getConfig("aes256-cbc"));
+                            c = Type.GetType((string)jsch.getConfig("aes256-cbc"));
                             cipher = (Cipher)(c.newInstance());
                             key = new byte[cipher.getBlockSize()];
                             iv = new byte[cipher.getIVSize()];
@@ -185,7 +181,7 @@ namespace SharpSSH.NG
                     if (buf[i] == 'C' && buf[i + 1] == 'B' && buf[i + 2] == 'C' && buf[i + 3] == ',')
                     {
                         i += 4;
-                        for (int ii = 0; ii < iv.length; ii++)
+                        for (int ii = 0; ii < iv.Length; ii++)
                         {
                             iv[ii] = (byte)(((a2b(buf[i++]) << 4) & 0xf0) +
                               (a2b(buf[i++]) & 0xf));
@@ -193,21 +189,21 @@ namespace SharpSSH.NG
                         continue;
                     }
                     if (buf[i] == 0x0d &&
-                       i + 1 < buf.length && buf[i + 1] == 0x0a)
+                       i + 1 < buf.Length && buf[i + 1] == 0x0a)
                     {
                         i++;
                         continue;
                     }
-                    if (buf[i] == 0x0a && i + 1 < buf.length)
+                    if (buf[i] == 0x0a && i + 1 < buf.Length)
                     {
                         if (buf[i + 1] == 0x0a) { i += 2; break; }
                         if (buf[i + 1] == 0x0d &&
-                           i + 2 < buf.length && buf[i + 2] == 0x0a)
+                           i + 2 < buf.Length && buf[i + 2] == 0x0a)
                         {
                             i += 3; break;
                         }
                         bool inheader = false;
-                        for (int j = i + 1; j < buf.length; j++)
+                        for (int j = i + 1; j < buf.Length; j++)
                         {
                             if (buf[j] == 0x0a) break;
                             //if(buf[j]==0x0d) break;
@@ -248,7 +244,7 @@ namespace SharpSSH.NG
                 }
                 encoded_data = Util.fromBase64(buf, start, i - start);
 
-                if (encoded_data.length > 4 &&            // FSecure
+                if (encoded_data.Length > 4 &&            // FSecure
                encoded_data[0] == (byte)0x3f &&
                encoded_data[1] == (byte)0x6f &&
                encoded_data[2] == (byte)0xf9 &&
@@ -259,27 +255,27 @@ namespace SharpSSH.NG
                     _buf.getInt();  // 0x3f6ff9be
                     _buf.getInt();
                     byte[] _type = _buf.getString();
-                    //Console.Error.WriteLine("type: "+new string(_type)); 
+                    //Console.Error.WriteLine("type: "+Encoding.UTF8.GetString(_type)); 
                     byte[] _cipher = _buf.getString();
-                    string cipher = new string(_cipher);
+                    string cipher = Encoding.UTF8.GetString(_cipher);
                     //Console.Error.WriteLine("cipher: "+cipher); 
-                    if (cipher.equals("3des-cbc"))
+                    if (cipher.Equals("3des-cbc"))
                     {
                         _buf.getInt();
-                        byte[] foo = new byte[encoded_data.length - _buf.getOffSet()];
+                        byte[] foo = new byte[encoded_data.Length - _buf.getOffSet()];
                         _buf.getByte(foo);
                         encoded_data = foo;
                         encrypted = true;
                         throw new JSchException("unknown privatekey format: " + identity);
                     }
-                    else if (cipher.equals("none"))
+                    else if (cipher.Equals("none"))
                     {
                         _buf.getInt();
                         //_buf.getInt();
 
                         encrypted = false;
 
-                        byte[] foo = new byte[encoded_data.length - _buf.getOffSet()];
+                        byte[] foo = new byte[encoded_data.Length - _buf.getOffSet()];
                         _buf.getByte(foo);
                         encoded_data = foo;
                     }
@@ -292,9 +288,9 @@ namespace SharpSSH.NG
                 }
 
                 buf = pubkey;
-                len = buf.length;
+                len = buf.Length;
 
-                if (buf.length > 4 &&             // FSecure's public key
+                if (buf.Length > 4 &&             // FSecure's public key
                buf[0] == '-' && buf[1] == '-' && buf[2] == '-' && buf[3] == '-')
                 {
                     i = 0;
@@ -334,7 +330,7 @@ namespace SharpSSH.NG
                     }
                     publickeyblob = Util.fromBase64(buf, start, i - start);
 
-                    if (type == UNKNOWN && publickeyblob.length > 8)
+                    if (type == UNKNOWN && publickeyblob.Length > 8)
                     {
                         if (publickeyblob[8] == 'd')
                         {
@@ -355,7 +351,7 @@ namespace SharpSSH.NG
                     start = i;
                     while (i < len) { if (buf[i] == ' ' || buf[i] == '\n')break; i++; }
                     publickeyblob = Util.fromBase64(buf, start, i - start);
-                    if (publickeyblob.length < 4 + 7)
+                    if (publickeyblob.Length < 4 + 7)
                     {  // It must start with "ssh-XXX".
                         if (JSch.getLogger().isEnabled(Logger.WARN))
                         {
@@ -370,9 +366,7 @@ namespace SharpSSH.NG
             {
                 //Console.Error.WriteLine("IdentityFile: "+e);
                 if (e is JSchException) throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
 
@@ -388,7 +382,7 @@ namespace SharpSSH.NG
               hash is MD5
               h(0) <- hash(passphrase, iv);
               h(n) <- hash(h(n-1), passphrase, iv);
-              key <- (h(0),...,h(n))[0,..,key.length];
+              key <- (h(0),...,h(n))[0,..,key.Length];
             */
             try
             {
@@ -397,33 +391,33 @@ namespace SharpSSH.NG
                     if (_passphrase == null) return false;
                     byte[] passphrase = _passphrase;
                     int hsize = hash.getBlockSize();
-                    byte[] hn = new byte[key.length / hsize * hsize +
-                               (key.length % hsize == 0 ? 0 : hsize)];
+                    byte[] hn = new byte[key.Length / hsize * hsize +
+                               (key.Length % hsize == 0 ? 0 : hsize)];
                     byte[] tmp = null;
                     if (keytype == OPENSSH)
                     {
-                        for (int index = 0; index + hsize <= hn.length; )
+                        for (int index = 0; index + hsize <= hn.Length; )
                         {
-                            if (tmp != null) { hash.update(tmp, 0, tmp.length); }
-                            hash.update(passphrase, 0, passphrase.length);
-                            hash.update(iv, 0, iv.length > 8 ? 8 : iv.length);
+                            if (tmp != null) { hash.update(tmp, 0, tmp.Length); }
+                            hash.update(passphrase, 0, passphrase.Length);
+                            hash.update(iv, 0, iv.Length > 8 ? 8 : iv.Length);
                             tmp = hash.digest();
-                            Array.Copy(tmp, 0, hn, index, tmp.length);
-                            index += tmp.length;
+                            Array.Copy(tmp, 0, hn, index, tmp.Length);
+                            index += tmp.Length;
                         }
-                        Array.Copy(hn, 0, key, 0, key.length);
+                        Array.Copy(hn, 0, key, 0, key.Length);
                     }
                     else if (keytype == FSECURE)
                     {
-                        for (int index = 0; index + hsize <= hn.length; )
+                        for (int index = 0; index + hsize <= hn.Length; )
                         {
-                            if (tmp != null) { hash.update(tmp, 0, tmp.length); }
-                            hash.update(passphrase, 0, passphrase.length);
+                            if (tmp != null) { hash.update(tmp, 0, tmp.Length); }
+                            hash.update(passphrase, 0, passphrase.Length);
                             tmp = hash.digest();
-                            Array.Copy(tmp, 0, hn, index, tmp.length);
-                            index += tmp.length;
+                            Array.Copy(tmp, 0, hn, index, tmp.Length);
+                            index += tmp.Length;
                         }
-                        Array.Copy(hn, 0, key, 0, key.length);
+                        Array.Copy(hn, 0, key, 0, key.Length);
                     }
                     Util.bzero(passphrase);
                 }
@@ -438,9 +432,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is JSchException) throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
 
@@ -454,9 +446,9 @@ namespace SharpSSH.NG
         byte[] getPublicKeyBlob_rsa()
         {
             if (e_array == null) return null;
-            Buffer buf = new Buffer("ssh-rsa".length() + 4 +
-                       e_array.length + 4 +
-                       n_array.length + 4);
+            Buffer buf = new Buffer("ssh-rsa".Length + 4 +
+                       e_array.Length + 4 +
+                       n_array.Length + 4);
             buf.putString("ssh-rsa".getBytes());
             buf.putString(e_array);
             buf.putString(n_array);
@@ -466,11 +458,11 @@ namespace SharpSSH.NG
         byte[] getPublicKeyBlob_dss()
         {
             if (P_array == null) return null;
-            Buffer buf = new Buffer("ssh-dss".length() + 4 +
-                       P_array.length + 4 +
-                       Q_array.length + 4 +
-                       G_array.length + 4 +
-                       pub_array.length + 4);
+            Buffer buf = new Buffer("ssh-dss".Length + 4 +
+                       P_array.Length + 4 +
+                       Q_array.Length + 4 +
+                       G_array.Length + 4 +
+                       pub_array.Length + 4);
             buf.putString("ssh-dss".getBytes());
             buf.putString(P_array);
             buf.putString(Q_array);
@@ -489,7 +481,7 @@ namespace SharpSSH.NG
         {
             try
             {
-                Class c = Class.forName((string)jsch.getConfig("signature.rsa"));
+                Type c = Type.GetType((string)jsch.getConfig("signature.rsa"));
                 SignatureRSA rsa = (SignatureRSA)(c.newInstance());
 
                 rsa.init();
@@ -497,8 +489,8 @@ namespace SharpSSH.NG
 
                 rsa.update(data);
                 byte[] sig = rsa.sign();
-                Buffer buf = new Buffer("ssh-rsa".length() + 4 +
-                          sig.length + 4);
+                Buffer buf = new Buffer("ssh-rsa".Length + 4 +
+                          sig.Length + 4);
                 buf.putString("ssh-rsa".getBytes());
                 buf.putString(sig);
                 return buf.buffer;
@@ -516,19 +508,19 @@ namespace SharpSSH.NG
                 int i;
                 System.err.print("P ");
                 foo=P_array;
-                for(i=0;  i<foo.length; i++){
+                for(i=0;  i<foo.Length; i++){
                   System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
                 System.err.print("Q ");
                 foo=Q_array;
-                for(i=0;  i<foo.length; i++){
+                for(i=0;  i<foo.Length; i++){
                   System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
                 System.err.print("G ");
                 foo=G_array;
-                for(i=0;  i<foo.length; i++){
+                for(i=0;  i<foo.Length; i++){
                   System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -536,15 +528,15 @@ namespace SharpSSH.NG
 
             try
             {
-                Class c = Class.forName((string)jsch.getConfig("signature.dss"));
+                Type c = Type.GetType((string)jsch.getConfig("signature.dss"));
                 SignatureDSA dsa = (SignatureDSA)(c.newInstance());
                 dsa.init();
                 dsa.setPrvKey(prv_array, P_array, Q_array, G_array);
 
                 dsa.update(data);
                 byte[] sig = dsa.sign();
-                Buffer buf = new Buffer("ssh-dss".length() + 4 +
-                          sig.length + 4);
+                Buffer buf = new Buffer("ssh-dss".Length + 4 +
+                          sig.Length + 4);
                 buf.putString("ssh-dss".getBytes());
                 buf.putString(sig);
                 return buf.buffer;
@@ -578,15 +570,15 @@ namespace SharpSSH.NG
                     if (keytype == OPENSSH)
                     {
                         cipher.init(Cipher.DECRYPT_MODE, key, iv);
-                        plain = new byte[encoded_data.length];
-                        cipher.update(encoded_data, 0, encoded_data.length, plain, 0);
+                        plain = new byte[encoded_data.Length];
+                        cipher.update(encoded_data, 0, encoded_data.Length, plain, 0);
                     }
                     else if (keytype == FSECURE)
                     {
-                        for (int i = 0; i < iv.length; i++) iv[i] = 0;
+                        for (int i = 0; i < iv.Length; i++) iv[i] = 0;
                         cipher.init(Cipher.DECRYPT_MODE, key, iv);
-                        plain = new byte[encoded_data.length];
-                        cipher.update(encoded_data, 0, encoded_data.length, plain, 0);
+                        plain = new byte[encoded_data.Length];
+                        cipher.update(encoded_data, 0, encoded_data.Length, plain, 0);
                     }
                     else
                     {
@@ -603,7 +595,7 @@ namespace SharpSSH.NG
                 {              // FSecure   
                     Buffer buf = new Buffer(plain);
                     int foo = buf.getInt();
-                    if (plain.length != foo + 4)
+                    if (plain.Length != foo + 4)
                     {
                         return false;
                     }
@@ -654,7 +646,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: N len="+length);
-                for(int i=0; i<n_array.length; i++){
+                for(int i=0; i<n_array.Length; i++){
                 System.err.print(Integer.toHexString(n_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -671,7 +663,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: E len="+length);
-                for(int i=0; i<e_array.length; i++){
+                for(int i=0; i<e_array.Length; i++){
                 System.err.print(Integer.toHexString(e_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -688,7 +680,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: D len="+length);
-                for(int i=0; i<d_array.length; i++){
+                for(int i=0; i<d_array.Length; i++){
                 System.err.print(Integer.toHexString(d_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -706,7 +698,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: P len="+length);
-                for(int i=0; i<p_array.length; i++){
+                for(int i=0; i<p_array.Length; i++){
                 System.err.print(Integer.toHexString(p_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -723,7 +715,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: q len="+length);
-                for(int i=0; i<q_array.length; i++){
+                for(int i=0; i<q_array.Length; i++){
                 System.err.print(Integer.toHexString(q_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -740,7 +732,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: dmp1 len="+length);
-                for(int i=0; i<dmp1_array.length; i++){
+                for(int i=0; i<dmp1_array.Length; i++){
                 System.err.print(Integer.toHexString(dmp1_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -757,7 +749,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: dmq1 len="+length);
-                for(int i=0; i<dmq1_array.length; i++){
+                for(int i=0; i<dmq1_array.Length; i++){
                 System.err.print(Integer.toHexString(dmq1_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -774,7 +766,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: iqmp len="+length);
-                for(int i=0; i<iqmp_array.length; i++){
+                for(int i=0; i<iqmp_array.Length; i++){
                 System.err.print(Integer.toHexString(iqmp_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -798,10 +790,10 @@ namespace SharpSSH.NG
                     if (keytype == OPENSSH)
                     {
                         cipher.init(Cipher.DECRYPT_MODE, key, iv);
-                        plain = new byte[encoded_data.length];
-                        cipher.update(encoded_data, 0, encoded_data.length, plain, 0);
+                        plain = new byte[encoded_data.Length];
+                        cipher.update(encoded_data, 0, encoded_data.Length, plain, 0);
                         /*
-                        for(int i=0; i<plain.length; i++){
+                        for(int i=0; i<plain.Length; i++){
                         System.err.print(Integer.toHexString(plain[i]&0xff)+":");
                         }
                         Console.Error.WriteLine("");
@@ -809,10 +801,10 @@ namespace SharpSSH.NG
                     }
                     else if (keytype == FSECURE)
                     {
-                        for (int i = 0; i < iv.length; i++) iv[i] = 0;
+                        for (int i = 0; i < iv.Length; i++) iv[i] = 0;
                         cipher.init(Cipher.DECRYPT_MODE, key, iv);
-                        plain = new byte[encoded_data.length];
-                        cipher.update(encoded_data, 0, encoded_data.length, plain, 0);
+                        plain = new byte[encoded_data.Length];
+                        cipher.update(encoded_data, 0, encoded_data.Length, plain, 0);
                     }
                     else
                     {
@@ -829,7 +821,7 @@ namespace SharpSSH.NG
                 {              // FSecure   
                     Buffer buf = new Buffer(plain);
                     int foo = buf.getInt();
-                    if (plain.length != foo + 4)
+                    if (plain.Length != foo + 4)
                     {
                         return false;
                     }
@@ -944,9 +936,9 @@ namespace SharpSSH.NG
 
         public bool equals(Object o)
         {
-            if (!(o is IdentityFile)) return base.equals(o);
+            if (!(o is IdentityFile)) return base.Equals(o);
             IdentityFile foo = (IdentityFile)o;
-            return getName().equals(foo.getName());
+            return getName().Equals(foo.getName());
         }
 
         public void clear()

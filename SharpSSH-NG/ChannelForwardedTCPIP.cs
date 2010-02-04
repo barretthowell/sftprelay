@@ -26,7 +26,7 @@ namespace SharpSSH.NG
         int lport;
         int rport;
 
-        ChannelForwardedTCPIP() :
+        internal ChannelForwardedTCPIP() :
             base()
         {
             setLocalWindowSizeMax(LOCAL_WINDOW_SIZE_MAX);
@@ -42,7 +42,7 @@ namespace SharpSSH.NG
             {
                 if (lport == -1)
                 {
-                    Class c = Class.forName(target);
+                    Type c = Type.GetType(target);
                     daemon = (ForwardedTCPIPDaemon)c.newInstance();
 
                     MemoryStream Out = new MemoryStream(32 * 1024);
@@ -64,9 +64,9 @@ namespace SharpSSH.NG
                     socket = (factory == null) ?
                        Util.createSocket(target, lport, TIMEOUT) :
                       factory.createSocket(target, lport);
-                    socket.setTcpNoDelay(true);
-                    io.setInputStream(socket.getInputStream());
-                    io.setOutputStream(socket.getOutputStream());
+                    socket.NoDelay=true;
+                    io.setInputStream(socket.GetStream());
+                    io.setOutputStream(socket.GetStream());
                 }
                 sendOpenConfirmation();
             }
@@ -90,7 +90,7 @@ namespace SharpSSH.NG
                 {
                     i = io.In.read(buf.buffer,
                                  14,
-                                 buf.buffer.length - 14
+                                 buf.buffer.Length - 14
                                  - 32 - 20 // padding and mac
                                  );
                     if (i <= 0)
@@ -127,9 +127,9 @@ namespace SharpSSH.NG
             int orgport = buf.getInt();
 
             /*
-            Console.Error.WriteLine("addr: "+new string(addr));
+            Console.Error.WriteLine("addr: "+Encoding.UTF8.GetString(addr));
             Console.Error.WriteLine("port: "+port);
-            Console.Error.WriteLine("orgaddr: "+new string(orgaddr));
+            Console.Error.WriteLine("orgaddr: "+Encoding.UTF8.GetString(orgaddr));
             Console.Error.WriteLine("orgport: "+orgport);
             */
 
@@ -145,7 +145,7 @@ namespace SharpSSH.NG
 
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
                     object[] foo = (object[])(pool[i]);
                     if (foo[0] != _session) continue;
@@ -154,7 +154,7 @@ namespace SharpSSH.NG
                     this.target = (string)foo[2];
                     if (foo[3] == null || (foo[3] is object[])) { this.lport = -1; }
                     else { this.lport = ((int)foo[3]); }
-                    if (foo.length >= 6)
+                    if (foo.Length >= 6)
                     {
                         this.factory = ((SocketFactory)foo[5]);
                     }
@@ -171,7 +171,7 @@ namespace SharpSSH.NG
         {
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
                     object[] bar = (object[])(pool[i]);
                     if (bar[0] != session) continue;
@@ -187,7 +187,7 @@ namespace SharpSSH.NG
             List<string> foo = new List<string>();
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
                     object[] bar = (object[])(pool[i]);
                     if (bar[0] != session) continue;
@@ -198,14 +198,14 @@ namespace SharpSSH.NG
             return foo.ToArray();
         }
 
-        static string normalize(string address)
+        internal static string normalize(string address)
         {
             if (address == null) { return "localhost"; }
-            else if (address.length() == 0 || address.equals("*")) { return ""; }
+            else if (address.Length == 0 || address.Equals("*")) { return ""; }
             else { return address; }
         }
 
-        static void addPort(Session session, string _address_to_bind, int port, string target, int lport, SocketFactory factory)
+        internal static void addPort(Session session, string _address_to_bind, int port, string target, int lport, SocketFactory factory)
         {
             string address_to_bind = normalize(_address_to_bind);
             lock (pool)
@@ -222,7 +222,7 @@ namespace SharpSSH.NG
                 pool.Add(foo);
             }
         }
-        static void addPort(Session session, string _address_to_bind, int port, string daemon, Object[] arg)
+        internal static void addPort(Session session, string _address_to_bind, int port, string daemon, Object[] arg)
         {
             string address_to_bind = normalize(_address_to_bind);
             lock (pool)
@@ -238,7 +238,7 @@ namespace SharpSSH.NG
                 pool.Add(foo);
             }
         }
-        static void delPort(ChannelForwardedTCPIP c)
+        internal static void delPort(ChannelForwardedTCPIP c)
         {
             Session _session = null;
             try
@@ -252,16 +252,16 @@ namespace SharpSSH.NG
             if (_session != null)
                 delPort(_session, c.rport);
         }
-        static void delPort(Session session, int rport)
+        internal static void delPort(Session session, int rport)
         {
             delPort(session, null, rport);
         }
-        static void delPort(Session session, string address_to_bind, int rport)
+        internal static void delPort(Session session, string address_to_bind, int rport)
         {
             lock (pool)
             {
                 object[] foo = null;
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
                     object[] bar = (object[])(pool[i]);
                     if (bar[0] != session) continue;
@@ -301,17 +301,17 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                //    throw new JSchException(e.toString());
+                //    throw new JSchException(e.ToString());
             }
         }
-        static void delPort(Session session)
+        internal static void delPort(Session session)
         {
             int[] rport = null;
             int count = 0;
             lock (pool)
             {
-                rport = new int[pool.size()];
-                for (int i = 0; i < pool.size(); i++)
+                rport = new int[pool.Count];
+                for (int i = 0; i < pool.Count; i++)
                 {
                     object[] bar = (object[])(pool[i]);
                     if (bar[0] == session)

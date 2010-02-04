@@ -77,11 +77,11 @@ namespace SharpSSH.NG
                     string message = null;
                     try
                     {
-                        message = new string(_message, "UTF-8");
+                        message = Encoding.UTF8.GetString(_message);
                     }
                     catch (java.io.UnsupportedEncodingException e)
                     {
-                        message = new string(_message);
+                        message = Encoding.UTF8.GetString(_message);
                     }
                     if (userinfo != null)
                     {
@@ -100,11 +100,11 @@ namespace SharpSSH.NG
                     buf.getInt(); buf.getByte(); buf.getByte();
                     byte[] foo = buf.getString();
                     int partial_success = buf.getByte();
-                    methods = new string(foo);
+                    methods = Encoding.UTF8.GetString(foo);
                     //Console.Error.WriteLine("UserAuthNONE: "+methods+
                     //		   " partial_success:"+(partial_success!=0));
                     //	if(partial_success!=0){
-                    //	  throw new JSchPartialAuthException(new string(foo));
+                    //	  throw new JSchPartialAuthException(Encoding.UTF8.GetString(foo));
                     //	}
 
                     break;
@@ -115,12 +115,12 @@ namespace SharpSSH.NG
                     throw new JSchException("USERAUTH fail (" + command + ")");
                 }
             loop:
-                null;
+                true;
             }
             //throw new JSchException("USERAUTH fail");
             return false;
         }
-        string getMethods()
+        internal string getMethods()
         {
             return methods;
         }

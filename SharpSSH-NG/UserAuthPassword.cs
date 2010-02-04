@@ -109,7 +109,7 @@ namespace SharpSSH.NG
                             boolean[] echo = { false };
                             response = kbi.promptKeyboardInteractive(dest,
                                                                    name,
-                                                                   new string(instruction),
+                                                                   Encoding.UTF8.GetString(instruction),
                                                                    prompt,
                                                                    echo);
                             if (response == null)
@@ -145,11 +145,11 @@ namespace SharpSSH.NG
                             buf.getInt(); buf.getByte(); buf.getByte();
                             byte[] foo = buf.getString();
                             int partial_success = buf.getByte();
-                            //Console.Error.WriteLine(new string(foo)+
+                            //Console.Error.WriteLine(Encoding.UTF8.GetString(foo)+
                             //		 " partial_success:"+(partial_success!=0));
                             if (partial_success != 0)
                             {
-                                throw new JSchPartialAuthException(new string(foo));
+                                throw new JSchPartialAuthException(Encoding.UTF8.GetString(foo));
                             }
                             break;
                         }

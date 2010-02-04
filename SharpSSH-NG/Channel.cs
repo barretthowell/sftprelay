@@ -4,63 +4,64 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Threading;
+using System.Runtime.CompilerServices;
 
 namespace SharpSSH.NG
 {
     class Channel
     {
-        const int SSH_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
-        const int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
-        const int SSH_MSG_CHANNEL_WINDOW_ADJUST = 93;
+        internal const int SSH_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
+        internal const int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
+        internal const int SSH_MSG_CHANNEL_WINDOW_ADJUST = 93;
 
-        const int SSH_OPEN_ADMINISTRATIVELY_PROHIBITED = 1;
-        const int SSH_OPEN_CONNECT_FAILED = 2;
-        const int SSH_OPEN_UNKNOWN_CHANNEL_TYPE = 3;
-        const int SSH_OPEN_RESOURCE_SHORTAGE = 4;
+        internal const int SSH_OPEN_ADMINISTRATIVELY_PROHIBITED = 1;
+        internal const int SSH_OPEN_CONNECT_FAILED = 2;
+        internal const int SSH_OPEN_UNKNOWN_CHANNEL_TYPE = 3;
+        internal const int SSH_OPEN_RESOURCE_SHORTAGE = 4;
 
         static int index = 0;
         private static List<Channel> pool = new List<Channel>();
-        static Channel getChannel(string type)
+        internal static Channel getChannel(string type)
         {
-            if (type.equals("session"))
+            if (type.Equals("session"))
             {
                 return new ChannelSession();
             }
-            if (type.equals("shell"))
+            if (type.Equals("shell"))
             {
                 return new ChannelShell();
             }
-            if (type.equals("exec"))
+            if (type.Equals("exec"))
             {
                 return new ChannelExec();
             }
-            if (type.equals("x11"))
+            if (type.Equals("x11"))
             {
                 return new ChannelX11();
             }
-            if (type.equals("auth-agent@openssh.com"))
+            if (type.Equals("auth-agent@openssh.com"))
             {
                 return new ChannelAgentForwarding();
             }
-            if (type.equals("direct-tcpip"))
+            if (type.Equals("direct-tcpip"))
             {
                 return new ChannelDirectTCPIP();
             }
-            if (type.equals("forwarded-tcpip"))
+            if (type.Equals("forwarded-tcpip"))
             {
                 return new ChannelForwardedTCPIP();
             }
-            if (type.equals("sftp"))
+            if (type.Equals("sftp"))
             {
                 return new ChannelSftp();
             }
-            if (type.equals("subsystem"))
+            if (type.Equals("subsystem"))
             {
                 return new ChannelSubsystem();
             }
             return null;
         }
-        static Channel getChannel(int id, Session session)
+        internal static Channel getChannel(int id, Session session)
         {
             lock (pool)
             {
@@ -72,7 +73,7 @@ namespace SharpSSH.NG
             }
             return null;
         }
-        static void del(Channel c)
+        internal static void del(Channel c)
         {
             lock (pool)
             {
@@ -82,35 +83,35 @@ namespace SharpSSH.NG
 
         int id;
         int recipient = -1;
-        byte[] type = "foo".getBytes();
-        int lwsize_max = 0x100000;
+        protected byte[] type = "foo".getBytes();
+        internal int lwsize_max = 0x100000;
         //int lwsize_max=0x20000;  // 32*1024*4
-        int lwsize = lwsize_max;  // local initial window size
-        int lmpsize = 0x4000;     // local maximum packet size
+        internal int lwsize = 0x100000; // lwsize_max;  // local initial window size
+        protected int lmpsize = 0x4000;     // local maximum packet size
         //int lmpsize=0x8000;     // local maximum packet size
 
-        int rwsize = 0;         // remote initial window size
-        int rmpsize = 0;        // remote maximum packet size
+        internal int rwsize = 0;         // remote initial window size
+        protected int rmpsize = 0;        // remote maximum packet size
 
-        IO io = null;
-        Thread thread = null;
+        internal IO io = null;
+        protected Thread thread = null;
 
-        bool eof_local = false;
-        bool eof_remote = false;
+        internal bool eof_local = false;
+        internal bool eof_remote = false;
 
-        bool close = false;
-        bool connected = false;
+        internal bool close = false;
+        protected bool connected = false;
 
-        int exitstatus = -1;
+        internal int exitstatus = -1;
 
-        int reply = 0;
-        int connectTimeout = 0;
+        internal int reply = 0;
+        internal int connectTimeout = 0;
 
         private Session session;
 
-        int notifyme = 0;
+        internal int notifyme = 0;
 
-        Channel()
+        internal Channel()
         {
             lock (pool)
             {
@@ -118,16 +119,16 @@ namespace SharpSSH.NG
                 pool.Add(this);
             }
         }
-        void setRecipient(int foo)
+        internal void setRecipient(int foo)
         {
             this.recipient = foo;
         }
-        int getRecipient()
+        internal int getRecipient()
         {
             return recipient;
         }
 
-        protected virtual void init()
+        internal virtual void init()
         {
         }
 
@@ -139,7 +140,7 @@ namespace SharpSSH.NG
         public void connect(int connectTimeout)
         {
             Session _session = getSession();
-            if (!_session.isConnected())
+            if (!_session.Connected)
             {
                 throw new JSchException("session is down");
             }
@@ -162,25 +163,25 @@ namespace SharpSSH.NG
                 buf.putInt(this.lmpsize);
                 _session.write(packet);
                 int retry = 1000;
-                long start = System.currentTimeMillis();
+                long start = JavaCompat.CurrentTimeMillis();
                 long timeout = connectTimeout;
                 while (this.getRecipient() == -1 &&
-                  _session.isConnected() &&
+                  _session.Connected &&
                   retry > 0)
                 {
                     if (timeout > 0L)
                     {
-                        if ((System.currentTimeMillis() - start) > timeout)
+                        if ((JavaCompat.CurrentTimeMillis() - start) > timeout)
                         {
                             retry = 0;
                             continue;
                         }
                     }
-                    try { Thread.sleep(50); }
+                    try { Thread.Sleep(50); }
                     catch (Exception ee) { }
                     retry--;
                 }
-                if (!_session.isConnected())
+                if (!_session.Connected)
                 {
                     throw new JSchException("session is down");
                 }
@@ -206,7 +207,7 @@ namespace SharpSSH.NG
                 connected = false;
                 if (e is JSchException)
                     throw (JSchException)e;
-                throw new JSchException(e.toString(), e);
+                throw new JSchException(e.ToString(), e);
             }
         }
 
@@ -218,7 +219,7 @@ namespace SharpSSH.NG
 
         public bool isEOF() { return eof_remote; }
 
-        void getData(Buffer buf)
+        internal void getData(Buffer buf)
         {
             setRecipient(buf.getInt());
             setRemoteWindowSize(buf.getInt());
@@ -293,14 +294,14 @@ namespace SharpSSH.NG
                 this.channel = channel;
             }
 
-            [System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]
+            [MethodImpl(MethodImplOptions.Synchronized)]
             private void Init()
             {
                 buffer = new Buffer(channel.rmpsize);
                 packet = new Packet(buffer);
 
                 byte[] _buf = buffer.buffer;
-                if (_buf.length - (14 + 0) - 32 - 20 <= 0)
+                if (_buf.Length - (14 + 0) - 32 - 20 <= 0)
                 {
                     buffer = null;
                     packet = null;
@@ -327,7 +328,7 @@ namespace SharpSSH.NG
                 }
 
                 byte[] _buf = buffer.buffer;
-                int _bufl = _buf.length;
+                int _bufl = _buf.Length;
                 while (l > 0)
                 {
                     int _l = l;
@@ -371,7 +372,7 @@ namespace SharpSSH.NG
                 catch (Exception e)
                 {
                     close();
-                    throw new IOException(e.toString());
+                    throw new IOException(e.ToString());
                 }
 
             }
@@ -450,29 +451,29 @@ namespace SharpSSH.NG
             }
 
         }
-        void setLocalWindowSizeMax(int foo) { this.lwsize_max = foo; }
-        void setLocalWindowSize(int foo) { this.lwsize = foo; }
-        void setLocalPacketSize(int foo) { this.lmpsize = foo; }
-        [System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]
-        void setRemoteWindowSize(int foo) { this.rwsize = foo; }
-        [System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]
-        void addRemoteWindowSize(int foo)
+        internal void setLocalWindowSizeMax(int foo) { this.lwsize_max = foo; }
+        internal void setLocalWindowSize(int foo) { this.lwsize = foo; }
+        internal void setLocalPacketSize(int foo) { this.lmpsize = foo; }
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal void setRemoteWindowSize(int foo) { this.rwsize = foo; }
+        [MethodImpl(MethodImplOptions.Synchronized)]
+        internal void addRemoteWindowSize(int foo)
         {
             this.rwsize += foo;
             if (notifyme > 0)
                 notifyAll();
         }
-        void setRemotePacketSize(int foo) { this.rmpsize = foo; }
+        internal void setRemotePacketSize(int foo) { this.rmpsize = foo; }
 
         public virtual void run()
         {
         }
 
-        void write(byte[] foo)
+        internal void write(byte[] foo)
         {
-            write(foo, 0, foo.length);
+            write(foo, 0, foo.Length);
         }
-        void write(byte[] foo, int s, int l)
+        internal void write(byte[] foo, int s, int l)
         {
             try
             {
@@ -480,7 +481,7 @@ namespace SharpSSH.NG
             }
             catch (NullReferenceException e) { }
         }
-        void write_ext(byte[] foo, int s, int l)
+        internal void write_ext(byte[] foo, int s, int l)
         {
             try
             {
@@ -489,14 +490,14 @@ namespace SharpSSH.NG
             catch (NullReferenceException e) { }
         }
 
-        void EofRemote()
+        internal void EofRemote()
         {
             eof_remote = true;
             try
             {
                 io.out_close();
             }
-            catch (NullPointerException e) { }
+            catch (NullReferenceException e) { }
         }
 
         void eof()
@@ -587,18 +588,18 @@ namespace SharpSSH.NG
         {
             return close;
         }
-        static void disconnect(Session session)
+        internal static void disconnect(Session session)
         {
             Channel[] channels = null;
             int count = 0;
             lock (pool)
             {
-                channels = new Channel[pool.size()];
-                for (int i = 0; i < pool.size(); i++)
+                channels = new Channel[pool.Count];
+                for (int i = 0; i < pool.Count; i++)
                 {
                     try
                     {
-                        Channel c = ((Channel)(pool.elementAt(i)));
+                        Channel c = pool[i];
                         if (c.session == session)
                         {
                             channels[count++] = c;
@@ -631,7 +632,7 @@ namespace SharpSSH.NG
 
             try
             {
-                close();
+                Close();
 
                 eof_remote = eof_local = true;
 
@@ -661,9 +662,16 @@ namespace SharpSSH.NG
             Session _session = this.session;
             if (_session != null)
             {
-                return _session.isConnected() && connected;
+                return _session.Connected && connected;
             }
             return false;
+        }
+        public bool Connected
+        {
+            get
+            {
+                return isConnected();
+            }
         }
 
         public void sendSignal(string signal)
@@ -673,8 +681,8 @@ namespace SharpSSH.NG
             request.request(getSession(), this);
         }
 
-        //  public string toString(){
-        //      return "Channel: type="+new string(type)+",id="+id+",recipient="+recipient+",window_size="+window_size+",packet_size="+packet_size;
+        //  public string ToString(){
+        //      return "Channel: type="+Encoding.UTF8.GetString(type)+",id="+id+",recipient="+recipient+",window_size="+window_size+",packet_size="+packet_size;
         //  }
 
         /*
@@ -687,10 +695,10 @@ namespace SharpSSH.NG
 
         
 
-        void setExitStatus(int status) { exitstatus = status; }
+        internal void setExitStatus(int status) { exitstatus = status; }
         public int getExitStatus() { return exitstatus; }
 
-        void setSession(Session session)
+        internal void setSession(Session session)
         {
             this.session = session;
         }
