@@ -8,9 +8,9 @@ namespace SharpSSH.NG
     class Buffer
     {
         readonly byte[] tmp = new byte[4];
-        byte[] buffer;
-        int index;
-        int s;
+        internal byte[] buffer;
+        internal int index;
+        internal int s;
         public Buffer(int size)
         {
             buffer = new byte[size];
@@ -23,7 +23,7 @@ namespace SharpSSH.NG
             index = 0;
             s = 0;
         }
-        public Buffer() { this(1024 * 10 * 2); }
+        public Buffer() : this(1024 * 10 * 2) { }
         public void putByte(byte foo)
         {
             buffer[index++] = foo;
@@ -71,11 +71,11 @@ namespace SharpSSH.NG
             Array.Copy(tmp, 0, buffer, index + 4, 4);
             index += 8;
         }
-        void skip(int n)
+        internal void skip(int n)
         {
             index += n;
         }
-        void putPad(int n)
+        internal void putPad(int n)
         {
             while (n > 0)
             {
@@ -119,10 +119,10 @@ namespace SharpSSH.NG
         public int getInt()
         {
             int foo = getShort();
-            foo = ((foo << 16) & 0xffff0000) | (getShort() & 0xffff);
+            foo = (int)(((foo << 16) & 0xffff0000) | (getShort() & 0xffff));
             return foo;
         }
-        int getShort()
+        internal int getShort()
         {
             int foo = getByte();
             foo = ((foo << 8) & 0xff00) | (getByte() & 0xff);
@@ -136,7 +136,7 @@ namespace SharpSSH.NG
         {
             getByte(foo, 0, foo.Length);
         }
-        void getByte(byte[] foo, int start, int len)
+        internal void getByte(byte[] foo, int start, int len)
         {
             Array.Copy(buffer, s, foo, start, len);
             s += len;
@@ -176,7 +176,7 @@ namespace SharpSSH.NG
             getByte(foo, 0, i);
             return foo;
         }
-        byte[] getString(int[] start, int[] len)
+        internal byte[] getString(int[] start, int[] len)
         {
             int i = getInt();
             start[0] = getByte(i);
@@ -195,12 +195,12 @@ namespace SharpSSH.NG
             index = index - s;
             s = 0;
         }
-        void rewind()
+        internal void rewind()
         {
             s = 0;
         }
 
-        byte getCommand()
+        internal byte getCommand()
         {
             return buffer[5];
         }
@@ -226,7 +226,7 @@ namespace SharpSSH.NG
             Console.Error.WriteLine("");
           }
           static void dump(byte[] b){
-            dump(b, 0, b.length);
+            dump(b, 0, b.Length);
           }
           static void dump(byte[] b, int s, int l){
             for(int i=s; i<s+l; i++){

@@ -10,7 +10,6 @@ namespace SharpSSH.NG
     interface SocketFactory
     {
         TcpClient createSocket(string host, int port);
-        Stream getInputStream(TcpClient socket);
-        Stream getOutputStream(TcpClient socket);
+        Stream GetStream(TcpClient socket);
     }
 }

@@ -29,15 +29,15 @@ namespace SharpSSH.NG
 
         private TcpClient socket = null;
 
-        static int revtable(byte foo)
+        internal static int revtable(byte foo)
         {
-            for (int i = 0; i < table.length; i++)
+            for (int i = 0; i < table.Length; i++)
             {
                 if (table[i] == foo) return i;
             }
             return 0;
         }
-        static void setCookie(string foo)
+        internal static void setCookie(string foo)
         {
             cookie_hex = foo.getBytes();
             cookie = new byte[16];
@@ -47,9 +47,9 @@ namespace SharpSSH.NG
                          ((revtable(cookie_hex[i * 2 + 1])) & 0xf));
             }
         }
-        static void setHost(string foo) { host = foo; }
-        static void setPort(int foo) { port = foo; }
-        static byte[] getFakedCookie(Session session)
+        internal static void setHost(string foo) { host = foo; }
+        internal static void setPort(int foo) { port = foo; }
+        internal static byte[] getFakedCookie(Session session)
         {
             lock (faked_cookie_hex_pool)
             {
@@ -64,26 +64,26 @@ namespace SharpSSH.NG
                     }
                     /*
                     System.err.print("faked_cookie: ");
-                    for(int i=0; i<foo.length; i++){
+                    for(int i=0; i<foo.Length; i++){
                         System.err.print(Integer.toHexString(foo[i]&0xff)+":");
                     }
                     Console.Error.WriteLine("");
                     */
-                    faked_cookie_pool.put(session, foo);
+                    faked_cookie_pool.Add(session, foo);
                     byte[] bar = new byte[32];
                     for (int i = 0; i < 16; i++)
                     {
                         bar[2 * i] = table[(foo[i] >> 4) & 0xf];
                         bar[2 * i + 1] = table[(foo[i]) & 0xf];
                     }
-                    faked_cookie_hex_pool.put(session, bar);
+                    faked_cookie_hex_pool.Add(session, bar);
                     foo = bar;
                 }
                 return foo;
             }
         }
 
-        ChannelX11()
+        internal ChannelX11()
             : base()
         {
 
@@ -97,10 +97,10 @@ namespace SharpSSH.NG
             /*
             try{ 
               socket=Util.createSocket(host, port, TIMEOUT);
-              socket.setTcpNoDelay(true);
+              socket.NoDelay=true;
               io=new IO();
-              io.setInputStream(socket.getInputStream());
-              io.setOutputStream(socket.getOutputStream());
+              io.setInputStream(socket.GetStream());
+              io.setOutputStream(socket.GetStream());
             }
             catch(Exception e){
               //Console.Error.WriteLine(e);
@@ -114,10 +114,10 @@ namespace SharpSSH.NG
             try
             {
                 socket = Util.createSocket(host, port, TIMEOUT);
-                socket.setTcpNoDelay(true);
+                socket.NoDelay=true;
                 io = new IO();
-                io.setInputStream(socket.getInputStream());
-                io.setOutputStream(socket.getOutputStream());
+                io.setInputStream(socket.GetStream());
+                io.setOutputStream(socket.GetStream());
                 sendOpenConfirmation();
             }
             catch (Exception e)
@@ -140,7 +140,7 @@ namespace SharpSSH.NG
                 {
                     i = io.In.read(buf.buffer,
                          14,
-                         buf.buffer.length - 14
+                         buf.buffer.Length - 14
                          - 32 - 20 // padding and mac
                          );
                     if (i <= 0)
@@ -167,10 +167,10 @@ namespace SharpSSH.NG
         private byte[] cache = new byte[0];
         private byte[] addCache(byte[] foo, int s, int l)
         {
-            byte[] bar = new byte[cache.length + l];
-            Array.Copy(foo, s, bar, cache.length, l);
-            if (cache.length > 0)
-                Array.Copy(cache, 0, bar, 0, cache.length);
+            byte[] bar = new byte[cache.Length + l];
+            Array.Copy(foo, s, bar, cache.Length, l);
+            if (cache.Length > 0)
+                Array.Copy(cache, 0, bar, 0, cache.Length);
             cache = bar;
             return cache;
         }
@@ -189,12 +189,12 @@ namespace SharpSSH.NG
                 }
                 catch (JSchException e)
                 {
-                    throw new java.io.IOException(e.toString());
+                    throw new java.io.IOException(e.ToString());
                 }
 
                 foo = addCache(foo, s, l);
                 s = 0;
-                l = foo.length;
+                l = foo.Length;
 
                 if (l < 9)
                     return;
@@ -229,12 +229,12 @@ namespace SharpSSH.NG
 
                 /*
           System.err.print("faked_cookie: ");
-          for(int i=0; i<faked_cookie.length; i++){
+          for(int i=0; i<faked_cookie.Length; i++){
               System.err.print(Integer.toHexString(faked_cookie[i]&0xff)+":");
           }
           Console.Error.WriteLine("");
           System.err.print("bar: ");
-          for(int i=0; i<bar.length; i++){
+          for(int i=0; i<bar.Length; i++){
               System.err.print(Integer.toHexString(bar[i]&0xff)+":");
           }
           Console.Error.WriteLine("");
@@ -263,8 +263,8 @@ namespace SharpSSH.NG
 
         private static bool equals(byte[] foo, byte[] bar)
         {
-            if (foo.length != bar.length) return false;
-            for (int i = 0; i < foo.length; i++)
+            if (foo.Length != bar.Length) return false;
+            for (int i = 0; i < foo.Length; i++)
             {
                 if (foo[i] != bar[i]) return false;
             }

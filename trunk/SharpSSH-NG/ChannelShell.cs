@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
     class ChannelShell : ChannelSession
     {
-        ChannelShell()
+        internal ChannelShell()
             : base()
         {
             pty = true;
@@ -26,24 +27,22 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is JSchException) throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException("ChannelShell", (Throwable)e);
-                throw new JSchException("ChannelShell");
+                throw new JSchException("ChannelShell",e);
             }
 
             if (io.In != null)
             {
-                thread = new Thread(this);
-                thread.setName("Shell for " + _session.host);
+                thread = new Thread(this.run);
+                thread.Name="Shell for " + _session.host;
                 if (_session.daemon_thread)
                 {
-                    thread.setDaemon(_session.daemon_thread);
+                    thread.IsBackground = _session.daemon_thread;
                 }
-                thread.start();
+                thread.Start();
             }
         }
 
-        protected override void init()
+        internal override void init()
         {
             io.setInputStream(getSession().In);
             io.setOutputStream(getSession().Out);

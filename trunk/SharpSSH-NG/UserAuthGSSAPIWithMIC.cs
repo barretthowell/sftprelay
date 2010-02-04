@@ -43,8 +43,8 @@ namespace SharpSSH.NG
             buf.putString(_username);
             buf.putString("ssh-connection".getBytes());
             buf.putString("gssapi-with-mic".getBytes());
-            buf.putInt(supported_oid.length);
-            for (int i = 0; i < supported_oid.length; i++)
+            buf.putInt(supported_oid.Length);
+            for (int i = 0; i < supported_oid.Length; i++)
             {
                 buf.putString(supported_oid[i]);
             }
@@ -67,7 +67,7 @@ namespace SharpSSH.NG
                     buf.getInt(); buf.getByte(); buf.getByte();
                     byte[] message = buf.getString();
 
-                    for (int i = 0; i < supported_oid.length; i++)
+                    for (int i = 0; i < supported_oid.Length; i++)
                     {
                         if (Util.array_equals(message, supported_oid[i]))
                         {
@@ -102,7 +102,7 @@ namespace SharpSSH.NG
             GSSContext context = null;
             try
             {
-                Class c = Class.forName(session.getConfig(method));
+                Type c = Type.GetType(session.getConfig(method));
                 context = (GSSContext)(c.newInstance());
             }
             catch (Exception e)
@@ -125,7 +125,7 @@ namespace SharpSSH.NG
             {
                 try
                 {
-                    token = context.init(token, 0, token.length);
+                    token = context.init(token, 0, token.Length);
                 }
                 catch (JSchException e)
                 {
@@ -216,11 +216,11 @@ namespace SharpSSH.NG
                 buf.getInt(); buf.getByte(); buf.getByte();
                 byte[] foo = buf.getString();
                 int partial_success = buf.getByte();
-                //Console.Error.WriteLine(new string(foo)+
+                //Console.Error.WriteLine(Encoding.UTF8.GetString(foo)+
                 //		 " partial_success:"+(partial_success!=0));
                 if (partial_success != 0)
                 {
-                    throw new JSchPartialAuthException(new string(foo));
+                    throw new JSchPartialAuthException(Encoding.UTF8.GetString(foo));
                 }
             }
             return false;

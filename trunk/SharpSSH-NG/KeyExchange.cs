@@ -8,17 +8,17 @@ namespace SharpSSH.NG
     abstract class KeyExchange
     {
 
-        const int PROPOSAL_KEX_ALGS = 0;
-        const int PROPOSAL_SERVER_HOST_KEY_ALGS = 1;
-        const int PROPOSAL_ENC_ALGS_CTOS = 2;
-        const int PROPOSAL_ENC_ALGS_STOC = 3;
-        const int PROPOSAL_MAC_ALGS_CTOS = 4;
-        const int PROPOSAL_MAC_ALGS_STOC = 5;
-        const int PROPOSAL_COMP_ALGS_CTOS = 6;
-        const int PROPOSAL_COMP_ALGS_STOC = 7;
-        const int PROPOSAL_LANG_CTOS = 8;
-        const int PROPOSAL_LANG_STOC = 9;
-        const int PROPOSAL_MAX = 10;
+        internal const int PROPOSAL_KEX_ALGS = 0;
+        internal const int PROPOSAL_SERVER_HOST_KEY_ALGS = 1;
+        internal const int PROPOSAL_ENC_ALGS_CTOS = 2;
+        internal const int PROPOSAL_ENC_ALGS_STOC = 3;
+        internal const int PROPOSAL_MAC_ALGS_CTOS = 4;
+        internal const int PROPOSAL_MAC_ALGS_STOC = 5;
+        internal const int PROPOSAL_COMP_ALGS_CTOS = 6;
+        internal const int PROPOSAL_COMP_ALGS_STOC = 7;
+        internal const int PROPOSAL_LANG_CTOS = 8;
+        internal const int PROPOSAL_LANG_STOC = 9;
+        internal const int PROPOSAL_MAX = 10;
 
         //static string kex_algs="diffie-hellman-group-exchange-sha1"+
         //                       ",diffie-hellman-group1-sha1";
@@ -52,7 +52,7 @@ namespace SharpSSH.NG
 
         /*
         void dump(byte[] foo){
-          for(int i=0; i<foo.length; i++){
+          for(int i=0; i<foo.Length; i++){
             if((foo[i]&0xf0)==0)System.err.print("0");
             System.err.print(Integer.toHexString(foo[i]&0xff));
             if(i%16==15){Console.Error.WriteLine(""); continue;}
@@ -61,7 +61,7 @@ namespace SharpSSH.NG
         } 
         */
 
-        protected static string[] guess(byte[] I_S, byte[] I_C)
+        internal static string[] guess(byte[] I_S, byte[] I_C)
         {
             //Console.Error.WriteLine("guess: ");
             string[] guess = new string[PROPOSAL_MAX];
@@ -73,26 +73,26 @@ namespace SharpSSH.NG
                 byte[] sp = sb.getString();  // server proposal
                 byte[] cp = cb.getString();  // client proposal
 
-                //Console.Error.WriteLine("server-proposal: |"+new string(sp)+"|");
-                //Console.Error.WriteLine("client-proposal: |"+new string(cp)+"|");
+                //Console.Error.WriteLine("server-proposal: |"+Encoding.UTF8.GetString(sp)+"|");
+                //Console.Error.WriteLine("client-proposal: |"+Encoding.UTF8.GetString(cp)+"|");
 
                 int j = 0;
                 int k = 0;
-            //Console.Error.WriteLine(new string(cp));
-                while (j < cp.length)
+            //Console.Error.WriteLine(Encoding.UTF8.GetString(cp));
+                while (j < cp.Length)
                 {
-                    while (j < cp.length && cp[j] != ',') j++;
+                    while (j < cp.Length && cp[j] != ',') j++;
                     if (k == j) return null;
-                    string algorithm = new string(cp, k, j - k);
+                    string algorithm = Encoding.UTF8.GetString(cp, k, j - k);
                     //Console.Error.WriteLine("algorithm: "+algorithm);
                     int l = 0;
                     int m = 0;
-                    while (l < sp.length)
+                    while (l < sp.Length)
                     {
-                        while (l < sp.length && sp[l] != ',') l++;
+                        while (l < sp.Length && sp[l] != ',') l++;
                         if (m == l) return null;
-                        //Console.Error.WriteLine("  "+new string(sp, m, l-m));
-                        if (algorithm.equals(new string(sp, m, l - m)))
+                        //Console.Error.WriteLine("  "+Encoding.UTF8.GetString(sp, m, l-m));
+                        if (algorithm.Equals(Encoding.UTF8.GetString(sp, m, l - m)))
                         {
                             guess[i] = algorithm;
                             //Console.Error.WriteLine("  "+algorithm);
@@ -142,15 +142,15 @@ namespace SharpSSH.NG
             HASH hash = null;
             try
             {
-                Class c = Class.forName(session.getConfig("md5"));
+                Type c = Type.GetType(session.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
             }
             catch (Exception e) { Console.Error.WriteLine("getFingerPrint: " + e); }
             return Util.getFingerPrint(hash, getHostKey());
         }
-        byte[] getK() { return K; }
-        byte[] getH() { return H; }
-        HASH getHash() { return sha; }
-        byte[] getHostKey() { return K_S; }
+        internal byte[] getK() { return K; }
+        internal byte[] getH() { return H; }
+        internal HASH getHash() { return sha; }
+        internal byte[] getHostKey() { return K_S; }
     }
 }

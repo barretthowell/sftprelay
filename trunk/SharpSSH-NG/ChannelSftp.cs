@@ -143,7 +143,7 @@ namespace SharpSSH.NG
         private string fEncoding = UTF8;
         private bool fEncoding_is_utf8 = true;
 
-        protected override void init()
+        internal override void init()
         {
         }
 
@@ -185,8 +185,8 @@ namespace SharpSSH.NG
 
                 // receive SSH_FXP_VERSION
                 Header header = new Header();
-                header = header(buf, header);
-                length = header.length;
+                header = MakeHeader(buf, header);
+                length = header.Length;
                 if (length > MAX_MSG_LENGTH)
                 {
                     throw new SftpException(SSH_FX_FAILURE,
@@ -205,9 +205,9 @@ namespace SharpSSH.NG
                     while (length > 0)
                     {
                         extension_name = buf.getString();
-                        length -= (4 + extension_name.length);
+                        length -= (4 + extension_name.Length);
                         extension_data = buf.getString();
-                        length -= (4 + extension_data.length);
+                        length -= (4 + extension_data.Length);
                         extensions.Add(Encoding.UTF8.GetString(extension_name), Encoding.UTF8.GetString(extension_data));
                     }
                 }
@@ -218,9 +218,7 @@ namespace SharpSSH.NG
             {
                 //Console.Error.WriteLine(e);
                 if (e is JSchException) throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
 
@@ -269,9 +267,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -298,8 +294,8 @@ namespace SharpSSH.NG
             try
             {
 
-                Vector v = glob_remote(dst);
-                int vsize = v.size();
+                List<string> v = glob_remote(dst);
+                int vsize = v.Count;
                 if (vsize != 1)
                 {
                     if (vsize == 0)
@@ -309,22 +305,22 @@ namespace SharpSSH.NG
                         else
                             dst = Util.unquote(dst);
                     }
-                    throw new SftpException(SSH_FX_FAILURE, v.toString());
+                    throw new SftpException(SSH_FX_FAILURE, v.ToString());
                 }
                 else
                 {
-                    dst = (string)(v.elementAt(0));
+                    dst = v[0];
                 }
 
-                bool isRemoteDir = isRemoteDir(dst);
+                bool _isRemoteDir = isRemoteDir(dst);
 
                 v = glob_local(src);
-                vsize = v.size();
+                vsize = v.Count;
 
                 StringBuilder dstsb = null;
                 if (isRemoteDir)
                 {
-                    if (!dst.endsWith("/"))
+                    if (!dst.EndsWith("/"))
                     {
                         dst += "/";
                     }
@@ -338,7 +334,7 @@ namespace SharpSSH.NG
 
                 for (int j = 0; j < vsize; j++)
                 {
-                    string _src = (string)(v.elementAt(j));
+                    string _src = (string)(v[j]);
                     string _dst = null;
                     if (isRemoteDir)
                     {
@@ -350,9 +346,9 @@ namespace SharpSSH.NG
                                 i = ii;
                         }
                         if (i == -1) dstsb.Append(_src);
-                        else dstsb.Append(_src.substring(i + 1));
+                        else dstsb.Append(_src.Substring(i + 1));
                         _dst = dstsb.ToString();
-                        dstsb.Remove(dst.length(), _dst.length());
+                        dstsb.Remove(dst.Length, _dst.Length);
                     }
                     else
                     {
@@ -396,7 +392,7 @@ namespace SharpSSH.NG
                     FileStream fis = null;
                     try
                     {
-                        fis = new FileStream(_src);
+                        fis = new FileStream(_src,FileMode.Open);
                         _put(fis, _dst, monitor, mode);
                     }
                     finally
@@ -411,9 +407,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, e.toString(), (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, e.toString());
+                throw new SftpException(SSH_FX_FAILURE, e.Message,e);
             }
         }
         public void put(Stream src, string dst)
@@ -436,8 +430,8 @@ namespace SharpSSH.NG
             {
                 dst = remoteAbsolutePath(dst);
 
-                Vector v = glob_remote(dst);
-                int vsize = v.size();
+                List<string> v = glob_remote(dst);
+                int vsize = v.Count;
                 if (vsize != 1)
                 {
                     if (vsize == 0)
@@ -447,7 +441,7 @@ namespace SharpSSH.NG
                         else
                             dst = Util.unquote(dst);
                     }
-                    throw new SftpException(SSH_FX_FAILURE, v.toString());
+                    throw new SftpException(SSH_FX_FAILURE, v.ToString());
                 }
                 else
                 {
@@ -464,9 +458,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, e.toString(), (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, e.toString());
+                throw new SftpException(SSH_FX_FAILURE, e.Message,e);
             }
         }
 
@@ -502,8 +494,8 @@ namespace SharpSSH.NG
                 else { sendOPENA(dstb); }
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -524,8 +516,8 @@ namespace SharpSSH.NG
 
                 if (!dontcopy)
                 {
-                    data = new byte[buf.buffer.length
-                                  - (5 + 13 + 21 + handle.length
+                    data = new byte[buf.buffer.Length
+                                  - (5 + 13 + 21 + handle.Length
                                     + 32 + 20 // padding and mac
                                     )
                     ];
@@ -549,13 +541,13 @@ namespace SharpSSH.NG
 
                     if (!dontcopy)
                     {
-                        datalen = data.length - s;
+                        datalen = data.Length - s;
                     }
                     else
                     {
                         data = buf.buffer;
-                        s = 5 + 13 + 21 + handle.length;
-                        datalen = buf.buffer.length - s
+                        s = 5 + 13 + 21 + handle.Length;
+                        datalen = buf.buffer.Length - s
                           - 32 - 20; // padding and mac
                     }
 
@@ -626,9 +618,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, e.toString(), (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, e.toString());
+                throw new SftpException(SSH_FX_FAILURE, e.Message,e);
             }
         }
 
@@ -677,8 +667,8 @@ namespace SharpSSH.NG
                 else { sendOPENA(dstb); }
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -707,9 +697,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
         class PrivateOutputStream : Stream
@@ -725,7 +713,7 @@ namespace SharpSSH.NG
 
             public void Write(byte[] d)
             {
-                Write(d, 0, d.length);
+                Write(d, 0, d.Length);
             }
 
             public override void Write(byte[] d, int s, int len)
@@ -780,7 +768,7 @@ namespace SharpSSH.NG
                     }
                 }
                 catch (IOException e) { throw e; }
-                catch (Exception e) { throw new IOException(e.toString()); }
+                catch (Exception e) { throw new IOException(e.ToString()); }
             }
 
             byte[] _data = new byte[1];
@@ -813,7 +801,7 @@ namespace SharpSSH.NG
                     }
                     catch (SftpException e)
                     {
-                        throw new IOException(e.toString());
+                        throw new IOException(e.ToString());
                     }
                 }
             }
@@ -830,7 +818,7 @@ namespace SharpSSH.NG
                 catch (IOException e) { throw e; }
                 catch (Exception e)
                 {
-                    throw new IOException(e.toString());
+                    throw new IOException(e.ToString());
                 }
                 isClosed = true;
             }
@@ -901,8 +889,8 @@ namespace SharpSSH.NG
 
             try
             {
-                Vector v = glob_remote(src);
-                int vsize = v.size();
+                List<string> v = glob_remote(src);
+                int vsize = v.Count;
                 if (vsize == 0)
                 {
                     throw new SftpException(SSH_FX_NO_SUCH_FILE, "No such file");
@@ -913,7 +901,7 @@ namespace SharpSSH.NG
                 StringBuffer dstsb = null;
                 if (isDstDir)
                 {
-                    if (!dst.endsWith(file_separator))
+                    if (!dst.EndsWith(file_separator))
                     {
                         dst += file_separator;
                     }
@@ -940,9 +928,9 @@ namespace SharpSSH.NG
                     {
                         int i = _src.lastIndexOf('/');
                         if (i == -1) dstsb.append(_src);
-                        else dstsb.append(_src.substring(i + 1));
-                        _dst = dstsb.toString();
-                        dstsb.delete(dst.length(), _dst.length());
+                        else dstsb.append(_src.Substring(i + 1));
+                        _dst = dstsb.ToString();
+                        dstsb.delete(dst.Length, _dst.Length);
                     }
                     else
                     {
@@ -999,9 +987,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
         public void get(string src, Stream dst)
@@ -1037,9 +1023,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1054,8 +1038,8 @@ namespace SharpSSH.NG
                 sendOPENR(srcb);
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1084,12 +1068,12 @@ namespace SharpSSH.NG
                 while (true)
                 {
 
-                    request_len = buf.buffer.length - 13;
+                    request_len = buf.buffer.Length - 13;
                     if (server_version == 0) { request_len = 1024; }
                     sendREAD(handle, offset, request_len);
 
-                    header = header(buf, header);
-                    length = header.length;
+                    header = MakeHeader(buf, header);
+                    length = header.Length;
                     type = header.type;
 
                     if (type == SSH_FXP_STATUS)
@@ -1116,9 +1100,9 @@ namespace SharpSSH.NG
                     while (foo > 0)
                     {
                         int bar = foo;
-                        if (bar > buf.buffer.length)
+                        if (bar > buf.buffer.Length)
                         {
-                            bar = buf.buffer.length;
+                            bar = buf.buffer.Length;
                         }
                         i = io_in.read(buf.buffer, 0, bar);
                         if (i < 0)
@@ -1139,7 +1123,7 @@ namespace SharpSSH.NG
                                 {
                                     i = io_in.read(buf.buffer,
                                                  0,
-                                                 (buf.buffer.length < foo ? buf.buffer.length : foo));
+                                                 (buf.buffer.Length < foo ? buf.buffer.Length : foo));
                                     if (i <= 0) break;
                                     foo -= i;
                                 }
@@ -1159,9 +1143,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1206,8 +1188,8 @@ namespace SharpSSH.NG
                 sendOPENR(srcb);
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1230,9 +1212,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
         class PrivateInputStream
@@ -1257,13 +1237,13 @@ namespace SharpSSH.NG
             public int read(byte[] d)
             {
                 if (closed) return -1;
-                return read(d, 0, d.length);
+                return read(d, 0, d.Length);
             }
             public int read(byte[] d, int s, int len)
             {
                 if (closed) return -1;
-                if (d == null) { throw new NullPointerException(); }
-                if (s < 0 || len < 0 || s + len > d.length)
+                if (d == null) { throw new NullReferenceException(); }
+                if (s < 0 || len < 0 || s + len > d.Length)
                 {
                     throw new IndexOutOfBoundsException();
                 }
@@ -1293,9 +1273,9 @@ namespace SharpSSH.NG
                     return foo;
                 }
 
-                if (buf.buffer.length - 13 < len)
+                if (buf.buffer.Length - 13 < len)
                 {
-                    len = buf.buffer.length - 13;
+                    len = buf.buffer.Length - 13;
                 }
                 if (server_version == 0 && len > 1024)
                 {
@@ -1305,8 +1285,8 @@ namespace SharpSSH.NG
                 try { sendREAD(handle, offset, len); }
                 catch (Exception e) { throw new IOException("error"); }
 
-                header = header(buf, header);
-                rest_length = header.length;
+                header = MakeHeader(buf, header);
+                rest_length = header.Length;
                 int type = header.type;
                 int id = header.rid;
 
@@ -1349,7 +1329,7 @@ namespace SharpSSH.NG
 
                     if (rest_length > 0)
                     {
-                        if (rest_byte.length < rest_length)
+                        if (rest_byte.Length < rest_length)
                         {
                             rest_byte = new byte[rest_length];
                         }
@@ -1398,8 +1378,8 @@ namespace SharpSSH.NG
                 List<LsEntry> v = new List<LsEntry>();
 
                 int foo = path.lastIndexOf('/');
-                string dir = path.substring(0, ((foo == 0) ? 1 : foo));
-                string _pattern = path.substring(foo + 1);
+                string dir = path.Substring(0, ((foo == 0) ? 1 : foo));
+                string _pattern = path.Substring(foo + 1);
                 dir = Util.unquote(dir);
 
                 // If pattern has included '*' or '?', we need to convert
@@ -1428,7 +1408,7 @@ namespace SharpSSH.NG
                           // we don't have to use openDIR.
                         string filename=Util.unquote(_pattern);
                         string longname=...
-                        v.addElement(new LsEntry(filename, longname, attr));
+                        v.Add(new LsEntry(filename, longname, attr));
                         return v;
                         */
 
@@ -1449,8 +1429,8 @@ namespace SharpSSH.NG
                 sendOPENDIR(Util.str2byte(dir, fEncoding));
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1471,8 +1451,8 @@ namespace SharpSSH.NG
                 {
                     sendREADDIR(handle);
 
-                    header = header(buf, header);
-                    length = header.length;
+                    header = MakeHeader(buf, header);
+                    length = header.Length;
                     type = header.type;
                     if (type != SSH_FXP_STATUS && type != SSH_FXP_NAME)
                     {
@@ -1500,9 +1480,9 @@ namespace SharpSSH.NG
                         if (length > 0)
                         {
                             buf.shift();
-                            int j = (buf.buffer.length > (buf.index + length)) ?
+                            int j = (buf.buffer.Length > (buf.index + length)) ?
                               length :
-                              (buf.buffer.length - buf.index);
+                              (buf.buffer.Length - buf.index);
                             int i = fill(buf.buffer, buf.index, j);
                             buf.index += i;
                             length -= i;
@@ -1547,7 +1527,7 @@ namespace SharpSSH.NG
                             {
                                 // TODO: we need to generate long name from attrs
                                 //       for the sftp protocol 4(and later).
-                                l = attrs.toString() + " " + f;
+                                l = attrs.ToString() + " " + f;
                             }
                             else
                             {
@@ -1562,14 +1542,14 @@ namespace SharpSSH.NG
                 _sendCLOSE(handle, header);
 
                 /*
-                if(v.size()==1 && pattern_has_wildcard){
+                if(v.Count==1 && pattern_has_wildcard){
                   LsEntry le=(LsEntry)v.elementAt(0);
                   if(le.getAttrs().isDir()){
                     string f=le.getFilename();
                     if(isPattern(f)){
                       f=Util.quote(f);
                     }
-                    if(!dir.endsWith("/")){
+                    if(!dir.EndsWith("/")){
                       dir+="/";
                     }
                     v=null;
@@ -1583,9 +1563,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
         public string readlink(string path)
@@ -1606,8 +1584,8 @@ namespace SharpSSH.NG
                 sendREADLINK(Util.str2byte(path, fEncoding));
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1638,9 +1616,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
             return null;
         }
@@ -1669,8 +1645,8 @@ namespace SharpSSH.NG
                             Util.str2byte(newpath, fEncoding));
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1687,9 +1663,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1708,11 +1682,11 @@ namespace SharpSSH.NG
 
                 oldpath = isUnique(oldpath);
 
-                Vector v = glob_remote(newpath);
-                int vsize = v.size();
+                List<string> v = glob_remote(newpath);
+                int vsize = v.Count;
                 if (vsize >= 2)
                 {
-                    throw new SftpException(SSH_FX_FAILURE, v.toString());
+                    throw new SftpException(SSH_FX_FAILURE, v.ToString());
                 }
                 if (vsize == 1)
                 {
@@ -1729,8 +1703,8 @@ namespace SharpSSH.NG
                            Util.str2byte(newpath, fEncoding));
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1747,9 +1721,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
         public void rm(string path)
@@ -1758,8 +1730,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
 
                 Header header = new Header();
 
@@ -1768,8 +1740,8 @@ namespace SharpSSH.NG
                     path = (string)(v.elementAt(j));
                     sendREMOVE(Util.str2byte(path, fEncoding));
 
-                    header = header(buf, header);
-                    int length = header.length;
+                    header = MakeHeader(buf, header);
+                    int length = header.Length;
                     int type = header.type;
 
                     fill(buf, length);
@@ -1788,9 +1760,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1801,8 +1771,8 @@ namespace SharpSSH.NG
                 sendSTAT(Util.str2byte(path, fEncoding));
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -1824,8 +1794,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
                 for (int j = 0; j < vsize; j++)
                 {
                     path = (string)(v.elementAt(j));
@@ -1840,9 +1810,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1852,8 +1820,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
                 for (int j = 0; j < vsize; j++)
                 {
                     path = (string)(v.elementAt(j));
@@ -1868,9 +1836,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1880,8 +1846,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
                 for (int j = 0; j < vsize; j++)
                 {
                     path = (string)(v.elementAt(j));
@@ -1896,9 +1862,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1908,8 +1872,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
                 for (int j = 0; j < vsize; j++)
                 {
                     path = (string)(v.elementAt(j));
@@ -1924,9 +1888,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1936,8 +1898,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
 
                 Header header = new Header();
 
@@ -1946,8 +1908,8 @@ namespace SharpSSH.NG
                     path = (string)(v.elementAt(j));
                     sendRMDIR(Util.str2byte(path, fEncoding));
 
-                    header = header(buf, header);
-                    int length = header.length;
+                    header = MakeHeader(buf, header);
+                    int length = header.Length;
                     int type = header.type;
 
                     fill(buf, length);
@@ -1967,9 +1929,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -1982,8 +1942,8 @@ namespace SharpSSH.NG
                 sendMKDIR(Util.str2byte(path, fEncoding), null);
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -2000,9 +1960,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -2019,9 +1977,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
             //return null;
         }
@@ -2034,8 +1990,8 @@ namespace SharpSSH.NG
                 sendSTAT(path);
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -2055,9 +2011,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
             //return null;
         }
@@ -2080,9 +2034,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -2093,8 +2045,8 @@ namespace SharpSSH.NG
                 sendLSTAT(Util.str2byte(path, fEncoding));
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -2114,9 +2066,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -2125,8 +2075,8 @@ namespace SharpSSH.NG
             sendREALPATH(Util.str2byte(path, fEncoding));
 
             Header header = new Header();
-            header = header(buf, header);
-            int length = header.length;
+            header = MakeHeader(buf, header);
+            int length = header.Length;
             int type = header.type;
 
             fill(buf, length);
@@ -2162,8 +2112,8 @@ namespace SharpSSH.NG
             {
                 path = remoteAbsolutePath(path);
 
-                Vector v = glob_remote(path);
-                int vsize = v.size();
+                List<string> v = glob_remote(path);
+                int vsize = v.Count;
                 for (int j = 0; j < vsize; j++)
                 {
                     path = (string)(v.elementAt(j));
@@ -2173,9 +2123,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
         private void _setStat(string path, SftpATTRS attr)
@@ -2185,8 +2133,8 @@ namespace SharpSSH.NG
                 sendSETSTAT(Util.str2byte(path, fEncoding), attr);
 
                 Header header = new Header();
-                header = header(buf, header);
-                int length = header.length;
+                header = MakeHeader(buf, header);
+                int length = header.Length;
                 int type = header.type;
 
                 fill(buf, length);
@@ -2204,9 +2152,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -2225,9 +2171,7 @@ namespace SharpSSH.NG
                 catch (Exception e)
                 {
                     if (e is SftpException) throw (SftpException)e;
-                    if (e is Throwable)
-                        throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                    throw new SftpException(SSH_FX_FAILURE, "");
+                    throw new SftpException(SSH_FX_FAILURE, "",e);
                 }
             }
             return home;
@@ -2262,8 +2206,8 @@ namespace SharpSSH.NG
 
         private bool checkStatus(int[] ackid, Header header)
         {
-            header = header(buf, header);
-            int length = header.length;
+            header = MakeHeader(buf, header);
+            int length = header.Length;
             int type = header.type;
             if (ackid != null)
                 ackid[0] = header.rid;
@@ -2314,11 +2258,11 @@ namespace SharpSSH.NG
         private void sendSETSTAT(byte[] path, SftpATTRS attr)
         {
             packet.reset();
-            putHEAD(SSH_FXP_SETSTAT, 9 + path.length + attr.length());
+            putHEAD(SSH_FXP_SETSTAT, 9 + path.Length + attr.length());
             buf.putInt(seq++);
             buf.putString(path);             // path
             attr.dump(buf);
-            getSession().write(packet, this, 9 + path.length + attr.length() + 4);
+            getSession().write(packet, this, 9 + path.Length + attr.length() + 4);
         }
         private void sendREMOVE(byte[] path)
         {
@@ -2327,12 +2271,12 @@ namespace SharpSSH.NG
         private void sendMKDIR(byte[] path, SftpATTRS attr)
         {
             packet.reset();
-            putHEAD(SSH_FXP_MKDIR, 9 + path.length + (attr != null ? attr.length() : 4));
+            putHEAD(SSH_FXP_MKDIR, 9 + path.Length + (attr != null ? attr.length() : 4));
             buf.putInt(seq++);
             buf.putString(path);             // path
             if (attr != null) attr.dump(buf);
             else buf.putInt(0);
-            getSession().write(packet, this, 9 + path.length + (attr != null ? attr.length() : 4) + 4);
+            getSession().write(packet, this, 9 + path.Length + (attr != null ? attr.length() : 4) + 4);
         }
         private void sendRMDIR(byte[] path)
         {
@@ -2377,29 +2321,29 @@ namespace SharpSSH.NG
         private void sendOPEN(byte[] path, int mode)
         {
             packet.reset();
-            putHEAD(SSH_FXP_OPEN, 17 + path.length);
+            putHEAD(SSH_FXP_OPEN, 17 + path.Length);
             buf.putInt(seq++);
             buf.putString(path);
             buf.putInt(mode);
             buf.putInt(0);           // attrs
-            getSession().write(packet, this, 17 + path.length + 4);
+            getSession().write(packet, this, 17 + path.Length + 4);
         }
         private void sendPacketPath(byte fxp, byte[] path)
         {
             packet.reset();
-            putHEAD(fxp, 9 + path.length);
+            putHEAD(fxp, 9 + path.Length);
             buf.putInt(seq++);
             buf.putString(path);             // path
-            getSession().write(packet, this, 9 + path.length + 4);
+            getSession().write(packet, this, 9 + path.Length + 4);
         }
         private void sendPacketPath(byte fxp, byte[] p1, byte[] p2)
         {
             packet.reset();
-            putHEAD(fxp, 13 + p1.length + p2.length);
+            putHEAD(fxp, 13 + p1.Length + p2.Length);
             buf.putInt(seq++);
             buf.putString(p1);
             buf.putString(p2);
-            getSession().write(packet, this, 13 + p1.length + p2.length + 4);
+            getSession().write(packet, this, 13 + p1.Length + p2.Length + 4);
         }
 
         private int sendWRITE(byte[] handle, long offset,
@@ -2407,19 +2351,19 @@ namespace SharpSSH.NG
         {
             int _length = length;
             packet.reset();
-            if (buf.buffer.length < buf.index + 13 + 21 + handle.length + length
+            if (buf.buffer.Length < buf.index + 13 + 21 + handle.Length + length
                + 32 + 20  // padding and mac
         )
             {
-                _length = buf.buffer.length - (buf.index + 13 + 21 + handle.length
+                _length = buf.buffer.Length - (buf.index + 13 + 21 + handle.Length
                                            + 32 + 20  // padding and mac
           );
                 //Console.Error.WriteLine("_length="+_length+" length="+length);
             }
 
-            putHEAD(SSH_FXP_WRITE, 21 + handle.length + _length);       // 14
+            putHEAD(SSH_FXP_WRITE, 21 + handle.Length + _length);       // 14
             buf.putInt(seq++);                                      //  4
-            buf.putString(handle);                                  //  4+handle.length
+            buf.putString(handle);                                  //  4+handle.Length
             buf.putLong(offset);                                    //  8
             if (buf.buffer != data)
             {
@@ -2430,19 +2374,19 @@ namespace SharpSSH.NG
                 buf.putInt(_length);
                 buf.skip(_length);
             }
-            getSession().write(packet, this, 21 + handle.length + _length + 4);
+            getSession().write(packet, this, 21 + handle.Length + _length + 4);
             return _length;
         }
 
         private void sendREAD(byte[] handle, long offset, int length)
         {
             packet.reset();
-            putHEAD(SSH_FXP_READ, 21 + handle.length);
+            putHEAD(SSH_FXP_READ, 21 + handle.Length);
             buf.putInt(seq++);
             buf.putString(handle);
             buf.putLong(offset);
             buf.putInt(length);
-            getSession().write(packet, this, 21 + handle.length + 4);
+            getSession().write(packet, this, 21 + handle.Length + 4);
         }
 
         private void putHEAD(byte type, int length)
@@ -2467,8 +2411,8 @@ namespace SharpSSH.NG
                 return v;
             }
 
-            string dir = _path.substring(0, ((foo == 0) ? 1 : foo));
-            string _pattern = _path.substring(foo + 1);
+            string dir = _path.Substring(0, ((foo == 0) ? 1 : foo));
+            string _pattern = _path.Substring(foo + 1);
 
             dir = Util.unquote(dir);
 
@@ -2478,7 +2422,7 @@ namespace SharpSSH.NG
 
             if (!pattern_has_wildcard)
             {
-                if (dir.length() != 1) // not equal to "/"
+                if (dir.Length != 1) // not equal to "/"
                     dir += "/";
                 v.Add(dir + Util.unquote(_pattern));
                 return v;
@@ -2489,8 +2433,8 @@ namespace SharpSSH.NG
             sendOPENDIR(Util.str2byte(dir, fEncoding));
 
             Header header = new Header();
-            header = header(buf, header);
-            int length = header.length;
+            header = MakeHeader(buf, header);
+            int length = header.Length;
             int type = header.type;
 
             fill(buf, length);
@@ -2511,8 +2455,8 @@ namespace SharpSSH.NG
             while (true)
             {
                 sendREADDIR(handle);
-                header = header(buf, header);
-                length = header.length;
+                header = MakeHeader(buf, header);
+                length = header.Length;
                 type = header.type;
 
                 if (type != SSH_FXP_STATUS && type != SSH_FXP_NAME)
@@ -2538,7 +2482,7 @@ namespace SharpSSH.NG
                     if (length > 0)
                     {
                         buf.shift();
-                        int j = (buf.buffer.length > (buf.index + length)) ? length : (buf.buffer.length - buf.index);
+                        int j = (buf.buffer.Length > (buf.index + length)) ? length : (buf.buffer.Length - buf.index);
                         i = io_in.read(buf.buffer, buf.index, j);
                         if (i <= 0) break;
                         buf.index += i;
@@ -2546,7 +2490,7 @@ namespace SharpSSH.NG
                     }
 
                     byte[] filename = buf.getString();
-                    //Console.Error.WriteLine("filename: "+new string(filename));
+                    //Console.Error.WriteLine("filename: "+Encoding.UTF8.GetString(filename));
                     if (server_version <= 3)
                     {
                         str = buf.getString();  // longname
@@ -2573,7 +2517,7 @@ namespace SharpSSH.NG
                         if (pdir == null)
                         {
                             pdir = dir;
-                            if (!pdir.endsWith("/"))
+                            if (!pdir.EndsWith("/"))
                             {
                                 pdir += "/";
                             }
@@ -2590,7 +2534,7 @@ namespace SharpSSH.NG
 
         private bool isPattern(byte[] path)
         {
-            int i = path.length - 1;
+            int i = path.Length - 1;
             while (i >= 0)
             {
                 if (path[i] == '*' || path[i] == '?')
@@ -2610,7 +2554,7 @@ namespace SharpSSH.NG
                 }
                 i--;
             }
-            // Console.Error.WriteLine("isPattern: ["+(new string(path))+"] "+(!(i<0)));
+            // Console.Error.WriteLine("isPattern: ["+(Encoding.UTF8.GetString(path))+"] "+(!(i<0)));
             return !(i < 0);
         }
 
@@ -2620,7 +2564,7 @@ namespace SharpSSH.NG
             List<string> v = new List<string>();
             //Vector v = new Vector();
             byte[] path = Util.str2byte(_path, UTF8);
-            int i = path.length - 1;
+            int i = path.Length - 1;
             while (i >= 0)
             {
                 if (path[i] != '*' && path[i] != '?')
@@ -2664,15 +2608,15 @@ namespace SharpSSH.NG
                 Array.Copy(path, 0, dir, 0, i);
             }
 
-            byte[] pattern = new byte[path.length - i - 1];
-            Array.Copy(path, i + 1, pattern, 0, pattern.length);
+            byte[] pattern = new byte[path.Length - i - 1];
+            Array.Copy(path, i + 1, pattern, 0, pattern.Length);
 
-            //Console.Error.WriteLine("dir: "+new string(dir)+" pattern: "+new string(pattern));
+            //Console.Error.WriteLine("dir: "+Encoding.UTF8.GetString(dir)+" pattern: "+Encoding.UTF8.GetString(pattern));
             try
             {
                 string[] children = (new File(Util.byte2str(dir, UTF8))).list();
                 string pdir = Util.byte2str(dir) + file_separator;
-                for (int j = 0; j < children.length; j++)
+                for (int j = 0; j < children.Length; j++)
                 {
                     //Console.Error.WriteLine("children: "+children[j]);
                     if (Util.glob(pattern, Util.str2byte(children[j], UTF8)))
@@ -2762,15 +2706,15 @@ namespace SharpSSH.NG
 
         class Header
         {
-            int length;
-            int type;
-            int rid;
+            internal int Length;
+            internal int type;
+            internal int rid;
         }
-        private Header header(Buffer buf, Header header)
+        private Header MakeHeader(Buffer buf, Header header)
         {
             buf.rewind();
             int i = fill(buf.buffer, 0, 9);
-            header.length = buf.getInt() - 5;
+            header.Length = buf.getInt() - 5;
             header.type = buf.getByte() & 0xff;
             header.rid = buf.getInt();
             return header;
@@ -2780,14 +2724,14 @@ namespace SharpSSH.NG
         {
             if (path.charAt(0) == '/') return path;
             string cwd = getCwd();
-            if (cwd.endsWith("/")) return cwd + path;
+            if (cwd.EndsWith("/")) return cwd + path;
             return cwd + "/" + path;
         }
 
         private string localAbsolutePath(string path)
         {
             if (isLocalAbsolutePath(path)) return path;
-            if (lcwd.endsWith(file_separator)) return lcwd + path;
+            if (lcwd.EndsWith(file_separator)) return lcwd + path;
             return lcwd + file_separator + path;
         }
 
@@ -2800,9 +2744,9 @@ namespace SharpSSH.NG
         private string isUnique(string path)
         {
             Vector v = glob_remote(path);
-            if (v.size() != 1)
+            if (v.Count != 1)
             {
-                throw new SftpException(SSH_FX_FAILURE, path + " is not unique: " + v.toString());
+                throw new SftpException(SSH_FX_FAILURE, path + " is not unique: " + v.ToString());
             }
             return (string)(v.elementAt(0));
         }
@@ -2820,17 +2764,17 @@ namespace SharpSSH.NG
         {
             int sversion = getServerVersion();
             if (sversion > 3 &&
-               !encoding.equals(UTF8))
+               !encoding.Equals(UTF8))
             {
                 throw new SftpException(SSH_FX_FAILURE,
                                         "The encoding can not be changed for this sftp server.");
             }
-            if (encoding.equals(UTF8))
+            if (encoding.Equals(UTF8))
             {
                 encoding = UTF8;
             }
             fEncoding = encoding;
-            fEncoding_is_utf8 = fEncoding.equals(UTF8);
+            fEncoding_is_utf8 = fEncoding.Equals(UTF8);
         }
 
         public string getExtension(string key)
@@ -2850,9 +2794,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is SftpException) throw (SftpException)e;
-                if (e is Throwable)
-                    throw new SftpException(SSH_FX_FAILURE, "", (Throwable)e);
-                throw new SftpException(SSH_FX_FAILURE, "");
+                throw new SftpException(SSH_FX_FAILURE, "",e);
             }
         }
 
@@ -2873,7 +2815,7 @@ namespace SharpSSH.NG
             void setLongname(string longname) { this.longname = longname; }
             public SftpATTRS getAttrs() { return attrs; }
             void setAttrs(SftpATTRS attrs) { this.attrs = attrs; }
-            public string toString() { return longname; }
+            public string ToString() { return longname; }
 
             public int compareTo(Object o)
             {
@@ -2881,7 +2823,7 @@ namespace SharpSSH.NG
                 {
                     return filename.compareTo(((LsEntry)o).getFilename());
                 }
-                throw new ClassCastException("a decendent of LsEntry must be given.");
+                throw new InvalidCastException("a decendent of LsEntry must be given.");
             }
 
             #region IComparable<LsEntry> Members

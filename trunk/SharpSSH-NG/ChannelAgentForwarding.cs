@@ -26,7 +26,7 @@ namespace SharpSSH.NG
         private Packet packet = null;
         private Buffer mbuf = null;
 
-        ChannelAgentForwarding()
+        internal ChannelAgentForwarding()
             : base()
         {
 
@@ -67,10 +67,10 @@ namespace SharpSSH.NG
             }
 
             rbuf.shift();
-            if (rbuf.buffer.length < rbuf.index + l)
+            if (rbuf.buffer.Length < rbuf.index + l)
             {
                 byte[] newbuf = new byte[rbuf.s + l];
-                Array.Copy(rbuf.buffer, 0, newbuf, 0, rbuf.buffer.length);
+                Array.Copy(rbuf.buffer, 0, newbuf, 0, rbuf.buffer.Length);
                 rbuf.buffer = newbuf;
             }
 
@@ -92,7 +92,7 @@ namespace SharpSSH.NG
             }
             catch (JSchException e)
             {
-                throw new java.io.IOException(e.toString());
+                throw new java.io.IOException(e.ToString());
             }
 
             Vector identities = _session.jsch.identities;
@@ -105,16 +105,16 @@ namespace SharpSSH.NG
                 lock (identities)
                 {
                     int count = 0;
-                    for (int i = 0; i < identities.size(); i++)
+                    for (int i = 0; i < identities.Count; i++)
                     {
-                        Identity identity = (Identity)(identities.elementAt(i));
+                        Identity identity = identities[i];
                         if (identity.getPublicKeyBlob() != null)
                             count++;
                     }
                     mbuf.putInt(count);
-                    for (int i = 0; i < identities.size(); i++)
+                    for (int i = 0; i < identities.Count; i++)
                     {
-                        Identity identity = (Identity)(identities.elementAt(i));
+                        Identity identity = identities[i];
                         byte[] pubkeyblob = identity.getPublicKeyBlob();
                         if (pubkeyblob == null)
                             continue;
@@ -140,9 +140,9 @@ namespace SharpSSH.NG
                 Identity identity = null;
                 lock (identities)
                 {
-                    for (int i = 0; i < identities.size(); i++)
+                    for (int i = 0; i < identities.Count; i++)
                     {
-                        Identity _identity = (Identity)(identities.elementAt(i));
+                        Identity _identity = identities[i];
                         if (_identity.getPublicKeyBlob() == null)
                             continue;
                         if (!Util.array_equals(blob, _identity.getPublicKeyBlob()))
@@ -219,12 +219,12 @@ namespace SharpSSH.NG
             packet.reset();
             wbuf.putByte((byte)Session.SSH_MSG_CHANNEL_DATA);
             wbuf.putInt(recipient);
-            wbuf.putInt(4 + message.length);
+            wbuf.putInt(4 + message.Length);
             wbuf.putString(message);
 
             try
             {
-                getSession().write(packet, this, 4 + message.length);
+                getSession().write(packet, this, 4 + message.Length);
             }
             catch (Exception e)
             {

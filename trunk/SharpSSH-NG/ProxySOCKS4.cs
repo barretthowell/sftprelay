@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Net.Sockets;
+using System.Net;
 
 namespace SharpSSH.NG
 {
@@ -22,12 +23,12 @@ namespace SharpSSH.NG
         {
             int port = DEFAULTPORT;
             string host = proxy_host;
-            if (proxy_host.indexOf(':') != -1)
+            if (proxy_host.IndexOf(':') != -1)
             {
                 try
                 {
-                    host = proxy_host.substring(0, proxy_host.indexOf(':'));
-                    port = Integer.parseInt(proxy_host.substring(proxy_host.indexOf(':') + 1));
+                    host = proxy_host.Substring(0, proxy_host.IndexOf(':'));
+                    port = int.Parse(proxy_host.Substring(proxy_host.IndexOf(':') + 1));
                 }
                 catch (Exception e)
                 {
@@ -60,8 +61,8 @@ namespace SharpSSH.NG
                 else
                 {
                     socket = socket_factory.createSocket(proxy_host, proxy_port);
-                    In = socket_factory.getInputStream(socket);
-                    Out = socket_factory.getOutputStream(socket);
+                    In = socket_factory.GetStream(socket);
+                    Out = socket_factory.GetStream(socket);
                 }
                 if (timeout > 0)
                 {
@@ -99,25 +100,25 @@ namespace SharpSSH.NG
 
                 try
                 {
-                    InetAddress addr = InetAddress.getByName(host);
-                    byte[] byteAddress = addr.getAddress();
-                    for (int i = 0; i < byteAddress.length; i++)
+                    IPAddress addr = Dns.GetHostEntry(host).AddressList[0];
+                    byte[] byteAddress = addr.GetAddressBytes();
+                    for (int i = 0; i < byteAddress.Length; i++)
                     {
                         buf[index++] = byteAddress[i];
                     }
                 }
-                catch (UnknownHostException uhe)
+                catch (SocketException uhe)
                 {
-                    throw new JSchException("ProxySOCKS4: " + uhe.toString(), uhe);
+                    throw new JSchException("ProxySOCKS4: " + uhe.ToString(), uhe);
                 }
 
                 if (user != null)
                 {
-                    Array.Copy(user.getBytes(), 0, buf, index, user.length());
-                    index += user.length();
+                    Array.Copy(user.getBytes(), 0, buf, index, user.Length);
+                    index += user.Length;
                 }
                 buf[index++] = 0;
-                Out.write(buf, 0, index);
+                Out.Write(buf, 0, index);
 
                 /*
                    The SOCKS server checks to see whether such a request should be granted
@@ -181,7 +182,7 @@ namespace SharpSSH.NG
                 catch (Exception eee)
                 {
                 }
-                throw new JSchException("ProxySOCKS4: " + e.toString());
+                throw new JSchException("ProxySOCKS4: " + e.ToString());
             }
         }
         public Stream getInputStream() { return In; }

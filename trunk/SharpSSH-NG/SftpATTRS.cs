@@ -145,8 +145,8 @@ namespace SharpSSH.NG
                     attr.extended = new string[count * 2];
                     for (int i = 0; i < count; i++)
                     {
-                        attr.extended[i * 2] = new string(buf.getString());
-                        attr.extended[i * 2 + 1] = new string(buf.getString());
+                        attr.extended[i * 2] = Encoding.UTF8.GetString(buf.getString());
+                        attr.extended[i * 2 + 1] = Encoding.UTF8.GetString(buf.getString());
                     }
                 }
             }
@@ -164,13 +164,13 @@ namespace SharpSSH.NG
             if ((flags & SSH_FILEXFER_ATTR_EXTENDED) != 0)
             {
                 len += 4;
-                int count = extended.length / 2;
+                int count = extended.Length / 2;
                 if (count > 0)
                 {
                     for (int i = 0; i < count; i++)
                     {
-                        len += 4; len += extended[i * 2].length();
-                        len += 4; len += extended[i * 2 + 1].length();
+                        len += 4; len += extended[i * 2].Length;
+                        len += 4; len += extended[i * 2 + 1].Length;
                     }
                 }
             }
@@ -193,7 +193,7 @@ namespace SharpSSH.NG
             if ((flags & SSH_FILEXFER_ATTR_ACMODTIME) != 0) { buf.putInt(mtime); }
             if ((flags & SSH_FILEXFER_ATTR_EXTENDED) != 0)
             {
-                int count = extended.length / 2;
+                int count = extended.Length / 2;
                 if (count > 0)
                 {
                     for (int i = 0; i < count; i++)
@@ -256,7 +256,7 @@ namespace SharpSSH.NG
             return (getPermissionsString() + " " + getUId() + " " + getGId() + " " + getSize() + " " + getMtimeString());
         }
         /*
-        public string toString(){
+        public string ToString(){
           return (((flags&SSH_FILEXFER_ATTR_SIZE)!=0) ? ("size:"+size+" ") : "")+
                  (((flags&SSH_FILEXFER_ATTR_UIDGID)!=0) ? ("uid:"+uid+",gid:"+gid+" ") : "")+
                  (((flags&SSH_FILEXFER_ATTR_PERMISSIONS)!=0) ? ("permissions:0x"+Integer.toHexString(permissions)+" ") : "")+

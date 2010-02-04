@@ -21,16 +21,16 @@ namespace SharpSSH.NG
 
             lock (identities)
             {
-                if (identities.size() <= 0)
+                if (identities.Count <= 0)
                 {
                     return false;
                 }
 
                 _username = Util.str2byte(username);
 
-                for (int i = 0; i < identities.size(); i++)
+                for (int i = 0; i < identities.Count; i++)
                 {
-                    Identity identity = (Identity)(identities.elementAt(i));
+                    Identity identity = identities[i];
                     byte[] pubkeyblob = identity.getPublicKeyBlob();
 
                     //Console.Error.WriteLine("UserAuthPublicKey: "+identity+" "+pubkeyblob);
@@ -73,10 +73,10 @@ namespace SharpSSH.NG
                                 byte[] _message = buf.getString();
                                 byte[] lang = buf.getString();
                                 string message = null;
-                                try { message = new string(_message, "UTF-8"); }
+                                try { message = Encoding.UTF8.GetString(_message); }
                                 catch (java.io.UnsupportedEncodingException e)
                                 {
-                                    message = new string(_message);
+                                    message = Encoding.UTF8.GetString(_message);
                                 }
                                 if (userinfo != null)
                                 {
@@ -161,11 +161,11 @@ namespace SharpSSH.NG
                     buf.putString(pubkeyblob);
 
                     //      byte[] tmp=new byte[buf.index-5];
-                    //      Array.Copy(buf.buffer, 5, tmp, 0, tmp.length);
+                    //      Array.Copy(buf.buffer, 5, tmp, 0, tmp.Length);
                     //      buf.putString(signature);
 
                     byte[] sid = session.getSessionId();
-                    int sidlen = sid.length;
+                    int sidlen = sid.Length;
                     byte[] tmp = new byte[4 + sidlen + buf.index - 5];
                     tmp[0] = (byte)(((uint)sidlen) >> 24);
                     tmp[1] = (byte)(((uint)sidlen) >> 16);
@@ -196,10 +196,10 @@ namespace SharpSSH.NG
                             byte[] _message = buf.getString();
                             byte[] lang = buf.getString();
                             string message = null;
-                            try { message = new string(_message, "UTF-8"); }
+                            try { message = Encoding.UTF8.GetString(_message); }
                             catch (Exception e)
                             {
-                                message = new string(_message);
+                                message = Encoding.UTF8.GetString(_message);
                             }
                             if (userinfo != null)
                             {
@@ -212,11 +212,11 @@ namespace SharpSSH.NG
                             buf.getInt(); buf.getByte(); buf.getByte();
                             byte[] foo = buf.getString();
                             int partial_success = buf.getByte();
-                            //Console.Error.WriteLine(new string(foo)+
+                            //Console.Error.WriteLine(Encoding.UTF8.GetString(foo)+
                             //                   " partial_success:"+(partial_success!=0));
                             if (partial_success != 0)
                             {
-                                throw new JSchPartialAuthException(new string(foo));
+                                throw new JSchPartialAuthException(Encoding.UTF8.GetString(foo));
                             }
                             break;
                         }

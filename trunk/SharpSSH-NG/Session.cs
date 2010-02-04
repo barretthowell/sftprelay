@@ -13,34 +13,34 @@ namespace SharpSSH.NG
         private const string version = "JSCH-0.1.42";
 
         // http://ietf.org/internet-drafts/draft-ietf-secsh-assignednumbers-01.txt
-        const int SSH_MSG_DISCONNECT = 1;
-        const int SSH_MSG_IGNORE = 2;
-        const int SSH_MSG_UNIMPLEMENTED = 3;
-        const int SSH_MSG_DEBUG = 4;
-        const int SSH_MSG_SERVICE_REQUEST = 5;
-        const int SSH_MSG_SERVICE_ACCEPT = 6;
-        const int SSH_MSG_KEXINIT = 20;
-        const int SSH_MSG_NEWKEYS = 21;
-        const int SSH_MSG_KEXDH_INIT = 30;
-        const int SSH_MSG_KEXDH_REPLY = 31;
-        const int SSH_MSG_KEX_DH_GEX_GROUP = 31;
-        const int SSH_MSG_KEX_DH_GEX_INIT = 32;
-        const int SSH_MSG_KEX_DH_GEX_REPLY = 33;
-        const int SSH_MSG_KEX_DH_GEX_REQUEST = 34;
-        const int SSH_MSG_GLOBAL_REQUEST = 80;
-        const int SSH_MSG_REQUEST_SUCCESS = 81;
-        const int SSH_MSG_REQUEST_FAILURE = 82;
-        const int SSH_MSG_CHANNEL_OPEN = 90;
-        const int SSH_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
-        const int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
-        const int SSH_MSG_CHANNEL_WINDOW_ADJUST = 93;
-        const int SSH_MSG_CHANNEL_DATA = 94;
-        const int SSH_MSG_CHANNEL_EXTENDED_DATA = 95;
-        const int SSH_MSG_CHANNEL_EOF = 96;
-        const int SSH_MSG_CHANNEL_CLOSE = 97;
-        const int SSH_MSG_CHANNEL_REQUEST = 98;
-        const int SSH_MSG_CHANNEL_SUCCESS = 99;
-        const int SSH_MSG_CHANNEL_FAILURE = 100;
+        internal const int SSH_MSG_DISCONNECT = 1;
+        internal const int SSH_MSG_IGNORE = 2;
+        internal const int SSH_MSG_UNIMPLEMENTED = 3;
+        internal const int SSH_MSG_DEBUG = 4;
+        internal const int SSH_MSG_SERVICE_REQUEST = 5;
+        internal const int SSH_MSG_SERVICE_ACCEPT = 6;
+        internal const int SSH_MSG_KEXINIT = 20;
+        internal const int SSH_MSG_NEWKEYS = 21;
+        internal const int SSH_MSG_KEXDH_INIT = 30;
+        internal const int SSH_MSG_KEXDH_REPLY = 31;
+        internal const int SSH_MSG_KEX_DH_GEX_GROUP = 31;
+        internal const int SSH_MSG_KEX_DH_GEX_INIT = 32;
+        internal const int SSH_MSG_KEX_DH_GEX_REPLY = 33;
+        internal const int SSH_MSG_KEX_DH_GEX_REQUEST = 34;
+        internal const int SSH_MSG_GLOBAL_REQUEST = 80;
+        internal const int SSH_MSG_REQUEST_SUCCESS = 81;
+        internal const int SSH_MSG_REQUEST_FAILURE = 82;
+        internal const int SSH_MSG_CHANNEL_OPEN = 90;
+        internal const int SSH_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
+        internal const int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
+        internal const int SSH_MSG_CHANNEL_WINDOW_ADJUST = 93;
+        internal const int SSH_MSG_CHANNEL_DATA = 94;
+        internal const int SSH_MSG_CHANNEL_EXTENDED_DATA = 95;
+        internal const int SSH_MSG_CHANNEL_EOF = 96;
+        internal const int SSH_MSG_CHANNEL_CLOSE = 97;
+        internal const int SSH_MSG_CHANNEL_REQUEST = 98;
+        internal const int SSH_MSG_CHANNEL_SUCCESS = 99;
+        internal const int SSH_MSG_CHANNEL_FAILURE = 100;
 
         private byte[] V_S;                                 // server version
         private byte[] V_C = ("SSH-2.0-" + version).getBytes(); // client version
@@ -90,7 +90,7 @@ namespace SharpSSH.NG
         Stream In = null;
         Stream Out = null;
 
-        static Random random;
+        internal static Random random;
 
         Buffer buf;
         Packet packet;
@@ -106,10 +106,10 @@ namespace SharpSSH.NG
         private int serverAliveInterval = 0;
         private int serverAliveCountMax = 1;
 
-        protected bool daemon_thread = false;
+        internal bool daemon_thread = false;
 
-        string host = "127.0.0.1";
-        int port = 22;
+        internal string host = "127.0.0.1";
+        internal int port = 22;
 
         string username = null;
         byte[] password = null;
@@ -142,12 +142,12 @@ namespace SharpSSH.NG
             {
                 try
                 {
-                    Class c = Class.forName(getConfig("random"));
+                    Type c = Type.GetType(getConfig("random"));
                     random = (Random)(c.newInstance());
                 }
                 catch (Exception e)
                 {
-                    throw new JSchException(e.toString(), e);
+                    throw new JSchException(e.ToString(), e);
                 }
             }
             Packet.setRandom(random);
@@ -164,8 +164,8 @@ namespace SharpSSH.NG
 
                 if (proxy == null)
                 {
-                    InputStream In;
-                    OutputStream Out;
+                    Stream In;
+                    Stream Out;
                     if (socket_factory == null)
                     {
                         socket = Util.createSocket(host, port, connectTimeout);
@@ -250,7 +250,7 @@ namespace SharpSSH.NG
                          buf.buffer[2] != 'H' || buf.buffer[3] != '-')))
                     {
                         // It must not start with 'SSH-'
-                        //Console.Error.WriteLine(new string(buf.buffer, 0, i);
+                        //Console.Error.WriteLine(Encoding.UTF8.GetString(buf.buffer, 0, i);
                         continue;
                     }
 
@@ -265,14 +265,14 @@ namespace SharpSSH.NG
                 }
 
                 V_S = new byte[i]; Array.Copy(buf.buffer, 0, V_S, 0, i);
-                //Console.Error.WriteLine("V_S: ("+i+") ["+new string(V_S)+"]");
+                //Console.Error.WriteLine("V_S: ("+i+") ["+Encoding.UTF8.GetString(V_S)+"]");
 
                 if (JSch.getLogger().isEnabled(Logger.INFO))
                 {
                     JSch.getLogger().log(Logger.INFO,
-                                         "Remote version string: " + new string(V_S));
+                                         "Remote version string: " + Encoding.UTF8.GetString(V_S));
                     JSch.getLogger().log(Logger.INFO,
-                                         "Local version string: " + new string(V_C));
+                                         "Local version string: " + Encoding.UTF8.GetString(V_C));
                 }
 
                 send_kexinit();
@@ -350,12 +350,12 @@ namespace SharpSSH.NG
                 UserAuth ua = null;
                 try
                 {
-                    Class c = Class.forName(getConfig("userauth.none"));
+                    Type c = Type.GetType(getConfig("userauth.none"));
                     ua = (UserAuth)(c.newInstance());
                 }
                 catch (Exception e)
                 {
-                    throw new JSchException(e.toString(), e);
+                    throw new JSchException(e.ToString(), e);
                 }
 
                 auth = ua.start(this);
@@ -397,7 +397,7 @@ namespace SharpSSH.NG
                         bool acceptable = false;
                         for (int k = 0; k < smethoda.Length; k++)
                         {
-                            if (smethoda[k].equals(method))
+                            if (smethoda[k].Equals(method))
                             {
                                 acceptable = true;
                                 break;
@@ -413,10 +413,10 @@ namespace SharpSSH.NG
                         if (JSch.getLogger().isEnabled(Logger.INFO))
                         {
                             string str = "Authentications that can continue: ";
-                            for (int k = methodi - 1; k < cmethoda.length; k++)
+                            for (int k = methodi - 1; k < cmethoda.Length; k++)
                             {
                                 str += cmethoda[k];
-                                if (k + 1 < cmethoda.length)
+                                if (k + 1 < cmethoda.Length)
                                     str += ",";
                             }
                             JSch.getLogger().log(Logger.INFO,
@@ -428,10 +428,10 @@ namespace SharpSSH.NG
                         ua = null;
                         try
                         {
-                            Class c = null;
+                            Type c = null;
                             if (getConfig("userauth." + method) != null)
                             {
-                                c = Class.forName(getConfig("userauth." + method));
+                                c = Type.GetType(getConfig("userauth." + method));
                                 ua = (UserAuth)(c.newInstance());
                             }
                         }
@@ -470,10 +470,11 @@ namespace SharpSSH.NG
                                 auth_cancel = false;
                                 goto loop;
                             }
+                             /*
                             catch (RuntimeException ee)
                             {
                                 throw ee;
-                            }
+                            }*/
                             catch (Exception ee)
                             {
                                 //Console.Error.WriteLine("ee: "+ee); // SSH_MSG_DISCONNECT: 2 Too many authentication failures
@@ -505,10 +506,10 @@ namespace SharpSSH.NG
                     if (isConnected)
                     {
                         connectThread = new Thread(run);
-                        connectThread.setName("Connect thread " + host + " session");
+                        connectThread.Name="Connect thread " + host + " session";
                         if (daemon_thread)
                         {
-                            connectThread.setDaemon(daemon_thread);
+                            connectThread.IsBackground=daemon_thread;
                         }
                         connectThread.Start();
                     }
@@ -529,7 +530,7 @@ namespace SharpSSH.NG
                         packet.reset();
                         buf.putByte((byte)SSH_MSG_DISCONNECT);
                         buf.putInt(3);
-                        buf.putString(e.toString().getBytes());
+                        buf.putString(e.ToString().getBytes());
                         buf.putString("en".getBytes());
                         write(packet);
                         disconnect();
@@ -540,7 +541,7 @@ namespace SharpSSH.NG
                 }
                 isConnected = false;
                 //e.printStackTrace();
-                if (e is RuntimeException) throw (RuntimeException)e;
+                /*if (e is RuntimeException) throw (RuntimeException)e;*/
                 if (e is JSchException) throw (JSchException)e;
                 throw new JSchException("Session.connect: " + e);
             }
@@ -563,7 +564,7 @@ namespace SharpSSH.NG
             {
                 I_S = new byte[j - 1 - buf.getByte()];
             }
-            Array.Copy(buf.buffer, buf.s, I_S, 0, I_S.length);
+            Array.Copy(buf.buffer, buf.s, I_S, 0, I_S.Length);
 
             if (!in_kex)
             {     // We are in rekeying activated by the remote!
@@ -577,8 +578,8 @@ namespace SharpSSH.NG
             }
 
             if (!isAuthed &&
-               (guess[KeyExchange.PROPOSAL_ENC_ALGS_CTOS].equals("none") ||
-                (guess[KeyExchange.PROPOSAL_ENC_ALGS_STOC].equals("none"))))
+               (guess[KeyExchange.PROPOSAL_ENC_ALGS_CTOS].Equals("none") ||
+                (guess[KeyExchange.PROPOSAL_ENC_ALGS_STOC].Equals("none"))))
             {
                 throw new JSchException("NONE Cipher should not be chosen before authentification is successed.");
             }
@@ -586,12 +587,12 @@ namespace SharpSSH.NG
             KeyExchange kex = null;
             try
             {
-                Class c = Class.forName(getConfig(guess[KeyExchange.PROPOSAL_KEX_ALGS]));
+                Type c = Type.GetType(getConfig(guess[KeyExchange.PROPOSAL_KEX_ALGS]));
                 kex = (KeyExchange)(c.newInstance());
             }
             catch (Exception e)
             {
-                throw new JSchException(e.toString(), e);
+                throw new JSchException(e.ToString(), e);
             }
 
             kex.init(this, V_S, V_C, I_S, I_C);
@@ -612,7 +613,7 @@ namespace SharpSSH.NG
             string ciphers2c = getConfig("cipher.s2c");
 
             string[] not_available = checkCiphers(getConfig("CheckCiphers"));
-            if (not_available != null && not_available.length > 0)
+            if (not_available != null && not_available.Length > 0)
             {
                 cipherc2s = Util.diffString(cipherc2s, not_available);
                 ciphers2c = Util.diffString(ciphers2c, not_available);
@@ -715,7 +716,7 @@ namespace SharpSSH.NG
 
             bool insert = false;
 
-            if ((shkc.equals("ask") || shkc.equals("yes")) &&
+            if ((shkc.Equals("ask") || shkc.Equals("yes")) &&
                i == HostKeyRepository.CHANGED)
             {
                 string file = null;
@@ -739,13 +740,13 @@ namespace SharpSSH.NG
             "Please contact your system administrator.\n" +
             "Add correct host key in " + file + " to get rid of this message.";
 
-                    if (shkc.equals("ask"))
+                    if (shkc.Equals("ask"))
                     {
                         b = userinfo.promptYesNo(message +
                                                "\nDo you want to delete the old key and insert the new key?");
                     }
                     else
-                    {  // shkc.equals("yes")
+                    {  // shkc.Equals("yes")
                         userinfo.showMessage(message);
                     }
                 }
@@ -758,16 +759,16 @@ namespace SharpSSH.NG
                 lock (hkr)
                 {
                     hkr.remove(chost,
-                               (key_type.equals("DSA") ? "ssh-dss" : "ssh-rsa"),
+                               (key_type.Equals("DSA") ? "ssh-dss" : "ssh-rsa"),
                                null);
                     insert = true;
                 }
             }
 
-            if ((shkc.equals("ask") || shkc.equals("yes")) &&
+            if ((shkc.Equals("ask") || shkc.Equals("yes")) &&
                (i != HostKeyRepository.OK) && !insert)
             {
-                if (shkc.equals("yes"))
+                if (shkc.Equals("yes"))
                 {
                     throw new JSchException("reject HostKey: " + host);
                 }
@@ -794,7 +795,7 @@ namespace SharpSSH.NG
                 }
             }
 
-            if (shkc.equals("no") &&
+            if (shkc.Equals("no") &&
                HostKeyRepository.NOT_INCLUDED == i)
             {
                 insert = true;
@@ -815,7 +816,7 @@ namespace SharpSSH.NG
             }
 
             string hkh = getConfig("HashKnownHosts");
-            if (hkh.equals("yes") && (hkr is KnownHosts))
+            if (hkh.Equals("yes") && (hkr is KnownHosts))
             {
                 hostkey = ((KnownHosts)hkr).createHashedHostKey(chost, K_S);
             }
@@ -918,10 +919,10 @@ namespace SharpSSH.NG
                 {
                     s2ccipher.update(buf.buffer, 0, s2ccipher_size, buf.buffer, 0);
                 }
-                j = ((buf.buffer[0] << 24) & 0xff000000) |
+                j = unchecked((int)((uint)((((uint)buf.buffer[0] << 24) & 0xff000000) |
                   ((buf.buffer[1] << 16) & 0x00ff0000) |
                   ((buf.buffer[2] << 8) & 0x0000ff00) |
-                  ((buf.buffer[3]) & 0x000000ff);
+                  ((buf.buffer[3]) & 0x000000ff))));
                 // RFC 4253 6.1. Maximum Packet Length
                 if (j < 5 || j > (32768 - 4))
                 {
@@ -931,7 +932,7 @@ namespace SharpSSH.NG
                 //if(j<0){
                 //  throw new IOException("invalid data");
                 //}
-                if ((buf.index + j) > buf.buffer.length)
+                if ((buf.index + j) > buf.buffer.Length)
                 {
                     byte[] foo = new byte[buf.index + j];
                     Array.Copy(buf.buffer, 0, foo, 0, buf.index);
@@ -970,8 +971,8 @@ namespace SharpSSH.NG
                     s2cmac.update(buf.buffer, 0, buf.index);
 
                     s2cmac.doFinal(s2cmac_result1, 0);
-                    io.getByte(s2cmac_result2, 0, s2cmac_result2.length);
-                    if (!java.util.Arrays.equals(s2cmac_result1, s2cmac_result2))
+                    io.getByte(s2cmac_result2, 0, s2cmac_result2.Length);
+                    if (!Array.Equals(s2cmac_result1, s2cmac_result2))
                     {
                         throw new IOException("MAC Error");
                     }
@@ -1008,8 +1009,8 @@ namespace SharpSSH.NG
                     byte[] language_tag = buf.getString();
                     throw new JSchException("SSH_MSG_DISCONNECT: " +
                                     reason_code +
-                                " " + new string(description) +
-                                " " + new string(language_tag));
+                                " " + Encoding.Default.GetString(description) +
+                                " " + Encoding.Default.GetString(language_tag));
                     //break;
                 }
                 else if (type == SSH_MSG_IGNORE)
@@ -1035,8 +1036,8 @@ namespace SharpSSH.NG
                         byte[] message=buf.getString();
                         byte[] language_tag=buf.getString();
                         Console.Error.WriteLine("SSH_MSG_DEBUG:"+
-                                   " "+new string(message)+
-                                   " "+new string(language_tag));
+                                   " "+Encoding.UTF8.GetString(message)+
+                                   " "+Encoding.UTF8.GetString(language_tag));
                     */
                 }
                 else if (type == SSH_MSG_CHANNEL_WINDOW_ADJUST)
@@ -1095,8 +1096,8 @@ namespace SharpSSH.NG
 
             if (session_id == null)
             {
-                session_id = new byte[H.length];
-                Array.Copy(H, 0, session_id, 0, H.length);
+                session_id = new byte[H.Length];
+                Array.Copy(H, 0, session_id, 0, H.Length);
             }
 
             /*
@@ -1116,7 +1117,7 @@ namespace SharpSSH.NG
             hash.update(buf.buffer, 0, buf.index);
             IVc2s = hash.digest();
 
-            int j = buf.index - session_id.length - 1;
+            int j = buf.index - session_id.Length - 1;
 
             buf.buffer[j]++;
             hash.update(buf.buffer, 0, buf.index);
@@ -1140,13 +1141,13 @@ namespace SharpSSH.NG
 
             try
             {
-                Class c;
+                Type c;
                 string method;
 
                 method = guess[KeyExchange.PROPOSAL_ENC_ALGS_STOC];
-                c = Class.forName(getConfig(method));
+                c = Type.GetType(getConfig(method));
                 s2ccipher = (Cipher)(c.newInstance());
-                while (s2ccipher.getBlockSize() > Es2c.length)
+                while (s2ccipher.getBlockSize() > Es2c.Length)
                 {
                     buf.reset();
                     buf.putMPInt(K);
@@ -1154,16 +1155,16 @@ namespace SharpSSH.NG
                     buf.putByte(Es2c);
                     hash.update(buf.buffer, 0, buf.index);
                     byte[] foo = hash.digest();
-                    byte[] bar = new byte[Es2c.length + foo.length];
-                    Array.Copy(Es2c, 0, bar, 0, Es2c.length);
-                    Array.Copy(foo, 0, bar, Es2c.length, foo.length);
+                    byte[] bar = new byte[Es2c.Length + foo.Length];
+                    Array.Copy(Es2c, 0, bar, 0, Es2c.Length);
+                    Array.Copy(foo, 0, bar, Es2c.Length, foo.Length);
                     Es2c = bar;
                 }
                 s2ccipher.init(Cipher.DECRYPT_MODE, Es2c, IVs2c);
                 s2ccipher_size = s2ccipher.getIVSize();
 
                 method = guess[KeyExchange.PROPOSAL_MAC_ALGS_STOC];
-                c = Class.forName(getConfig(method));
+                c = Type.GetType(getConfig(method));
                 s2cmac = (MAC)(c.newInstance());
                 s2cmac.init(MACs2c);
                 //mac_buf=new byte[s2cmac.getBlockSize()];
@@ -1171,9 +1172,9 @@ namespace SharpSSH.NG
                 s2cmac_result2 = new byte[s2cmac.getBlockSize()];
 
                 method = guess[KeyExchange.PROPOSAL_ENC_ALGS_CTOS];
-                c = Class.forName(getConfig(method));
+                c = Type.GetType(getConfig(method));
                 c2scipher = (Cipher)(c.newInstance());
-                while (c2scipher.getBlockSize() > Ec2s.length)
+                while (c2scipher.getBlockSize() > Ec2s.Length)
                 {
                     buf.reset();
                     buf.putMPInt(K);
@@ -1181,16 +1182,16 @@ namespace SharpSSH.NG
                     buf.putByte(Ec2s);
                     hash.update(buf.buffer, 0, buf.index);
                     byte[] foo = hash.digest();
-                    byte[] bar = new byte[Ec2s.length + foo.length];
-                    Array.Copy(Ec2s, 0, bar, 0, Ec2s.length);
-                    Array.Copy(foo, 0, bar, Ec2s.length, foo.length);
+                    byte[] bar = new byte[Ec2s.Length + foo.Length];
+                    Array.Copy(Ec2s, 0, bar, 0, Ec2s.Length);
+                    Array.Copy(foo, 0, bar, Ec2s.Length, foo.Length);
                     Ec2s = bar;
                 }
                 c2scipher.init(Cipher.ENCRYPT_MODE, Ec2s, IVc2s);
                 c2scipher_size = c2scipher.getIVSize();
 
                 method = guess[KeyExchange.PROPOSAL_MAC_ALGS_CTOS];
-                c = Class.forName(getConfig(method));
+                c = Type.GetType(getConfig(method));
                 c2smac = (MAC)(c.newInstance());
                 c2smac.init(MACc2s);
 
@@ -1204,21 +1205,20 @@ namespace SharpSSH.NG
             {
                 if (e is JSchException)
                     throw e;
-                throw new JSchException(e.toString(), e);
+                throw new JSchException(e.ToString(), e);
                 //Console.Error.WriteLine("updatekeys: "+e); 
             }
         }
-        /*[System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]*/
+        /*[MethodImpl(MethodImplOptions.Synchronized)]*/
         /*public*/
         /*synchronized*/
-        void write(Packet packet, Channel c, int length)
+        internal void write(Packet packet, Channel c, int length)
         {
             while (true)
             {
                 if (in_kex)
                 {
-                    try { Thread.Sleep(10); }
-                    catch (java.lang.InterruptedException e) { };
+                    Thread.Sleep(10);
                     continue;
                 }
                 lock (c)
@@ -1282,9 +1282,9 @@ namespace SharpSSH.NG
                     try
                     {
                         c.notifyme++;
-                        c.wait(100);
+                        Monitor.Wait(c, 100);
                     }
-                    catch (java.lang.InterruptedException e)
+                    catch (ThreadInterruptedException e)
                     {
                     }
                     finally
@@ -1317,7 +1317,7 @@ namespace SharpSSH.NG
                     break;
                 }
                 try { Thread.Sleep(10); }
-                catch (java.lang.InterruptedException e) { };
+                catch (ThreadInterruptedException e) { };
             }
             _write(packet);
         }
@@ -1338,7 +1338,7 @@ namespace SharpSSH.NG
         Thread thread;
         public void run()
         {
-            thread = this;
+            thread = new Thread(this.run);
 
             byte[] foo;
             Buffer buf = new Buffer();
@@ -1360,7 +1360,7 @@ namespace SharpSSH.NG
                         buf = read(buf);
                         stimeout = 0;
                     }
-                    catch (InterruptedIOException/*SocketTimeoutException*/ ee)
+                    catch (IOException/*SocketTimeoutException*/ ee)
                     {
                         if (!in_kex && stimeout < serverAliveCountMax)
                         {
@@ -1445,7 +1445,7 @@ namespace SharpSSH.NG
                             channel = Channel.getChannel(i, this);
                             buf.getInt();                   // data_type_code == 1
                             foo = buf.getString(start, length);
-                            //Console.Error.WriteLine("stderr: "+new string(foo,start[0],length[0]));
+                            //Console.Error.WriteLine("stderr: "+Encoding.UTF8.GetString(foo,start[0],length[0]));
                             if (channel == null)
                             {
                                 break;
@@ -1492,7 +1492,7 @@ namespace SharpSSH.NG
                             {
                                 //channel.eof_remote=true;
                                 //channel.eof();
-                                channel.eof_remote();
+                                channel.EofRemote();
                             }
                             /*
                             packet.reset();
@@ -1512,7 +1512,7 @@ namespace SharpSSH.NG
                                 channel.disconnect();
                             }
                             /*
-                                if(Channel.pool.size()==0){
+                                if(Channel.pool.Count==0){
                               thread=null;
                             }
                             */
@@ -1561,7 +1561,7 @@ namespace SharpSSH.NG
                             if (channel != null)
                             {
                                 byte reply_type = (byte)SSH_MSG_CHANNEL_FAILURE;
-                                if ((new string(foo)).equals("exit-status"))
+                                if ((Encoding.UTF8.GetString(foo)).Equals("exit-status"))
                                 {
                                     i = buf.getInt();             // exit-status
                                     channel.setExitStatus(i);
@@ -1585,10 +1585,10 @@ namespace SharpSSH.NG
                             buf.getInt();
                             buf.getShort();
                             foo = buf.getString();
-                            string ctyp = new string(foo);
-                            if (!"forwarded-tcpip".equals(ctyp) &&
-                           !("x11".equals(ctyp) && x11_forwarding) &&
-                           !("auth-agent@openssh.com".equals(ctyp) && agent_forwarding))
+                            string ctyp = Encoding.UTF8.GetString(foo);
+                            if (!"forwarded-tcpip".Equals(ctyp) &&
+                           !("x11".Equals(ctyp) && x11_forwarding) &&
+                           !("auth-agent@openssh.com".Equals(ctyp) && agent_forwarding))
                             {
                                 //Console.Error.WriteLine("Session.run: CHANNEL OPEN "+ctyp); 
                                 //throw new IOException("Session.run: CHANNEL OPEN "+ctyp);
@@ -1599,6 +1599,7 @@ namespace SharpSSH.NG
                                 buf.putString("".getBytes());
                                 buf.putString("".getBytes());
                                 write(packet);
+                                break;
                             }
                             else
                             {
@@ -1608,10 +1609,10 @@ namespace SharpSSH.NG
                                 channel.init();
 
                                 Thread tmp = new Thread(channel.run);
-                                tmp.setName("Channel " + ctyp + " " + host);
+                                tmp.Name="Channel " + ctyp + " " + host;
                                 if (daemon_thread)
                                 {
-                                    tmp.setDaemon(daemon_thread);
+                                    tmp.IsBackground=daemon_thread;
                                 }
                                 tmp.Start();
                                 break;
@@ -1656,7 +1657,7 @@ namespace SharpSSH.NG
                             if (t != null)
                             {
                                 grr.setReply(msgType == SSH_MSG_REQUEST_SUCCESS ? 1 : 0);
-                                t.interrupt();
+                                t.Interrupt();
                             }
                             break;
                         default:
@@ -1670,7 +1671,7 @@ namespace SharpSSH.NG
                 if (JSch.getLogger().isEnabled(Logger.INFO))
                 {
                     JSch.getLogger().log(Logger.INFO,
-                                         "Caught an exception, leaving main loop due to " + e.getMessage());
+                                         "Caught an exception, leaving main loop due to " + e.Message);
                 }
                 //Console.Error.WriteLine("# Session.run");
                 //e.printStackTrace();
@@ -1679,7 +1680,7 @@ namespace SharpSSH.NG
             {
                 disconnect();
             }
-            catch (NullPointerException e)
+            catch (NullReferenceException e)
             {
                 //Console.Error.WriteLine("@1");
                 //e.printStackTrace();
@@ -1703,9 +1704,9 @@ namespace SharpSSH.NG
                                      "Disconnecting from " + host + " port " + port);
             }
             /*
-            for(int i=0; i<Channel.pool.size(); i++){
+            for(int i=0; i<Channel.pool.Count; i++){
               try{
-                Channel c=((Channel)(Channel.pool.elementAt(i)));
+                Channel c=Channel.pool[i];
             if(c.session==this) c.eof();
               }
               catch(Exception e){
@@ -1734,9 +1735,9 @@ namespace SharpSSH.NG
             {
                 if (io != null)
                 {
-                    if (io.In != null) io.In.close();
-                    if (io.Out != null) io.Out.close();
-                    if (io.out_ext != null) io.out_ext.close();
+                    if (io.In != null) io.In.Close();
+                    if (io.Out != null) io.Out.Close();
+                    if (io.out_ext != null) io.out_ext.Close();
                 }
                 if (proxy == null)
                 {
@@ -1759,7 +1760,7 @@ namespace SharpSSH.NG
             io = null;
             socket = null;
             //    lock(jsch.pool){
-            //      jsch.pool.removeElement(this);
+            //      jsch.pool.Remove(this);
             //    }
 
             jsch.removeSession(this);
@@ -1779,12 +1780,12 @@ namespace SharpSSH.NG
         {
             PortWatcher pw = PortWatcher.addPort(this, boundaddress, lport, host, rport, ssf);
             Thread tmp = new Thread(pw.run);
-            tmp.setName("PortWatcher Thread for " + host);
+            tmp.Name="PortWatcher Thread for " + host;
             if (daemon_thread)
             {
-                tmp.setDaemon(daemon_thread);
+                tmp.IsBackground=daemon_thread;
             }
-            tmp.start();
+            tmp.Start();
             return pw.lport;
         }
         public void delPortForwardingL(int lport)
@@ -1836,14 +1837,14 @@ namespace SharpSSH.NG
         {
             private Thread thread = null;
             private int reply = -1;
-            void setThread(Thread thread)
+            internal void setThread(Thread thread)
             {
                 this.thread = thread;
                 this.reply = -1;
             }
-            Thread getThread() { return thread; }
-            void setReply(int reply) { this.reply = reply; }
-            int getReply() { return this.reply; }
+            internal Thread getThread() { return thread; }
+            internal void setReply(int reply) { this.reply = reply; }
+            internal int getReply() { return this.reply; }
         }
         private GlobalRequestReply grr = new GlobalRequestReply();
         private void setPortForwarding(string bind_address, int rport)
@@ -1873,9 +1874,7 @@ namespace SharpSSH.NG
                 }
                 catch (Exception e)
                 {
-                    if (e is Throwable)
-                        throw new JSchException(e.toString(), (Throwable)e);
-                    throw new JSchException(e.toString());
+                    throw new JSchException(e.Message,e);
                 }
 
                 grr.setThread(Thread.CurrentThread);
@@ -1898,7 +1897,7 @@ namespace SharpSSH.NG
 
         private void initDeflater(string method)
         {
-            if (method.equals("none"))
+            if (method.Equals("none"))
             {
                 deflater = null;
                 return;
@@ -1906,21 +1905,21 @@ namespace SharpSSH.NG
             string foo = getConfig(method);
             if (foo != null)
             {
-                if (method.equals("zlib") ||
-                   (isAuthed && method.equals("zlib@openssh.com")))
+                if (method.Equals("zlib") ||
+                   (isAuthed && method.Equals("zlib@openssh.com")))
                 {
                     try
                     {
-                        Class c = Class.forName(foo);
+                        Type c = Type.GetType(foo);
                         deflater = (Compression)(c.newInstance());
                         int level = 6;
-                        try { level = Integer.parseInt(getConfig("compression_level")); }
+                        try { level = int.Parse(getConfig("compression_level")); }
                         catch (Exception ee) { }
                         deflater.init(Compression.DEFLATER, level);
                     }
                     catch (Exception ee)
                     {
-                        throw new JSchException(ee.toString(), ee);
+                        throw new JSchException(ee.ToString(), ee);
                         //Console.Error.WriteLine(foo+" isn't accessible.");
                     }
                 }
@@ -1928,7 +1927,7 @@ namespace SharpSSH.NG
         }
         private void initInflater(string method)
         {
-            if (method.equals("none"))
+            if (method.Equals("none"))
             {
                 inflater = null;
                 return;
@@ -1936,18 +1935,18 @@ namespace SharpSSH.NG
             string foo = getConfig(method);
             if (foo != null)
             {
-                if (method.equals("zlib") ||
-                   (isAuthed && method.equals("zlib@openssh.com")))
+                if (method.Equals("zlib") ||
+                   (isAuthed && method.Equals("zlib@openssh.com")))
                 {
                     try
                     {
-                        Class c = Class.forName(foo);
+                        Type c = Type.GetType(foo);
                         inflater = (Compression)(c.newInstance());
                         inflater.init(Compression.INFLATER, 0);
                     }
                     catch (Exception ee)
                     {
-                        throw new JSchException(ee.toString(), ee);
+                        throw new JSchException(ee.ToString(), ee);
                         //Console.Error.WriteLine(foo+" isn't accessible.");
                     }
                 }
@@ -1979,8 +1978,8 @@ namespace SharpSSH.NG
         {
             if (password != null)
             {
-                this.password = new byte[password.length];
-                Array.Copy(password, 0, this.password, 0, password.length);
+                this.password = new byte[password.Length];
+                Array.Copy(password, 0, this.password, 0, password.Length);
             }
         }
 
@@ -2018,7 +2017,7 @@ namespace SharpSSH.NG
                     return config[key];
                 }
             }
-            return jsch.getConfig(key);
+            return JSch.getConfig(key);
         }
 
         public void setSocketFactory(SocketFactory sfactory)
@@ -2045,18 +2044,16 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
         public string getServerVersion()
         {
-            return new string(V_S);
+            return Encoding.UTF8.GetString(V_S);
         }
         public string getClientVersion()
         {
-            return new string(V_C);
+            return Encoding.UTF8.GetString(V_C);
         }
         public void setClientVersion(string cv)
         {
@@ -2124,7 +2121,7 @@ namespace SharpSSH.NG
 
         private string[] checkCiphers(string ciphers)
         {
-            if (ciphers == null || ciphers.length() == 0)
+            if (ciphers == null || ciphers.Length == 0)
                 return null;
 
             if (JSch.getLogger().isEnabled(Logger.INFO))
@@ -2133,23 +2130,23 @@ namespace SharpSSH.NG
                                      "CheckCiphers: " + ciphers);
             }
 
-            java.util.Vector result = new java.util.Vector();
+            List<string> result = new List<string>();
             string[] _ciphers = Util.split(ciphers, ",");
-            for (int i = 0; i < _ciphers.length; i++)
+            for (int i = 0; i < _ciphers.Length; i++)
             {
                 if (!checkCipher(getConfig(_ciphers[i])))
                 {
-                    result.addElement(_ciphers[i]);
+                    result.Add(_ciphers[i]);
                 }
             }
-            if (result.size() == 0)
+            if (result.Count == 0)
                 return null;
-            string[] foo = new string[result.size()];
-            Array.Copy(result.toArray(), 0, foo, 0, result.size());
+            string[] foo = new string[result.Count];
+            Array.Copy(result.ToArray(), 0, foo, 0, result.Count);
 
             if (JSch.getLogger().isEnabled(Logger.INFO))
             {
-                for (int i = 0; i < foo.length; i++)
+                for (int i = 0; i < foo.Length; i++)
                 {
                     JSch.getLogger().log(Logger.INFO,
                                          foo[i] + " is not available.");
@@ -2163,7 +2160,7 @@ namespace SharpSSH.NG
         {
             try
             {
-                Class c = Class.forName(cipher);
+                Type c = Type.GetType(cipher);
                 Cipher _c = (Cipher)(c.newInstance());
                 _c.init(Cipher.ENCRYPT_MODE,
                         new byte[_c.getBlockSize()],

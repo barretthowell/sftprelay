@@ -26,7 +26,7 @@ namespace SharpSSH.NG
             this.key_size = key_size;
             try
             {
-                Class c = Class.forName(jsch.getConfig("keypairgen.dsa"));
+                Type c = Type.GetType(jsch.getConfig("keypairgen.dsa"));
                 KeyPairGenDSA keypairgen = (KeyPairGenDSA)(c.newInstance());
                 keypairgen.init(key_size);
                 P_array = keypairgen.getP();
@@ -40,9 +40,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 //Console.Error.WriteLine("KeyPairDSA: "+e); 
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
 
@@ -56,11 +54,11 @@ namespace SharpSSH.NG
         {
             int content =
               1 + countLength(1) + 1 +                           // INTEGER
-              1 + countLength(P_array.length) + P_array.length + // INTEGER  P
-              1 + countLength(Q_array.length) + Q_array.length + // INTEGER  Q
-              1 + countLength(G_array.length) + G_array.length + // INTEGER  G
-              1 + countLength(pub_array.length) + pub_array.length + // INTEGER  pub
-              1 + countLength(prv_array.length) + prv_array.length;  // INTEGER  prv
+              1 + countLength(P_array.Length) + P_array.Length + // INTEGER  P
+              1 + countLength(Q_array.Length) + Q_array.Length + // INTEGER  Q
+              1 + countLength(G_array.Length) + G_array.Length + // INTEGER  G
+              1 + countLength(pub_array.Length) + pub_array.Length + // INTEGER  pub
+              1 + countLength(prv_array.Length) + prv_array.Length;  // INTEGER  prv
 
             int total =
               1 + countLength(content) + content;   // SEQUENCE
@@ -191,11 +189,11 @@ namespace SharpSSH.NG
 
             if (P_array == null) return null;
 
-            Buffer buf = new Buffer(sshdss.length + 4 +
-                      P_array.length + 4 +
-                      Q_array.length + 4 +
-                      G_array.length + 4 +
-                      pub_array.length + 4);
+            Buffer buf = new Buffer(sshdss.Length + 4 +
+                      P_array.Length + 4 +
+                      Q_array.Length + 4 +
+                      G_array.Length + 4 +
+                      pub_array.Length + 4);
             buf.putString(sshdss);
             buf.putString(P_array);
             buf.putString(Q_array);

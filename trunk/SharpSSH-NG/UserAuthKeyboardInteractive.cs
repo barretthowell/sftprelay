@@ -63,10 +63,10 @@ namespace SharpSSH.NG
                         byte[] _message = buf.getString();
                         byte[] lang = buf.getString();
                         string message = null;
-                        try { message = new string(_message, "UTF-8"); }
+                        try { message = Encoding.UTF8.GetString(_message); }
                         catch (Exception e)
                         {
-                            message = new string(_message);
+                            message = Encoding.UTF8.GetString(_message);
                         }
                         if (userinfo != null)
                         {
@@ -79,12 +79,12 @@ namespace SharpSSH.NG
                         buf.getInt(); buf.getByte(); buf.getByte();
                         byte[] foo = buf.getString();
                         int partial_success = buf.getByte();
-                        //	  Console.Error.WriteLine(new string(foo)+
+                        //	  Console.Error.WriteLine(Encoding.UTF8.GetString(foo)+
                         //			     " partial_success:"+(partial_success!=0));
 
                         if (partial_success != 0)
                         {
-                            throw new JSchPartialAuthException(new string(foo));
+                            throw new JSchPartialAuthException(Encoding.UTF8.GetString(foo));
                         }
 
                         if (firsttime)
@@ -99,21 +99,21 @@ namespace SharpSSH.NG
                     {
                         firsttime = false;
                         buf.getInt(); buf.getByte(); buf.getByte();
-                        string name = new string(buf.getString());
-                        string instruction = new string(buf.getString());
-                        string languate_tag = new string(buf.getString());
+                        string name = Encoding.UTF8.GetString(buf.getString());
+                        string instruction = Encoding.UTF8.GetString(buf.getString());
+                        string languate_tag = Encoding.UTF8.GetString(buf.getString());
                         int num = buf.getInt();
                         string[] prompt = new string[num];
                         boolean[] echo = new boolean[num];
                         for (int i = 0; i < num; i++)
                         {
-                            prompt[i] = new string(buf.getString());
+                            prompt[i] = Encoding.UTF8.GetString(buf.getString());
                             echo[i] = (buf.getByte() != 0);
                         }
 
                         byte[][] response = null;
                         if (num > 0
-                           || (name.length() > 0 || instruction.length() > 0)
+                           || (name.Length > 0 || instruction.Length > 0)
                            )
                         {
                             if (userinfo != null)
@@ -126,8 +126,8 @@ namespace SharpSSH.NG
                                                                                  echo);
                                 if (_response != null)
                                 {
-                                    response = new byte[_response.length][];
-                                    for (int i = 0; i < _response.length; i++)
+                                    response = new byte[_response.Length][];
+                                    for (int i = 0; i < _response.Length; i++)
                                     {
                                         response[i] = Util.str2byte(_response[i]);
                                     }
@@ -150,14 +150,14 @@ namespace SharpSSH.NG
                         // ...
                         // string    response[num-responses] (ISO-10646 UTF-8)
                         //if(response!=null)
-                        //Console.Error.WriteLine("response.length="+response.length);
+                        //Console.Error.WriteLine("response.Length="+response.Length);
                         //else
                         //Console.Error.WriteLine("response is null");
                         packet.reset();
                         buf.putByte((byte)SSH_MSG_USERAUTH_INFO_RESPONSE);
                         if (num > 0 &&
                            (response == null ||  // cancel
-                            num != response.length))
+                            num != response.Length))
                         {
 
                             if (response == null)
@@ -182,7 +182,7 @@ namespace SharpSSH.NG
                             buf.putInt(num);
                             for (int i = 0; i < num; i++)
                             {
-                                //Console.Error.WriteLine("response: |"+new string(response[i])+"| <- replace here with **** if you need");
+                                //Console.Error.WriteLine("response: |"+Encoding.UTF8.GetString(response[i])+"| <- replace here with **** if you need");
                                 buf.putString(response[i]);
                             }
                         }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace SharpSSH.NG
 {
@@ -66,7 +67,7 @@ namespace SharpSSH.NG
             if (encoded != plain)
                 Util.bzero(plain);
             byte[] iv = _iv[0];
-            byte[] prv = Util.toBase64(encoded, 0, encoded.length);
+            byte[] prv = Util.toBase64(encoded, 0, encoded.Length);
 
             try
             {
@@ -75,7 +76,7 @@ namespace SharpSSH.NG
                 {
                     Out.write(header[0]); Out.write(cr);
                     Out.write(header[1]);
-                    for (int i = 0; i < iv.length; i++)
+                    for (int i = 0; i < iv.Length; i++)
                     {
                         Out.write(b2a((byte)((iv[i] >> 4) & 0x0f)));
                         Out.write(b2a((byte)(iv[i] & 0x0f)));
@@ -84,16 +85,16 @@ namespace SharpSSH.NG
                     Out.write(cr);
                 }
                 int i = 0;
-                while (i < prv.length)
+                while (i < prv.Length)
                 {
-                    if (i + 64 < prv.length)
+                    if (i + 64 < prv.Length)
                     {
                         Out.write(prv, i, 64);
                         Out.write(cr);
                         i += 64;
                         continue;
                     }
-                    Out.write(prv, i, prv.length - i);
+                    Out.write(prv, i, prv.Length - i);
                     Out.write(cr);
                     break;
                 }
@@ -115,11 +116,11 @@ namespace SharpSSH.NG
         public void writePublicKey(Stream Out, string comment)
         {
             byte[] pubblob = getPublicKeyBlob();
-            byte[] pub = Util.toBase64(pubblob, 0, pubblob.length);
+            byte[] pub = Util.toBase64(pubblob, 0, pubblob.Length);
             try
             {
                 Out.write(getKeyTypeName()); Out.write(space);
-                Out.write(pub, 0, pub.length); Out.write(space);
+                Out.write(pub, 0, pub.Length); Out.write(space);
                 Out.write(comment.getBytes());
                 Out.write(cr);
             }
@@ -138,16 +139,16 @@ namespace SharpSSH.NG
         public void writeSECSHPublicKey(Stream Out, string comment)
         {
             byte[] pubblob = getPublicKeyBlob();
-            byte[] pub = Util.toBase64(pubblob, 0, pubblob.length);
+            byte[] pub = Util.toBase64(pubblob, 0, pubblob.Length);
             try
             {
                 Out.write("---- BEGIN SSH2 PUBLIC KEY ----".getBytes()); Out.write(cr);
                 Out.write(("Comment: \"" + comment + "\"").getBytes()); Out.write(cr);
                 int index = 0;
-                while (index < pub.length)
+                while (index < pub.Length)
                 {
                     int len = 70;
-                    if ((pub.length - index) < len) len = pub.length - index;
+                    if ((pub.Length - index) < len) len = pub.Length - index;
                     Out.write(pub, index, len); Out.write(cr);
                     index += len;
                 }
@@ -189,7 +190,7 @@ namespace SharpSSH.NG
             byte[] iv = _iv[0] = new byte[cipher.getIVSize()];
 
             if (random == null) random = genRandom();
-            random.fill(iv, 0, iv.length);
+            random.fill(iv, 0, iv.Length);
 
             byte[] key = genKey(passphrase, iv);
             byte[] encoded = plain;
@@ -198,10 +199,10 @@ namespace SharpSSH.NG
             {
                 //int bsize=cipher.getBlockSize();
                 int bsize = cipher.getIVSize();
-                byte[] foo = new byte[(encoded.length / bsize + 1) * bsize];
-                Array.Copy(encoded, 0, foo, 0, encoded.length);
-                int padding = bsize - encoded.length % bsize;
-                for (int i = foo.length - 1; (foo.length - padding) <= i; i--)
+                byte[] foo = new byte[(encoded.Length / bsize + 1) * bsize];
+                Array.Copy(encoded, 0, foo, 0, encoded.Length);
+                int padding = bsize - encoded.Length % bsize;
+                for (int i = foo.Length - 1; (foo.Length - padding) <= i; i--)
                 {
                     foo[i] = (byte)padding;
                 }
@@ -211,7 +212,7 @@ namespace SharpSSH.NG
             try
             {
                 cipher.init(Cipher.ENCRYPT_MODE, key, iv);
-                cipher.update(encoded, 0, encoded.length, encoded, 0);
+                cipher.update(encoded, 0, encoded.Length, encoded, 0);
             }
             catch (Exception e)
             {
@@ -228,7 +229,7 @@ namespace SharpSSH.NG
             /*
             if(iv==null){  // FSecure
               iv=new byte[8];
-              for(int i=0; i<iv.length; i++)iv[i]=0;
+              for(int i=0; i<iv.Length; i++)iv[i]=0;
             }
             */
             try
@@ -236,8 +237,8 @@ namespace SharpSSH.NG
                 byte[] key = genKey(passphrase, iv);
                 cipher.init(Cipher.DECRYPT_MODE, key, iv);
                 Util.bzero(key);
-                byte[] plain = new byte[data.length];
-                cipher.update(data, 0, data.length, plain, 0);
+                byte[] plain = new byte[data.Length];
+                cipher.update(data, 0, data.Length, plain, 0);
                 return plain;
             }
             catch (Exception e)
@@ -256,9 +257,9 @@ namespace SharpSSH.NG
         int writeINTEGER(byte[] buf, int index, byte[] data)
         {
             buf[index++] = 0x02;
-            index = writeLength(buf, index, data.length);
-            Array.Copy(data, 0, buf, index, data.length);
-            index += data.length;
+            index = writeLength(buf, index, data.Length);
+            Array.Copy(data, 0, buf, index, data.Length);
+            index += data.Length;
             return index;
         }
 
@@ -301,7 +302,7 @@ namespace SharpSSH.NG
             {
                 try
                 {
-                    Class c = Class.forName(jsch.getConfig("random"));
+                    Type c = Type.GetType(jsch.getConfig("random"));
                     random = (Random)(c.newInstance());
                 }
                 catch (Exception e) { Console.Error.WriteLine("connect: random " + e); }
@@ -313,7 +314,7 @@ namespace SharpSSH.NG
         {
             try
             {
-                Class c = Class.forName(jsch.getConfig("md5"));
+                Type c = Type.GetType(jsch.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
                 hash.init();
             }
@@ -326,8 +327,8 @@ namespace SharpSSH.NG
         {
             try
             {
-                Class c;
-                c = Class.forName(jsch.getConfig("3des-cbc"));
+                Type c;
+                c = Type.GetType(jsch.getConfig("3des-cbc"));
                 cipher = (Cipher)(c.newInstance());
             }
             catch (Exception e)
@@ -340,9 +341,9 @@ namespace SharpSSH.NG
           hash is MD5
           h(0) <- hash(passphrase, iv);
           h(n) <- hash(h(n-1), passphrase, iv);
-          key <- (h(0),...,h(n))[0,..,key.length];
+          key <- (h(0),...,h(n))[0,..,key.Length];
         */
-        [System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         byte[] genKey(byte[] passphrase, byte[] iv)
         {
             if (cipher == null) cipher = genCipher();
@@ -350,35 +351,35 @@ namespace SharpSSH.NG
 
             byte[] key = new byte[cipher.getBlockSize()];
             int hsize = hash.getBlockSize();
-            byte[] hn = new byte[key.length / hsize * hsize +
-                       (key.length % hsize == 0 ? 0 : hsize)];
+            byte[] hn = new byte[key.Length / hsize * hsize +
+                       (key.Length % hsize == 0 ? 0 : hsize)];
             try
             {
                 byte[] tmp = null;
                 if (vendor == VENDOR_OPENSSH)
                 {
-                    for (int index = 0; index + hsize <= hn.length; )
+                    for (int index = 0; index + hsize <= hn.Length; )
                     {
-                        if (tmp != null) { hash.update(tmp, 0, tmp.length); }
-                        hash.update(passphrase, 0, passphrase.length);
-                        hash.update(iv, 0, iv.length);
+                        if (tmp != null) { hash.update(tmp, 0, tmp.Length); }
+                        hash.update(passphrase, 0, passphrase.Length);
+                        hash.update(iv, 0, iv.Length);
                         tmp = hash.digest();
-                        Array.Copy(tmp, 0, hn, index, tmp.length);
-                        index += tmp.length;
+                        Array.Copy(tmp, 0, hn, index, tmp.Length);
+                        index += tmp.Length;
                     }
-                    Array.Copy(hn, 0, key, 0, key.length);
+                    Array.Copy(hn, 0, key, 0, key.Length);
                 }
                 else if (vendor == VENDOR_FSECURE)
                 {
-                    for (int index = 0; index + hsize <= hn.length; )
+                    for (int index = 0; index + hsize <= hn.Length; )
                     {
-                        if (tmp != null) { hash.update(tmp, 0, tmp.length); }
-                        hash.update(passphrase, 0, passphrase.length);
+                        if (tmp != null) { hash.update(tmp, 0, tmp.Length); }
+                        hash.update(passphrase, 0, passphrase.Length);
                         tmp = hash.digest();
-                        Array.Copy(tmp, 0, hn, index, tmp.length);
-                        index += tmp.length;
+                        Array.Copy(tmp, 0, hn, index, tmp.Length);
+                        index += tmp.Length;
                     }
-                    Array.Copy(hn, 0, key, 0, key.length);
+                    Array.Copy(hn, 0, key, 0, key.Length);
                 }
             }
             catch (Exception e)
@@ -390,7 +391,7 @@ namespace SharpSSH.NG
 
         public void setPassphrase(string passphrase)
         {
-            if (passphrase == null || passphrase.length() == 0)
+            if (passphrase == null || passphrase.Length == 0)
             {
                 setPassphrase((byte[])null);
             }
@@ -401,7 +402,7 @@ namespace SharpSSH.NG
         }
         public void setPassphrase(byte[] passphrase)
         {
-            if (passphrase != null && passphrase.length == 0)
+            if (passphrase != null && passphrase.Length == 0)
                 passphrase = null;
             this.passphrase = passphrase;
         }
@@ -414,7 +415,7 @@ namespace SharpSSH.NG
         public bool isEncrypted() { return encrypted; }
         public bool decrypt(string _passphrase)
         {
-            if (_passphrase == null || _passphrase.length() == 0)
+            if (_passphrase == null || _passphrase.Length == 0)
             {
                 return !encrypted;
             }
@@ -430,8 +431,8 @@ namespace SharpSSH.NG
             {
                 return !encrypted;
             }
-            byte[] bar = new byte[_passphrase.length];
-            Array.Copy(_passphrase, 0, bar, 0, bar.length);
+            byte[] bar = new byte[_passphrase.Length];
+            Array.Copy(_passphrase, 0, bar, 0, bar.Length);
             _passphrase = bar;
             byte[] foo = decrypt(data, _passphrase, iv);
             Util.bzero(_passphrase);
@@ -465,13 +466,14 @@ namespace SharpSSH.NG
 
             try
             {
-                File file = new File(prvkey);
-                FileInputStream fis = new FileInputStream(prvkey);
-                byte[] buf = new byte[(int)(file.length())];
+                //File file = new File(prvkey);
+
+                FileStream fis = new FileStream(prvkey,FileMode.Open);
+                byte[] buf = new byte[fis.Length];
                 int len = 0;
                 while (true)
                 {
-                    int i = fis.read(buf, len, buf.length - len);
+                    int i = fis.read(buf, len, buf.Length - len);
                     if (i <= 0)
                         break;
                     len += i;
@@ -503,28 +505,28 @@ namespace SharpSSH.NG
                     if (buf[i] == 'C' && buf[i + 1] == 'B' && buf[i + 2] == 'C' && buf[i + 3] == ',')
                     {
                         i += 4;
-                        for (int ii = 0; ii < iv.length; ii++)
+                        for (int ii = 0; ii < iv.Length; ii++)
                         {
                             iv[ii] = (byte)(((a2b(buf[i++]) << 4) & 0xf0) + (a2b(buf[i++]) & 0xf));
                         }
                         continue;
                     }
                     if (buf[i] == 0x0d &&
-                       i + 1 < buf.length && buf[i + 1] == 0x0a)
+                       i + 1 < buf.Length && buf[i + 1] == 0x0a)
                     {
                         i++;
                         continue;
                     }
-                    if (buf[i] == 0x0a && i + 1 < buf.length)
+                    if (buf[i] == 0x0a && i + 1 < buf.Length)
                     {
                         if (buf[i + 1] == 0x0a) { i += 2; break; }
                         if (buf[i + 1] == 0x0d &&
-                           i + 2 < buf.length && buf[i + 2] == 0x0a)
+                           i + 2 < buf.Length && buf[i + 2] == 0x0a)
                         {
                             i += 3; break;
                         }
                         bool inheader = false;
-                        for (int j = i + 1; j < buf.length; j++)
+                        for (int j = i + 1; j < buf.Length; j++)
                         {
                             if (buf[j] == 0x0a) break;
                             //if(buf[j]==0x0d) break;
@@ -565,7 +567,7 @@ namespace SharpSSH.NG
                 }
                 data = Util.fromBase64(buf, start, i - start);
 
-                if (data.length > 4 &&            // FSecure
+                if (data.Length > 4 &&            // FSecure
                data[0] == (byte)0x3f &&
                data[1] == (byte)0x6f &&
                data[2] == (byte)0xf9 &&
@@ -576,27 +578,27 @@ namespace SharpSSH.NG
                     _buf.getInt();  // 0x3f6ff9be
                     _buf.getInt();
                     byte[] _type = _buf.getString();
-                    //Console.Error.WriteLine("type: "+new string(_type)); 
+                    //Console.Error.WriteLine("type: "+Encoding.UTF8.GetString(_type)); 
                     byte[] _cipher = _buf.getString();
-                    string cipher = new string(_cipher);
+                    string cipher = Encoding.UTF8.GetString(_cipher);
                     //Console.Error.WriteLine("cipher: "+cipher); 
-                    if (cipher.equals("3des-cbc"))
+                    if (cipher.Equals("3des-cbc"))
                     {
                         _buf.getInt();
-                        byte[] foo = new byte[data.length - _buf.getOffSet()];
+                        byte[] foo = new byte[data.Length - _buf.getOffSet()];
                         _buf.getByte(foo);
                         data = foo;
                         encrypted = true;
                         throw new JSchException("unknown privatekey format: " + prvkey);
                     }
-                    else if (cipher.equals("none"))
+                    else if (cipher.Equals("none"))
                     {
                         _buf.getInt();
                         _buf.getInt();
 
                         encrypted = false;
 
-                        byte[] foo = new byte[data.length - _buf.getOffSet()];
+                        byte[] foo = new byte[data.Length - _buf.getOffSet()];
                         _buf.getByte(foo);
                         data = foo;
                     }
@@ -606,34 +608,33 @@ namespace SharpSSH.NG
                 {
                     try
                     {
-                        file = new File(pubkey);
-                        fis = new FileInputStream(pubkey);
-                        buf = new byte[(int)(file.length())];
+                        fis = new FileStream(pubkey);
+                        buf = new byte[fis.Length];
                         len = 0;
                         while (true)
                         {
-                            i = fis.read(buf, len, buf.length - len);
+                            i = fis.read(buf, len, buf.Length - len);
                             if (i <= 0)
                                 break;
                             len += i;
                         }
                         fis.close();
 
-                        if (buf.length > 4 &&             // FSecure's public key
+                        if (buf.Length > 4 &&             // FSecure's public key
                            buf[0] == '-' && buf[1] == '-' && buf[2] == '-' && buf[3] == '-')
                         {
 
                             bool valid = true;
                             i = 0;
-                            do { i++; } while (buf.length > i && buf[i] != 0x0a);
-                            if (buf.length <= i) { valid = false; }
+                            do { i++; } while (buf.Length > i && buf[i] != 0x0a);
+                            if (buf.Length <= i) { valid = false; }
 
                             while (valid)
                             {
                                 if (buf[i] == 0x0a)
                                 {
                                     bool inheader = false;
-                                    for (int j = i + 1; j < buf.length; j++)
+                                    for (int j = i + 1; j < buf.Length; j++)
                                     {
                                         if (buf[j] == 0x0a) break;
                                         if (buf[j] == ':') { inheader = true; break; }
@@ -646,7 +647,7 @@ namespace SharpSSH.NG
                                 }
                                 i++;
                             }
-                            if (buf.length <= i) { valid = false; }
+                            if (buf.Length <= i) { valid = false; }
 
                             start = i;
                             while (valid && i < len)
@@ -693,9 +694,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is JSchException) throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
 
             KeyPair kpair = null;

@@ -10,20 +10,20 @@ namespace SharpSSH.NG
     class Util
     {
 
-        static byte[] fromBase64(byte[] buf, int start, int length)
+        public static byte[] fromBase64(byte[] buf, int start, int length)
         {
-            return Convert.FromBase64String(Encoding.ASCII.GetChars(buf, start, length));
+            return Convert.FromBase64String(Encoding.ASCII.GetString(buf, start, length));
         }
-        static byte[] toBase64(byte[] buf, int start, int length)
+        public static byte[] toBase64(byte[] buf, int start, int length)
         {
             return Encoding.ASCII.GetBytes(Convert.ToBase64String(buf, start, length));
         }
 
-        static string[] split(string foo, string split)
+        public static string[] split(string foo, string split)
         {
             return foo.Split(new string[] { split }, StringSplitOptions.None);
         }
-        static bool glob(byte[] pattern, byte[] name)
+        public static bool glob(byte[] pattern, byte[] name)
         {
             return glob0(pattern, 0, name, 0);
         }
@@ -44,7 +44,7 @@ namespace SharpSSH.NG
         static private bool glob(byte[] pattern, int pattern_index,
                         byte[] name, int name_index)
         {
-            //Console.Error.WriteLine("glob: "+new string(pattern)+", "+pattern_index+" "+new string(name)+", "+name_index);
+            //Console.Error.WriteLine("glob: "+Encoding.UTF8.GetString(pattern)+", "+pattern_index+" "+Encoding.UTF8.GetString(name)+", "+name_index);
 
             int patternlen = pattern.Length;
             if (patternlen == 0)
@@ -178,7 +178,7 @@ namespace SharpSSH.NG
             return false;
         }
 
-        static string quote(string path)
+        public static string quote(string path)
         {
             byte[] _path = str2byte(path);
             int count = 0;
@@ -196,14 +196,14 @@ namespace SharpSSH.NG
                 byte b = _path[i];
                 if (b == '\\' || b == '?' || b == '*')
                 {
-                    _path2[j++] = '\\';
+                    _path2[j++] = (byte)'\\';
                 }
                 _path2[j++] = b;
             }
             return byte2str(_path2);
         }
 
-        static string unquote(string path)
+        public static string unquote(string path)
         {
             byte[] foo = str2byte(path);
             byte[] bar = unquote(foo);
@@ -211,7 +211,7 @@ namespace SharpSSH.NG
                 return path;
             return byte2str(bar);
         }
-        static byte[] unquote(byte[] path)
+        public static byte[] unquote(byte[] path)
         {
             int pathlen = path.Length;
             int i = 0;
@@ -238,7 +238,7 @@ namespace SharpSSH.NG
         private static string[] chars ={
     "0","1","2","3","4","5","6","7","8","9", "a","b","c","d","e","f"
   };
-        static string getFingerPrint(HASH hash, byte[] data)
+        public static string getFingerPrint(HASH hash, byte[] data)
         {
             try
             {
@@ -262,7 +262,7 @@ namespace SharpSSH.NG
                 return "???";
             }
         }
-        static bool array_equals(byte[] foo, byte[] bar)
+        public static bool array_equals(byte[] foo, byte[] bar)
         {
             int i = foo.Length;
             if (i != bar.Length) return false;
@@ -270,27 +270,24 @@ namespace SharpSSH.NG
             //try{while(true){i--; if(foo[i]!=bar[i])return false;}}catch(Exception e){}
             return true;
         }
-        static Socket createSocket(string host, int port, int timeout)
+        public static TcpClient createSocket(string host, int port, int timeout)
         {
-            Socket socket = null;
+            TcpClient socket = null;
             if (timeout == 0)
             {
                 try
                 {
-                    socket = new Socket(host, port);
+                    socket = new TcpClient(host, port);
                     return socket;
                 }
                 catch (Exception e)
                 {
-                    string message = e.toString();
-                    if (e is Throwable)
-                        throw new JSchException(message, (Throwable)e);
-                    throw new JSchException(message);
+                    throw new JSchException(e.Message,e);
                 }
             }
             string _host = host;
             int _port = port;
-            Socket[] sockp = new Socket[1];
+            TcpClient[] sockp = new TcpClient[1];
             Exception[] ee = new Exception[1];
             string message = "";
             Thread tmp = new Thread(new ThreadStart(delegate()
@@ -299,16 +296,16 @@ namespace SharpSSH.NG
                 sockp[0] = null;
                 try
                 {
-                    sockp[0] = new Socket(_host, _port);
+                    sockp[0] = new TcpClient(_host, _port);
                 }
                 catch (Exception e)
                 {
                     ee[0] = e;
-                    if (sockp[0] != null && sockp[0].isConnected())
+                    if (sockp[0] != null && sockp[0].Connected)
                     {
                         try
                         {
-                            sockp[0].close();
+                            sockp[0].Close();
                         }
                         catch (Exception eee) { }
                     }
@@ -326,7 +323,7 @@ namespace SharpSSH.NG
             catch
             {
             }
-            if (sockp[0] != null && sockp[0].isConnected())
+            if (sockp[0] != null && sockp[0].Connected)
             {
                 socket = sockp[0];
             }
@@ -335,16 +332,16 @@ namespace SharpSSH.NG
                 message += "socket is not established";
                 if (ee[0] != null)
                 {
-                    message = ee[0].toString();
+                    message = ee[0].ToString();
                 }
-                tmp.interrupt();
+                tmp.Interrupt();
                 tmp = null;
                 throw new JSchException(message);
             }
             return socket;
         }
 
-        static byte[] str2byte(string str, string encoding)
+        public static byte[] str2byte(string str, string encoding)
         {
             if (str == null)
                 return null;
@@ -355,21 +352,21 @@ namespace SharpSSH.NG
             }
         }
 
-        static byte[] str2byte(string str)
+        public static byte[] str2byte(string str)
         {
             return str2byte(str, "UTF-8");
         }
 
-        static string byte2str(byte[] str, string encoding)
+        public static string byte2str(byte[] str, string encoding)
         {
-            try { return new string(str, encoding); }
+            try { return Encoding.UTF8.GetString(str, encoding); }
             catch (java.io.UnsupportedEncodingException e)
             {
-                return new string(str);
+                return Encoding.UTF8.GetString(str);
             }
         }
 
-        static string byte2str(byte[] str)
+        public static string byte2str(byte[] str)
         {
             return byte2str(str, "UTF-8");
         }
@@ -377,12 +374,12 @@ namespace SharpSSH.NG
         /*
         static byte[] char2byte(char[] foo){
           int len=0;
-          for(int i=0; i<foo.length; i++){
+          for(int i=0; i<foo.Length; i++){
             if((foo[i]&0xff00)==0) len++;
             else len+=2;
           }
           byte[] bar=new byte[len];
-          for(int i=0, j=0; i<foo.length; i++){
+          for(int i=0, j=0; i<foo.Length; i++){
             if((foo[i]&0xff00)==0){
               bar[j++]=(byte)foo[i];
             }
@@ -394,7 +391,7 @@ namespace SharpSSH.NG
           return bar;
         }
         */
-        static void bzero(byte[] foo)
+        public static void bzero(byte[] foo)
         {
             if (foo == null)
                 return;
@@ -402,7 +399,7 @@ namespace SharpSSH.NG
                 foo[i] = 0;
         }
 
-        static string diffString(string str, string[] not_available)
+        public static string diffString(string str, string[] not_available)
         {
             string[] stra = Util.split(str, ",");
             string result = null;
@@ -410,7 +407,7 @@ namespace SharpSSH.NG
             {
                 for (int j = 0; j < not_available.Length; j++)
                 {
-                    if (stra[i].equals(not_available[j]))
+                    if (stra[i].Equals(not_available[j]))
                     {
                         goto loop;
                     }
@@ -418,7 +415,7 @@ namespace SharpSSH.NG
                 if (result == null) { result = stra[i]; }
                 else { result = result + "," + stra[i]; }
             loop:
-                null;
+                false;
             }
             return result;
         }

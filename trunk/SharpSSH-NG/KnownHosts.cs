@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace SharpSSH.NG
 {
@@ -50,7 +51,7 @@ namespace SharpSSH.NG
             bool error = false;
             try
             {
-                InputStream fis = foo;
+                Stream fis = foo;
                 string host;
                 string key = null;
                 int type;
@@ -71,11 +72,11 @@ namespace SharpSSH.NG
                         }
                         if (j == 0x0d) { continue; }
                         if (j == 0x0a) { break; }
-                        if (buf.length <= bufl)
+                        if (buf.Length <= bufl)
                         {
                             if (bufl > 1024 * 10) break;   // too long...
-                            byte[] newbuf = new byte[buf.length * 2];
-                            Array.Copy(buf, 0, newbuf, 0, buf.length);
+                            byte[] newbuf = new byte[buf.Length * 2];
+                            Array.Copy(buf, 0, newbuf, 0, buf.Length);
                             buf = newbuf;
                         }
                         buf[bufl++] = (byte)j;
@@ -88,14 +89,14 @@ namespace SharpSSH.NG
                         if (i == ' ' || i == '\t') { j++; continue; }
                         if (i == '#')
                         {
-                            addInvalidLine(new string(buf, 0, bufl));
+                            addInvalidLine(Encoding.UTF8.GetString(buf, 0, bufl));
                             goto loop;
                         }
                         break;
                     }
                     if (j >= bufl)
                     {
-                        addInvalidLine(new string(buf, 0, bufl));
+                        addInvalidLine(Encoding.UTF8.GetString(buf, 0, bufl));
                         goto loop;
                     }
 
@@ -106,10 +107,10 @@ namespace SharpSSH.NG
                         if (i == 0x20 || i == '\t') { break; }
                         sb.append((char)i);
                     }
-                    host = sb.toString();
-                    if (j >= bufl || host.length() == 0)
+                    host = sb.ToString();
+                    if (j >= bufl || host.Length == 0)
                     {
-                        addInvalidLine(new string(buf, 0, bufl));
+                        addInvalidLine(Encoding.UTF8.GetString(buf, 0, bufl));
                         goto loop;
                     }
 
@@ -121,12 +122,12 @@ namespace SharpSSH.NG
                         if (i == 0x20 || i == '\t') { break; }
                         sb.append((char)i);
                     }
-                    if (sb.toString().equals("ssh-dss")) { type = HostKey.SSHDSS; }
-                    else if (sb.toString().equals("ssh-rsa")) { type = HostKey.SSHRSA; }
+                    if (sb.ToString().Equals("ssh-dss")) { type = HostKey.SSHDSS; }
+                    else if (sb.ToString().Equals("ssh-rsa")) { type = HostKey.SSHRSA; }
                     else { j = bufl; }
                     if (j >= bufl)
                     {
-                        addInvalidLine(new string(buf, 0, bufl));
+                        addInvalidLine(Encoding.UTF8.GetString(buf, 0, bufl));
                         goto loop;
                     }
 
@@ -138,10 +139,10 @@ namespace SharpSSH.NG
                         if (i == 0x0a) { break; }
                         sb.append((char)i);
                     }
-                    key = sb.toString();
-                    if (key.length() == 0)
+                    key = sb.ToString();
+                    if (key.Length == 0)
                     {
-                        addInvalidLine(new string(buf, 0, bufl));
+                        addInvalidLine(Encoding.UTF8.GetString(buf, 0, bufl));
                         goto loop;
                     }
 
@@ -151,8 +152,8 @@ namespace SharpSSH.NG
                     HostKey hk = null;
                     hk = new HashedHostKey(host, type,
                                            Util.fromBase64(key.getBytes(), 0,
-                                                           key.length()));
-                    pool.addElement(hk);
+                                                           key.Length));
+                    pool.Add(hk);
                 }
             outloop:
                 fis.close();
@@ -165,15 +166,13 @@ namespace SharpSSH.NG
             {
                 if (e is JSchException)
                     throw (JSchException)e;
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
         private void addInvalidLine(string line)
         {
             HostKey hk = new HostKey(line, HostKey.UNKNOWN, null);
-            pool.addElement(hk);
+            pool.Add(hk);
         }
         string getKnownHostsFile() { return known_hosts; }
         public override string getKnownHostsRepositoryID() { return known_hosts; }
@@ -191,9 +190,9 @@ namespace SharpSSH.NG
 
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    hk = (HostKey)(pool.elementAt(i));
+                    hk = pool[i];
                     if (hk.isMatched(host) && hk.type == type)
                     {
                         if (Util.array_equals(hk.key, key))
@@ -220,14 +219,14 @@ namespace SharpSSH.NG
             HostKey hk = null;
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    hk = (HostKey)(pool.elementAt(i));
+                    hk = pool[i];
                     if (hk.isMatched(host) && hk.type == type)
                     {
                         /*
                               if(Util.array_equals(hk.key, key)){ return; }
-                              if(hk.host.equals(host)){
+                              if(hk.host.Equals(host)){
                                 hk.key=key;
                                 return;
                               }
@@ -242,7 +241,7 @@ namespace SharpSSH.NG
 
             hk = hostkey;
 
-            pool.addElement(hk);
+            pool.Add(hk);
 
             string bar = getKnownHostsRepositoryID();
             if (bar != null)
@@ -299,13 +298,13 @@ namespace SharpSSH.NG
             lock (pool)
             {
                 int count = 0;
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    HostKey hk = (HostKey)pool.elementAt(i);
+                    HostKey hk = pool[i];
                     if (hk.type == HostKey.UNKNOWN) continue;
                     if (host == null ||
                        (hk.isMatched(host) &&
-                        (type == null || hk.getType().equals(type))))
+                        (type == null || hk.getType().Equals(type))))
                     {
                         count++;
                     }
@@ -313,13 +312,13 @@ namespace SharpSSH.NG
                 if (count == 0) return null;
                 HostKey[] foo = new HostKey[count];
                 int j = 0;
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    HostKey hk = (HostKey)pool.elementAt(i);
+                    HostKey hk = pool[i];
                     if (hk.type == HostKey.UNKNOWN) continue;
                     if (host == null ||
                        (hk.isMatched(host) &&
-                        (type == null || hk.getType().equals(type))))
+                        (type == null || hk.getType().Equals(type))))
                     {
                         foo[j++] = hk;
                     }
@@ -336,20 +335,20 @@ namespace SharpSSH.NG
             bool sync = false;
             lock (pool)
             {
-                for (int i = 0; i < pool.size(); i++)
+                for (int i = 0; i < pool.Count; i++)
                 {
-                    HostKey hk = (HostKey)(pool.elementAt(i));
+                    HostKey hk = pool[i];
                     if (host == null ||
                    (hk.isMatched(host) &&
-                    (type == null || (hk.getType().equals(type) &&
+                    (type == null || (hk.getType().Equals(type) &&
                             (key == null || Util.array_equals(key, hk.key))))))
                     {
                         string hosts = hk.getHost();
-                        if (hosts.equals(host) ||
+                        if (hosts.Equals(host) ||
                            ((hk is HashedHostKey) &&
                             ((HashedHostKey)hk).isHashed()))
                         {
-                            pool.removeElement(hk);
+                            pool.Remove(hk);
                         }
                         else
                         {
@@ -371,7 +370,7 @@ namespace SharpSSH.NG
             if (known_hosts != null)
                 sync(known_hosts);
         }
-        [System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         protected void sync(string foo)
         {
             if (foo == null) return;
@@ -389,13 +388,13 @@ namespace SharpSSH.NG
                 HostKey hk;
                 lock (pool)
                 {
-                    for (int i = 0; i < pool.size(); i++)
+                    for (int i = 0; i < pool.Count; i++)
                     {
-                        hk = (HostKey)(pool.elementAt(i));
+                        hk = pool[i];
                         //hk.dump(Out);
                         string host = hk.getHost();
                         string type = hk.getType();
-                        if (type.equals("UNKNOWN"))
+                        if (type.Equals("UNKNOWN"))
                         {
                             Out.write(host.getBytes());
                             Out.write(cr);
@@ -424,34 +423,34 @@ namespace SharpSSH.NG
         private string deleteSubString(string hosts, string host)
         {
             int i = 0;
-            int hostlen = host.length();
-            int hostslen = hosts.length();
+            int hostlen = host.Length;
+            int hostslen = hosts.Length;
             int j;
             while (i < hostslen)
             {
-                j = hosts.indexOf(',', i);
+                j = hosts.IndexOf(',', i);
                 if (j == -1) break;
-                if (!host.equals(hosts.substring(i, j)))
+                if (!host.Equals(hosts.Substring(i, j - i)))
                 {
                     i = j + 1;
                     continue;
                 }
-                return hosts.substring(0, i) + hosts.substring(j + 1);
+                return hosts.Substring(0, i) + hosts.Substring(j + 1);
             }
-            if (hosts.endsWith(host) && hostslen - i == hostlen)
+            if (hosts.EndsWith(host) && hostslen - i == hostlen)
             {
-                return hosts.substring(0, (hostlen == hostslen) ? 0 : hostslen - hostlen - 1);
+                return hosts.Substring(0, (hostlen == hostslen) ? 0 : hostslen - hostlen - 1);
             }
             return hosts;
         }
-        [System.Runtime.CompilerServices.MethodImpl(MethodImplOptions.Synchronized)]
+        [MethodImpl(MethodImplOptions.Synchronized)]
         private MAC getHMACSHA1()
         {
             if (hmacsha1 == null)
             {
                 try
                 {
-                    Class c = Class.forName(jsch.getConfig("hmac-sha1"));
+                    Type c = Type.GetType(jsch.getConfig("hmac-sha1"));
                     hmacsha1 = (MAC)(c.newInstance());
                 }
                 catch (Exception e)
@@ -462,7 +461,7 @@ namespace SharpSSH.NG
             return hmacsha1;
         }
 
-        HostKey createHashedHostKey(string host, byte[] key)
+        internal HostKey createHashedHostKey(string host, byte[] key)
         {
             HashedHostKey hhk = new HashedHostKey(host, key);
             hhk.hash();
@@ -479,22 +478,23 @@ namespace SharpSSH.NG
 
 
             HashedHostKey(string host, byte[] key)
+                :
+                    this(host, GUESS, key)
             {
-                this(host, GUESS, key);
             }
             HashedHostKey(string host, int type, byte[] key) :
                 base(host, type, key)
             {
                 if (this.host.startsWith(HASH_MAGIC) &&
-                   this.host.substring(HASH_MAGIC.length()).indexOf(HASH_DELIM) > 0)
+                   this.host.Substring(HASH_MAGIC.Length).IndexOf(HASH_DELIM) > 0)
                 {
-                    string data = this.host.substring(HASH_MAGIC.length());
-                    string _salt = data.substring(0, data.indexOf(HASH_DELIM));
-                    string _hash = data.substring(data.indexOf(HASH_DELIM) + 1);
-                    salt = Util.fromBase64(_salt.getBytes(), 0, _salt.length());
-                    hash = Util.fromBase64(_hash.getBytes(), 0, _hash.length());
-                    if (salt.length != 20 ||  // block size of hmac-sha1
-                       hash.length != 20)
+                    string data = this.host.Substring(HASH_MAGIC.Length);
+                    string _salt = data.Substring(0, data.IndexOf(HASH_DELIM));
+                    string _hash = data.Substring(data.IndexOf(HASH_DELIM) + 1);
+                    salt = Util.fromBase64(_salt.getBytes(), 0, _salt.Length);
+                    hash = Util.fromBase64(_hash.getBytes(), 0, _hash.Length);
+                    if (salt.Length != 20 ||  // block size of hmac-sha1
+                       hash.Length != 20)
                     {
                         salt = null;
                         hash = null;
@@ -517,7 +517,7 @@ namespace SharpSSH.NG
                     {
                         macsha1.init(salt);
                         byte[] foo = _host.getBytes();
-                        macsha1.update(foo, 0, foo.length);
+                        macsha1.update(foo, 0, foo.Length);
                         byte[] bar = new byte[macsha1.getBlockSize()];
                         macsha1.doFinal(bar, 0);
                         return Util.array_equals(hash, bar);
@@ -525,7 +525,7 @@ namespace SharpSSH.NG
                 }
                 catch (Exception e)
                 {
-                    System.Out.println(e);
+                    System.Out.WriteLine(e);
                 }
                 return false;
             }
@@ -546,7 +546,7 @@ namespace SharpSSH.NG
                     lock (random)
                     {
                         salt = new byte[macsha1.getBlockSize()];
-                        random.fill(salt, 0, salt.length);
+                        random.fill(salt, 0, saltLength);
                     }
                 }
                 try
@@ -555,7 +555,7 @@ namespace SharpSSH.NG
                     {
                         macsha1.init(salt);
                         byte[] foo = host.getBytes();
-                        macsha1.update(foo, 0, foo.length);
+                        macsha1.update(foo, 0, fooLength);
                         hash = new byte[macsha1.getBlockSize()];
                         macsha1.doFinal(hash, 0);
                     }
@@ -563,8 +563,8 @@ namespace SharpSSH.NG
                 catch (Exception e)
                 {
                 }
-                host = HASH_MAGIC + new string(Util.toBase64(salt, 0, salt.length)) +
-                  HASH_DELIM + new string(Util.toBase64(hash, 0, hash.length));
+                host = HASH_MAGIC + Encoding.UTF8.GetString(Util.toBase64(salt, 0, saltLength)) +
+                  HASH_DELIM + Encoding.UTF8.GetString(Util.toBase64(hash, 0, hashLength));
                 hashed = true;
             }
         }

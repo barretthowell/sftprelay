@@ -8,9 +8,9 @@ namespace SharpSSH.NG
     class Packet
     {
         private static Random random = null;
-        static void setRandom(Random foo) { random = foo; }
+        internal static void setRandom(Random foo) { random = foo; }
 
-        Buffer buffer;
+        internal Buffer buffer;
         byte[] ba4 = new byte[4];
         public Packet(Buffer buffer)
         {
@@ -20,7 +20,7 @@ namespace SharpSSH.NG
         {
             buffer.index = 5;
         }
-        void padding(int bsize)
+        internal void padding(int bsize)
         {
             int len = buffer.index;
             int pad = (-len) & (bsize - 1);
@@ -50,7 +50,7 @@ namespace SharpSSH.NG
             */
         }
 
-        int shift(int len, int mac)
+        internal int shift(int len, int mac)
         {
             int s = len + 5 + 9;
             int pad = (-s) & 15;
@@ -59,19 +59,19 @@ namespace SharpSSH.NG
             s += mac;
 
             /**/
-            if (buffer.buffer.length < s + buffer.index - 5 - 9 - len)
+            if (buffer.buffer.Length < s + buffer.index - 5 - 9 - len)
             {
                 byte[] foo = new byte[s + buffer.index - 5 - 9 - len];
-                Array.Copy(buffer.buffer, 0, foo, 0, buffer.buffer.length);
+                Array.Copy(buffer.buffer, 0, foo, 0, buffer.buffer.Length);
                 buffer.buffer = foo;
             }
             /**/
 
-            //if(buffer.buffer.length<len+5+9)
-            //  Console.Error.WriteLine("buffer.buffer.length="+buffer.buffer.length+" len+5+9="+(len+5+9));
+            //if(buffer.buffer.Length<len+5+9)
+            //  Console.Error.WriteLine("buffer.buffer.Length="+buffer.buffer.Length+" len+5+9="+(len+5+9));
 
-            //if(buffer.buffer.length<s)
-            //  Console.Error.WriteLine("buffer.buffer.length="+buffer.buffer.length+" s="+(s));
+            //if(buffer.buffer.Length<s)
+            //  Console.Error.WriteLine("buffer.buffer.Length="+buffer.buffer.Length+" s="+(s));
 
             Array.Copy(buffer.buffer,
                      len + 5 + 9,
@@ -82,7 +82,7 @@ namespace SharpSSH.NG
             buffer.index = len + 5 + 9;
             return s;
         }
-        void unshift(byte command, int recipient, int s, int len)
+        internal void unshift(byte command, int recipient, int s, int len)
         {
             Array.Copy(buffer.buffer,
                      s,

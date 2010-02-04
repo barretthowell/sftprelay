@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
@@ -37,23 +38,21 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 if (e is JSchException) { throw (JSchException)e; }
-                if (e is Throwable)
-                    throw new JSchException("ChannelSubsystem", (Throwable)e);
-                throw new JSchException("ChannelSubsystem");
+                throw new JSchException("ChannelSubsystem",e);
             }
             if (io.In != null)
             {
                 thread = new Thread(this.run);
-                thread.setName("Subsystem for " + _session.host);
+                thread.Name="Subsystem for " + _session.host;
                 if (_session.daemon_thread)
                 {
-                    thread.setDaemon(_session.daemon_thread);
+                    thread.IsBackground=_session.daemon_thread;
                 }
-                thread.start();
+                thread.Start();
             }
         }
 
-        protected override void init()
+        internal override void init()
         {
             io.setInputStream(getSession().In);
             io.setOutputStream(getSession().Out);

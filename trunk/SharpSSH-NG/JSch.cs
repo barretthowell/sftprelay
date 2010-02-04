@@ -128,11 +128,11 @@ namespace SharpSSH.NG
             s.setUserName(username);
             s.setHost(host);
             s.setPort(port);
-            //pool.addElement(s);
+            //pool.Add(s);
             return s;
         }
 
-        protected void addSession(Session session)
+        internal void addSession(Session session)
         {
             lock (pool)
             {
@@ -140,7 +140,7 @@ namespace SharpSSH.NG
             }
         }
 
-        protected bool removeSession(Session session)
+        internal bool removeSession(Session session)
         {
             lock (pool)
             {
@@ -236,7 +236,7 @@ namespace SharpSSH.NG
             {
                 if (!identities.contains(identity))
                 {
-                    identities.addElement(identity);
+                    identities.Add(identity);
                 }
             }
         }
@@ -245,12 +245,12 @@ namespace SharpSSH.NG
         {
             lock (identities)
             {
-                for (int i = 0; i < identities.size(); i++)
+                for (int i = 0; i < identities.Count; i++)
                 {
-                    Identity identity = (Identity)(identities.elementAt(i));
-                    if (!identity.getName().equals(name))
+                    Identity identity = identities[i];
+                    if (!identity.getName().Equals(name))
                         continue;
-                    identities.removeElement(identity);
+                    identities.Remove(identity);
                     identity.clear();
                     break;
                 }
@@ -262,7 +262,7 @@ namespace SharpSSH.NG
             List<string> foo = new List<string>();
             lock (identities)
             {
-                for (int i = 0; i < identities.size(); i++)
+                for (int i = 0; i < identities.Count; i++)
                 {
                     Identity identity = (Identity)(identities[i]);
                     foo.Add(identity.getName());
@@ -313,7 +313,7 @@ namespace SharpSSH.NG
             if (logger == null) JSch.logger = DEVNULL;
             JSch.logger = logger;
         }
-        static Logger getLogger()
+        internal static Logger getLogger()
         {
             return logger;
         }

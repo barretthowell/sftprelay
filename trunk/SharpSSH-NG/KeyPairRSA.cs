@@ -30,7 +30,7 @@ namespace SharpSSH.NG
             this.key_size = key_size;
             try
             {
-                Class c = Class.forName(jsch.getConfig("keypairgen.rsa"));
+                Type c = Type.GetType(jsch.getConfig("keypairgen.rsa"));
                 KeyPairGenRSA keypairgen = (KeyPairGenRSA)(c.newInstance());
                 keypairgen.init(key_size);
                 pub_array = keypairgen.getE();
@@ -48,9 +48,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 //Console.Error.WriteLine("KeyPairRSA: "+e); 
-                if (e is Throwable)
-                    throw new JSchException(e.toString(), (Throwable)e);
-                throw new JSchException(e.toString());
+                throw new JSchException(e.Message,e);
             }
         }
 
@@ -64,14 +62,14 @@ namespace SharpSSH.NG
         {
             int content =
               1 + countLength(1) + 1 +                           // INTEGER
-              1 + countLength(n_array.length) + n_array.length + // INTEGER  N
-              1 + countLength(pub_array.length) + pub_array.length + // INTEGER  pub
-              1 + countLength(prv_array.length) + prv_array.length +  // INTEGER  prv
-              1 + countLength(p_array.length) + p_array.length +      // INTEGER  p
-              1 + countLength(q_array.length) + q_array.length +      // INTEGER  q
-              1 + countLength(ep_array.length) + ep_array.length +    // INTEGER  ep
-              1 + countLength(eq_array.length) + eq_array.length +    // INTEGER  eq
-              1 + countLength(c_array.length) + c_array.length;      // INTEGER  c
+              1 + countLength(n_array.Length) + n_array.Length + // INTEGER  N
+              1 + countLength(pub_array.Length) + pub_array.Length + // INTEGER  pub
+              1 + countLength(prv_array.Length) + prv_array.Length +  // INTEGER  prv
+              1 + countLength(p_array.Length) + p_array.Length +      // INTEGER  p
+              1 + countLength(q_array.Length) + q_array.Length +      // INTEGER  q
+              1 + countLength(ep_array.Length) + ep_array.Length +    // INTEGER  ep
+              1 + countLength(eq_array.Length) + eq_array.Length +    // INTEGER  eq
+              1 + countLength(c_array.Length) + c_array.Length;      // INTEGER  c
 
             int total =
               1 + countLength(content) + content;   // SEQUENCE
@@ -155,7 +153,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: N len="+length);
-                for(int i=0; i<n_array.length; i++){
+                for(int i=0; i<n_array.Length; i++){
                 System.err.print(Integer.toHexString(n_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -172,7 +170,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: E len="+length);
-                for(int i=0; i<pub_array.length; i++){
+                for(int i=0; i<pub_array.Length; i++){
                 System.err.print(Integer.toHexString(pub_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -189,7 +187,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: prv len="+length);
-                for(int i=0; i<prv_array.length; i++){
+                for(int i=0; i<prv_array.Length; i++){
                 System.err.print(Integer.toHexString(prv_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -207,7 +205,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: P len="+length);
-                for(int i=0; i<p_array.length; i++){
+                for(int i=0; i<p_array.Length; i++){
                 System.err.print(Integer.toHexString(p_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -224,7 +222,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: q len="+length);
-                for(int i=0; i<q_array.length; i++){
+                for(int i=0; i<q_array.Length; i++){
                 System.err.print(Integer.toHexString(q_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -241,7 +239,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: ep len="+length);
-                for(int i=0; i<ep_array.length; i++){
+                for(int i=0; i<ep_array.Length; i++){
                 System.err.print(Integer.toHexString(ep_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -258,7 +256,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: eq len="+length);
-                for(int i=0; i<eq_array.length; i++){
+                for(int i=0; i<eq_array.Length; i++){
                 System.err.print(Integer.toHexString(eq_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -275,7 +273,7 @@ namespace SharpSSH.NG
                 index += length;
                 /*
                 Console.Error.WriteLine("int: c len="+length);
-                for(int i=0; i<c_array.length; i++){
+                for(int i=0; i<c_array.Length; i++){
                 System.err.print(Integer.toHexString(c_array[i]&0xff)+":");
                 }
                 Console.Error.WriteLine("");
@@ -297,9 +295,9 @@ namespace SharpSSH.NG
 
             if (pub_array == null) return null;
 
-            Buffer buf = new Buffer(sshrsa.length + 4 +
-                      pub_array.length + 4 +
-                      n_array.length + 4);
+            Buffer buf = new Buffer(sshrsa.Length + 4 +
+                      pub_array.Length + 4 +
+                      n_array.Length + 4);
             buf.putString(sshrsa);
             buf.putString(pub_array);
             buf.putString(n_array);

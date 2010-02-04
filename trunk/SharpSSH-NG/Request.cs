@@ -30,16 +30,16 @@ namespace SharpSSH.NG
             session.write(packet);
             if (reply)
             {
-                long start = System.currentTimeMillis();
+                long start = JavaCompat.CurrentTimeMillis();
                 long timeout = channel.connectTimeout;
-                while (channel.isConnected() && channel.reply == -1)
+                while (channel.Connected && channel.reply == -1)
                 {
-                    try { Thread.sleep(10); }
+                    try { Thread.Sleep(10); }
                     catch (Exception ee)
                     {
                     }
                     if (timeout > 0L &&
-                       (System.currentTimeMillis() - start) > timeout)
+                       (JavaCompat.CurrentTimeMillis() - start) > timeout)
                     {
                         channel.reply = 0;
                         throw new JSchException("channel request: timeout");
