@@ -8,7 +8,7 @@ namespace SharpSSH.NG
     class RequestExec : Request
     {
         private byte[] command = new byte[0];
-        RequestExec(byte[] command)
+        internal RequestExec(byte[] command)
         {
             this.command = command;
         }

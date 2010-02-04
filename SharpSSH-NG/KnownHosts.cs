@@ -23,14 +23,14 @@ namespace SharpSSH.NG
 
         private MAC hmacsha1 = null;
 
-        KnownHosts(JSch jsch) :
+        internal KnownHosts(JSch jsch) :
             base()
         {
             this.jsch = jsch;
             pool = new List<HostKey>();
         }
 
-        void setKnownHosts(string foo)
+        internal void setKnownHosts(string foo)
         {
             try
             {
@@ -42,10 +42,10 @@ namespace SharpSSH.NG
             {
             }
         }
-        void setKnownHosts(Stream foo)
+        internal void setKnownHosts(Stream foo)
         {
-            pool.removeAllElements();
-            StringBuffer sb = new StringBuffer();
+            pool.RemoveAll();
+            StringBuilder sb = new StringBuilder();
             byte i;
             int j;
             bool error = false;
@@ -64,7 +64,7 @@ namespace SharpSSH.NG
                     bufl = 0;
                     while (true)
                     {
-                        j = fis.read();
+                        j = fis.Read();
                         if (j == -1)
                         {
                             if (bufl == 0) { goto outloop; }
@@ -156,7 +156,7 @@ namespace SharpSSH.NG
                     pool.Add(hk);
                 }
             outloop:
-                fis.close();
+                fis.Close();
                 if (error)
                 {
                     throw new JSchException("KnownHosts: invalid format");
@@ -374,9 +374,9 @@ namespace SharpSSH.NG
         protected void sync(string foo)
         {
             if (foo == null) return;
-            FileOutputStream fos = new FileOutputStream(foo);
+            FileStream fos = new FileStream(foo);
             dump(fos);
-            fos.close();
+            fos.Close();
         }
 
         private static readonly byte[] space = { (byte)0x20 };

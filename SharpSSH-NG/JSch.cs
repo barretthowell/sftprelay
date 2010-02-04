@@ -11,81 +11,81 @@ namespace SharpSSH.NG
         static Dictionary<string, string> config = new Dictionary<string, string>();
         static JSch()
         {
-            //  config.put("kex", "diffie-hellman-group-exchange-sha1");
+            //  config.Add("kex", "diffie-hellman-group-exchange-sha1");
             config["kex"] = "diffie-hellman-group1-sha1,diffie-hellman-group-exchange-sha1";
-            config.put("server_host_key", "ssh-rsa,ssh-dss");
-            //    config.put("server_host_key", "ssh-dss,ssh-rsa");
+            config.Add("server_host_key", "ssh-rsa,ssh-dss");
+            //    config.Add("server_host_key", "ssh-dss,ssh-rsa");
 
-            config.put("cipher.s2c",
+            config.Add("cipher.s2c",
                        "aes128-ctr,aes128-cbc,3des-ctr,3des-cbc,blowfish-cbc,aes192-cbc,aes256-cbc");
-            config.put("cipher.c2s",
+            config.Add("cipher.c2s",
                        "aes128-ctr,aes128-cbc,3des-ctr,3des-cbc,blowfish-cbc,aes192-cbc,aes256-cbc");
 
-            config.put("mac.s2c", "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
-            config.put("mac.c2s", "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
-            config.put("compression.s2c", "none");
-            // config.put("compression.s2c", "zlib@openssh.com,zlib,none");
-            config.put("compression.c2s", "none");
-            // config.put("compression.c2s", "zlib@openssh.com,zlib,none");
+            config.Add("mac.s2c", "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
+            config.Add("mac.c2s", "hmac-md5,hmac-sha1,hmac-sha1-96,hmac-md5-96");
+            config.Add("compression.s2c", "none");
+            // config.Add("compression.s2c", "zlib@openssh.com,zlib,none");
+            config.Add("compression.c2s", "none");
+            // config.Add("compression.c2s", "zlib@openssh.com,zlib,none");
 
-            config.put("lang.s2c", "");
-            config.put("lang.c2s", "");
+            config.Add("lang.s2c", "");
+            config.Add("lang.c2s", "");
 
-            config.put("compression_level", "6");
+            config.Add("compression_level", "6");
 
-            config.put("diffie-hellman-group-exchange-sha1",
+            config.Add("diffie-hellman-group-exchange-sha1",
                                         "SharpSSH.NG.DHGEX");
-            config.put("diffie-hellman-group1-sha1",
+            config.Add("diffie-hellman-group1-sha1",
                                     "SharpSSH.NG.DHG1");
 
-            config.put("dh", "SharpSSH.NG.jce.DH");
-            config.put("3des-cbc", "SharpSSH.NG.jce.TripleDESCBC");
-            config.put("blowfish-cbc", "SharpSSH.NG.jce.BlowfishCBC");
-            config.put("hmac-sha1", "SharpSSH.NG.jce.HMACSHA1");
-            config.put("hmac-sha1-96", "SharpSSH.NG.jce.HMACSHA196");
-            config.put("hmac-md5", "SharpSSH.NG.jce.HMACMD5");
-            config.put("hmac-md5-96", "SharpSSH.NG.jce.HMACMD596");
-            config.put("sha-1", "SharpSSH.NG.jce.SHA1");
-            config.put("md5", "SharpSSH.NG.jce.MD5");
-            config.put("signature.dss", "SharpSSH.NG.jce.SignatureDSA");
-            config.put("signature.rsa", "SharpSSH.NG.jce.SignatureRSA");
-            config.put("keypairgen.dsa", "SharpSSH.NG.jce.KeyPairGenDSA");
-            config.put("keypairgen.rsa", "SharpSSH.NG.jce.KeyPairGenRSA");
-            config.put("random", "SharpSSH.NG.jce.Random");
+            config.Add("dh", "SharpSSH.NG.jce.DH");
+            config.Add("3des-cbc", "SharpSSH.NG.jce.TripleDESCBC");
+            config.Add("blowfish-cbc", "SharpSSH.NG.jce.BlowfishCBC");
+            config.Add("hmac-sha1", "SharpSSH.NG.jce.HMACSHA1");
+            config.Add("hmac-sha1-96", "SharpSSH.NG.jce.HMACSHA196");
+            config.Add("hmac-md5", "SharpSSH.NG.jce.HMACMD5");
+            config.Add("hmac-md5-96", "SharpSSH.NG.jce.HMACMD596");
+            config.Add("sha-1", "SharpSSH.NG.jce.SHA1");
+            config.Add("md5", "SharpSSH.NG.jce.MD5");
+            config.Add("signature.dss", "SharpSSH.NG.jce.SignatureDSA");
+            config.Add("signature.rsa", "SharpSSH.NG.jce.SignatureRSA");
+            config.Add("keypairgen.dsa", "SharpSSH.NG.jce.KeyPairGenDSA");
+            config.Add("keypairgen.rsa", "SharpSSH.NG.jce.KeyPairGenRSA");
+            config.Add("random", "SharpSSH.NG.jce.Random");
 
-            config.put("none", "SharpSSH.NG.CipherNone");
+            config.Add("none", "SharpSSH.NG.CipherNone");
 
-            config.put("aes128-cbc", "SharpSSH.NG.jce.AES128CBC");
-            config.put("aes192-cbc", "SharpSSH.NG.jce.AES192CBC");
-            config.put("aes256-cbc", "SharpSSH.NG.jce.AES256CBC");
+            config.Add("aes128-cbc", "SharpSSH.NG.jce.AES128CBC");
+            config.Add("aes192-cbc", "SharpSSH.NG.jce.AES192CBC");
+            config.Add("aes256-cbc", "SharpSSH.NG.jce.AES256CBC");
 
-            config.put("aes128-ctr", "SharpSSH.NG.jce.AES128CTR");
-            config.put("aes192-ctr", "SharpSSH.NG.jce.AES192CTR");
-            config.put("aes256-ctr", "SharpSSH.NG.jce.AES256CTR");
-            config.put("3des-ctr", "SharpSSH.NG.jce.TripleDESCTR");
-            config.put("arcfour", "SharpSSH.NG.jce.ARCFOUR");
-            config.put("arcfour128", "SharpSSH.NG.jce.ARCFOUR128");
-            config.put("arcfour256", "SharpSSH.NG.jce.ARCFOUR256");
+            config.Add("aes128-ctr", "SharpSSH.NG.jce.AES128CTR");
+            config.Add("aes192-ctr", "SharpSSH.NG.jce.AES192CTR");
+            config.Add("aes256-ctr", "SharpSSH.NG.jce.AES256CTR");
+            config.Add("3des-ctr", "SharpSSH.NG.jce.TripleDESCTR");
+            config.Add("arcfour", "SharpSSH.NG.jce.ARCFOUR");
+            config.Add("arcfour128", "SharpSSH.NG.jce.ARCFOUR128");
+            config.Add("arcfour256", "SharpSSH.NG.jce.ARCFOUR256");
 
-            config.put("userauth.none", "SharpSSH.NG.UserAuthNone");
-            config.put("userauth.password", "SharpSSH.NG.UserAuthPassword");
-            config.put("userauth.keyboard-interactive", "SharpSSH.NG.UserAuthKeyboardInteractive");
-            config.put("userauth.publickey", "SharpSSH.NG.UserAuthPublicKey");
-            config.put("userauth.gssapi-with-mic", "SharpSSH.NG.UserAuthGSSAPIWithMIC");
-            config.put("gssapi-with-mic.krb5", "SharpSSH.NG.jgss.GSSContextKrb5");
+            config.Add("userauth.none", "SharpSSH.NG.UserAuthNone");
+            config.Add("userauth.password", "SharpSSH.NG.UserAuthPassword");
+            config.Add("userauth.keyboard-interactive", "SharpSSH.NG.UserAuthKeyboardInteractive");
+            config.Add("userauth.publickey", "SharpSSH.NG.UserAuthPublicKey");
+            config.Add("userauth.gssapi-with-mic", "SharpSSH.NG.UserAuthGSSAPIWithMIC");
+            config.Add("gssapi-with-mic.krb5", "SharpSSH.NG.jgss.GSSContextKrb5");
 
-            config.put("zlib", "SharpSSH.NG.jcraft.Compression");
-            config.put("zlib@openssh.com", "SharpSSH.NG.jcraft.Compression");
+            config.Add("zlib", "SharpSSH.NG.jcraft.Compression");
+            config.Add("zlib@openssh.com", "SharpSSH.NG.jcraft.Compression");
 
-            config.put("StrictHostKeyChecking", "ask");
-            config.put("HashKnownHosts", "no");
-            //config.put("HashKnownHosts",  "yes");
-            config.put("PreferredAuthentications", "gssapi-with-mic,publickey,keyboard-interactive,password");
+            config.Add("StrictHostKeyChecking", "ask");
+            config.Add("HashKnownHosts", "no");
+            //config.Add("HashKnownHosts",  "yes");
+            config.Add("PreferredAuthentications", "gssapi-with-mic,publickey,keyboard-interactive,password");
 
-            config.put("CheckCiphers", "aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,3des-ctr,arcfour,arcfour128,arcfour256");
+            config.Add("CheckCiphers", "aes256-ctr,aes192-ctr,aes128-ctr,aes256-cbc,aes192-cbc,aes128-cbc,3des-ctr,arcfour,arcfour128,arcfour256");
         }
         List<Session> pool = new List<Session>();
-        List<Identity> identities = new List<Identity>();
+        internal List<Identity> identities = new List<Identity>();
         private HostKeyRepository known_hosts = null;
         private class DEVNULL : Logger
         {
@@ -101,10 +101,10 @@ namespace SharpSSH.NG
             {
                 if (Environment.OSVersion.Platform == PlatformID.MacOSX)
                 {
-                    config.put("hmac-sha1", "SharpSSH.NG.jcraft.HMACSHA1");
-                    config.put("hmac-md5", "SharpSSH.NG.jcraft.HMACMD5");
-                    config.put("hmac-md5-96", "SharpSSH.NG.jcraft.HMACMD596");
-                    config.put("hmac-sha1-96", "SharpSSH.NG.jcraft.HMACSHA196");
+                    config.Add("hmac-sha1", "SharpSSH.NG.jcraft.HMACSHA1");
+                    config.Add("hmac-md5", "SharpSSH.NG.jcraft.HMACMD5");
+                    config.Add("hmac-md5-96", "SharpSSH.NG.jcraft.HMACMD596");
+                    config.Add("hmac-sha1-96", "SharpSSH.NG.jcraft.HMACSHA196");
                 }
             }
             catch (Exception e)
@@ -201,18 +201,18 @@ namespace SharpSSH.NG
 
         public void addIdentity(string prvkey, byte[] passphrase)
         {
-            Identity identity = IdentityFile.newInstance(prvkey, null, this);
+            Identity identity = (Identity)IdentityFile.newInstance(prvkey, null, this);
             addIdentity(identity, passphrase);
         }
         public void addIdentity(string prvkey, string pubkey, byte[] passphrase)
         {
-            Identity identity = IdentityFile.newInstance(prvkey, pubkey, this);
+            Identity identity = (Identity)IdentityFile.newInstance(prvkey, pubkey, this);
             addIdentity(identity, passphrase);
         }
 
         public void addIdentity(string name, byte[] prvkey, byte[] pubkey, byte[] passphrase)
         {
-            Identity identity = IdentityFile.newInstance(name, prvkey, pubkey, this);
+            Identity identity = (Identity)IdentityFile.newInstance(name, prvkey, pubkey, this);
             addIdentity(identity, passphrase);
         }
 
@@ -234,7 +234,7 @@ namespace SharpSSH.NG
             }
             lock (identities)
             {
-                if (!identities.contains(identity))
+                if (!identities.Contains(identity))
                 {
                     identities.Add(identity);
                 }
@@ -310,7 +310,7 @@ namespace SharpSSH.NG
 
         public static void setLogger(Logger logger)
         {
-            if (logger == null) JSch.logger = DEVNULL;
+            if (logger == null) JSch.logger = new DEVNULL();
             JSch.logger = logger;
         }
         internal static Logger getLogger()

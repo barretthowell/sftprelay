@@ -10,7 +10,7 @@ namespace SharpSSH.NG
         private bool reply = false;
         private Session session = null;
         private Channel channel = null;
-        void request(Session session, Channel channel)
+        internal void request(Session session, Channel channel)
         {
             this.session = session;
             this.channel = channel;

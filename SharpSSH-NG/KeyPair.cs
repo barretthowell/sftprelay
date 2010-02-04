@@ -99,7 +99,7 @@ namespace SharpSSH.NG
                     break;
                 }
                 Out.write(getEnd()); Out.write(cr);
-                //Out.close();
+                //Out.Close();
             }
             catch (Exception e)
             {
@@ -133,7 +133,7 @@ namespace SharpSSH.NG
         {
             FileStream fos = new FileStream(name);
             writePublicKey(fos, comment);
-            fos.close();
+            fos.Close();
         }
 
         public void writeSECSHPublicKey(Stream Out, string comment)
@@ -163,15 +163,15 @@ namespace SharpSSH.NG
         {
             FileStream fos = new FileStream(name);
             writeSECSHPublicKey(fos, comment);
-            fos.close();
+            fos.Close();
         }
 
 
         public void writePrivateKey(string name)
         {
-            FileOutputStream fos = new FileOutputStream(name);
+            FileStream fos = new FileStream(name);
             writePrivateKey(fos);
-            fos.close();
+            fos.Close();
         }
 
         public string getFingerPrint()
@@ -473,12 +473,12 @@ namespace SharpSSH.NG
                 int len = 0;
                 while (true)
                 {
-                    int i = fis.read(buf, len, buf.Length - len);
+                    int i = fis.Read(buf, len, buf.Length - len);
                     if (i <= 0)
                         break;
                     len += i;
                 }
-                fis.close();
+                fis.Close();
 
                 int i = 0;
 
@@ -613,12 +613,12 @@ namespace SharpSSH.NG
                         len = 0;
                         while (true)
                         {
-                            i = fis.read(buf, len, buf.Length - len);
+                            i = fis.Read(buf, len, buf.Length - len);
                             if (i <= 0)
                                 break;
                             len += i;
                         }
-                        fis.close();
+                        fis.Close();
 
                         if (buf.Length > 4 &&             // FSecure's public key
                            buf[0] == '-' && buf[1] == '-' && buf[2] == '-' && buf[3] == '-')

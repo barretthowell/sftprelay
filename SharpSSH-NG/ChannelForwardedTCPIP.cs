@@ -57,7 +57,7 @@ namespace SharpSSH.NG
                     object[] foo = getPort(getSession(), rport);
                     daemon.setArg((object[])foo[3]);
 
-                    new Thread(daemon).start();
+                    new Thread(new ThreadStart(daemon.run)).Start();
                 }
                 else
                 {
@@ -88,7 +88,7 @@ namespace SharpSSH.NG
                       io != null &&
                       io.In != null)
                 {
-                    i = io.In.read(buf.buffer,
+                    i = io.In.Read(buf.buffer,
                                  14,
                                  buf.buffer.Length - 14
                                  - 32 - 20 // padding and mac
@@ -316,7 +316,7 @@ namespace SharpSSH.NG
                     object[] bar = (object[])(pool[i]);
                     if (bar[0] == session)
                     {
-                        rport[count++] = ((Integer)bar[1]).intValue();
+                        rport[count++] = ((int)bar[1]);
                     }
                 }
             }

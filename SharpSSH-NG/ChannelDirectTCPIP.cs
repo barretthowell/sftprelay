@@ -114,7 +114,7 @@ namespace SharpSSH.NG
             }
             catch (Exception e)
             {
-                io.close();
+                io.Close();
                 io = null;
                 Channel.del(this);
                 if (e is JSchException)
@@ -139,7 +139,7 @@ namespace SharpSSH.NG
                       io != null &&
                       io.In != null)
                 {
-                    i = io.In.read(buf.buffer,
+                    i = io.In.Read(buf.buffer,
                                  14,
                                  buf.buffer.Length - 14
                                  - 32 - 20 // padding and mac

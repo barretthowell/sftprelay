@@ -11,7 +11,7 @@ namespace SharpSSH.NG
     {
         byte[] command = new byte[0];
 
-        public override void start()
+        public override void Start()
         {
             Session _session = getSession();
             try

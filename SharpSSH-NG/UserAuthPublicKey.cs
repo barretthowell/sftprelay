@@ -56,7 +56,7 @@ namespace SharpSSH.NG
 
                         while (true)
                         {
-                            buf = session.read(buf);
+                            buf = session.Read(buf);
                             command = buf.getCommand() & 0xff;
 
                             if (command == SSH_MSG_USERAUTH_PK_OK)
@@ -183,7 +183,7 @@ namespace SharpSSH.NG
 
                     while (true)
                     {
-                        buf = session.read(buf);
+                        buf = session.Read(buf);
                         command = buf.getCommand() & 0xff;
 
                         if (command == SSH_MSG_USERAUTH_SUCCESS)

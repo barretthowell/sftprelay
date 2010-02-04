@@ -47,31 +47,31 @@ namespace SharpSSH.NG
 
         private bool encrypted = true;
 
-        static IdentityFile newInstance(string prvfile, string pubfile, JSch jsch)
+        internal static IdentityFile newInstance(string prvfile, string pubfile, JSch jsch)
         {
             byte[] prvkey = null;
             byte[] pubkey = null;
 
             File file = null;
-            FileInputStream fis = null;
+            FileStream fis = null;
             try
             {
                 file = new File(prvfile);
-                fis = new FileInputStream(prvfile);
+                fis = new FileStream(prvfile);
                 prvkey = new byte[(int)(file.length())];
                 int len = 0;
                 while (true)
                 {
-                    int i = fis.read(prvkey, len, prvkey.Length - len);
+                    int i = fis.Read(prvkey, len, prvkey.Length - len);
                     if (i <= 0)
                         break;
                     len += i;
                 }
-                fis.close();
+                fis.Close();
             }
             catch (Exception e)
             {
-                try { if (fis != null) fis.close(); }
+                try { if (fis != null) fis.Close(); }
                 catch (Exception ee) { }
                 throw new JSchException(e.Message,e);
             }
@@ -85,21 +85,21 @@ namespace SharpSSH.NG
             try
             {
                 file = new File(_pubfile);
-                fis = new FileInputStream(_pubfile);
+                fis = new FileStream(_pubfile);
                 pubkey = new byte[(int)(file.length())];
                 int len = 0;
                 while (true)
                 {
-                    int i = fis.read(pubkey, len, pubkey.Length - len);
+                    int i = fis.Read(pubkey, len, pubkey.Length - len);
                     if (i <= 0)
                         break;
                     len += i;
                 }
-                fis.close();
+                fis.Close();
             }
             catch (Exception e)
             {
-                try { if (fis != null) fis.close(); }
+                try { if (fis != null) fis.Close(); }
                 catch (Exception ee) { }
                 if (pubfile != null)
                 {
@@ -110,7 +110,7 @@ namespace SharpSSH.NG
             return newInstance(prvfile, prvkey, pubkey, jsch);
         }
 
-        static IdentityFile newInstance(string name, byte[] prvkey, byte[] pubkey, JSch jsch)
+        internal static IdentityFile newInstance(string name, byte[] prvkey, byte[] pubkey, JSch jsch)
         {
             try
             {

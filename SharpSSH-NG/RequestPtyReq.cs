@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    class RequestPtyReg : Request
+    class RequestPtyReq : Request
     {
         private string ttype = "vt100";
         private int tcol = 80;
@@ -19,17 +19,17 @@ namespace SharpSSH.NG
         {
         }
 
-        void setTType(string ttype)
+        internal void setTType(string ttype)
         {
             this.ttype = ttype;
         }
 
-        void setTerminalMode(byte[] terminal_mode)
+        internal void setTerminalMode(byte[] terminal_mode)
         {
             this.terminal_mode = terminal_mode;
         }
 
-        void setTSize(int tcol, int trow, int twp, int thp)
+        internal void setTSize(int tcol, int trow, int twp, int thp)
         {
             this.tcol = tcol;
             this.trow = trow;

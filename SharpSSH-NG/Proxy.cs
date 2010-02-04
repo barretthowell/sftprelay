@@ -13,6 +13,6 @@ namespace SharpSSH.NG
         Stream getInputStream();
         Stream getOutputStream();
         TcpClient getSocket();
-        void close();
+        void Close();
     }
 }

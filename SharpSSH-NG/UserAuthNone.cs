@@ -32,7 +32,7 @@ namespace SharpSSH.NG
             // receive
             // byte      SSH_MSG_SERVICE_ACCEPT(6)
             // string    service name
-            buf = session.read(buf);
+            buf = session.Read(buf);
             int command = buf.getCommand();
 
             bool result = (command == SSH_MSG_SERVICE_ACCEPT);
@@ -62,7 +62,7 @@ namespace SharpSSH.NG
 
             while (true)
             {
-                buf = session.read(buf);
+                buf = session.Read(buf);
                 command = buf.getCommand() & 0xff;
 
                 if (command == SSH_MSG_USERAUTH_SUCCESS)

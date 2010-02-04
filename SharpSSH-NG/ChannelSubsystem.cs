@@ -16,7 +16,7 @@ namespace SharpSSH.NG
         public override void setPty(bool foo) { pty = foo; }
         public void setWantReply(bool foo) { want_reply = foo; }
         public void setSubsystem(string foo) { subsystem = foo; }
-        public override void start()
+        public override void Start()
         {
             Session _session = getSession();
             try

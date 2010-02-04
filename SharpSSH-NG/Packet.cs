@@ -93,7 +93,7 @@ namespace SharpSSH.NG
             buffer.putInt(len);
             buffer.index = len + 5 + 9;
         }
-        Buffer getBuffer()
+        internal Buffer getBuffer()
         {
             return buffer;
         }

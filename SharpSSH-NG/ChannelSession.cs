@@ -215,8 +215,6 @@ namespace SharpSSH.NG
             {
                 foreach(KeyValuePair<byte[],byte[]> kv in env)
                 {
-                    Object name = _env.nextElement();
-                    Object value = env.get(name);
                     request = new RequestEnv();
                     ((RequestEnv)request).setEnv(kv.Key, kv.Value);
                     request.request(_session, this);
@@ -238,7 +236,7 @@ namespace SharpSSH.NG
                       io != null &&
                       io.In != null)
                 {
-                    i = io.In.read(buf.buffer,
+                    i = io.In.Read(buf.buffer,
                                  14,
                                  buf.buffer.Length - 14
                                  - 32 - 20 // padding and mac

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -92,10 +93,10 @@ namespace SharpSSH.NG
             }
             catch (JSchException e)
             {
-                throw new java.io.IOException(e.ToString());
+                throw new IOException(e.ToString());
             }
 
-            Vector identities = _session.jsch.identities;
+            List<Identity> identities = _session.jsch.identities;
             UserInfo userinfo = _session.getUserInfo();
 
             if (typ == SSH2_AGENTC_REQUEST_IDENTITIES)
