@@ -18,7 +18,7 @@ namespace SharpSSH.NG
             this.width_pixels = wp;
             this.height_pixels = hp;
         }
-        public void request(Session session, Channel channel)
+        internal override void request(Session session, Channel channel)
         {
             base.request(session, channel);
 

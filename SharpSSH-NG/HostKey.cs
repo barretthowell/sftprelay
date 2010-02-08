@@ -20,8 +20,8 @@ namespace SharpSSH.NG
         internal byte[] key;
 
         public HostKey(string host, byte[] key)
+            : this(host, GUESS, key)
         {
-            this(host, GUESS, key);
         }
 
         public HostKey(string host, int type, byte[] key)
@@ -56,14 +56,14 @@ namespace SharpSSH.NG
             HASH hash = null;
             try
             {
-                Type c = Type.GetType(jsch.getConfig("md5"));
+                Type c = Type.GetType(JSch.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
             }
             catch (Exception e) { Console.Error.WriteLine("getFingerPrint: " + e); }
             return Util.getFingerPrint(hash, key);
         }
 
-        bool isMatched(string _host)
+        internal virtual bool isMatched(string _host)
         {
             return isIncluded(_host);
         }

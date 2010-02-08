@@ -48,6 +48,8 @@ namespace SharpSSH.NG
         }
         public void putInt(int val)
         {
+            putByte(JavaCompat.GetBytesBig(val));
+            /*
             uint uval = (uint)val;
             tmp[0] = (byte)(uval >> 24);
             tmp[1] = (byte)(uval >> 16);
@@ -55,9 +57,12 @@ namespace SharpSSH.NG
             tmp[3] = (byte)(uval);
             Array.Copy(tmp, 0, buffer, index, 4);
             index += 4;
+             */
         }
         public void putLong(long val)
         {
+            putByte(JavaCompat.GetBytesBig(val));
+            /*
             ulong uval = (ulong)val;
             tmp[0] = (byte)(uval >> 56);
             tmp[1] = (byte)(uval >> 48);
@@ -70,6 +75,7 @@ namespace SharpSSH.NG
             tmp[3] = (byte)(uval);
             Array.Copy(tmp, 0, buffer, index + 4, 4);
             index += 8;
+             */
         }
         internal void skip(int n)
         {
@@ -112,20 +118,21 @@ namespace SharpSSH.NG
         }
         public long getLong()
         {
-            long foo = getInt() & 0xffffffffL;
-            foo = ((foo << 32)) | (getInt() & 0xffffffffL);
+            long foo = JavaCompat.ToInt64Big(buffer, s);
+            s += 8;
             return foo;
         }
         public int getInt()
         {
-            int foo = getShort();
-            foo = (int)(((foo << 16) & 0xffff0000) | (getShort() & 0xffff));
+            int foo = JavaCompat.ToInt32Big(buffer, s);
+            s += 4;
             return foo;
         }
         internal int getShort()
         {
-            int foo = getByte();
-            foo = ((foo << 8) & 0xff00) | (getByte() & 0xff);
+
+            int foo = JavaCompat.ToInt16Big(buffer, s);
+            s += 2;
             return foo;
         }
         public int getByte()

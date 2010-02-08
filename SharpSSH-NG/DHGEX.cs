@@ -69,7 +69,7 @@ namespace SharpSSH.NG
             try
             {
                 Type c = Type.GetType(session.getConfig("dh"));
-                dh = (com.jcraft.jsch.DH)(c.newInstance());
+                dh = (DH)(c.newInstance());
                 dh.init();
             }
             catch (Exception e)
@@ -218,8 +218,8 @@ namespace SharpSSH.NG
 
                     i = 0;
                     j = 0;
-                    j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                    j =(int)( ((K_S[i++] << 24) & 0xff000000U) | ((K_S[i++] << 16) & 0x00ff0000U) |
+                  ((K_S[i++] << 8) & 0x0000ff00U) | ((K_S[i++]) & 0x000000ffU));
                     string alg = Encoding.UTF8.GetString(K_S, i, j);
                     i += j;
 
@@ -231,13 +231,16 @@ namespace SharpSSH.NG
                         byte[] n;
 
                         type = RSA;
-
-                        j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                          ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                        j = JavaCompat.ToInt32Big(K_S, i);
+                        i += 4;
+                        //j =(int)( ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
+                        //  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff));
                         tmp = new byte[j]; Array.Copy(K_S, i, tmp, 0, j); i += j;
                         ee = tmp;
-                        j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                          ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                        j = JavaCompat.ToInt32Big(K_S, i);
+                        i += 4;
+                        //j =(int)( ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
+                        //  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff));
                         tmp = new byte[j]; Array.Copy(K_S, i, tmp, 0, j); i += j;
                         n = tmp;
 
@@ -251,9 +254,9 @@ namespace SharpSSH.NG
                             sig = (SignatureRSA)(c.newInstance());
                             sig.init();
                         }
-                        catch (Exception e)
+                        catch (Exception eeeee)
                         {
-                            Console.Error.WriteLine(e);
+                            Console.Error.WriteLine(eeeee);
                         }
 
                         sig.setPubKey(ee, n);
@@ -273,21 +276,28 @@ namespace SharpSSH.NG
                         byte[] tmp;
 
                         type = DSS;
-
-                        j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                          ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                        j = JavaCompat.ToInt32Big(K_S, i);
+                        i += 4;
+                        //j =(int)( ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
+                        //  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff));
                         tmp = new byte[j]; Array.Copy(K_S, i, tmp, 0, j); i += j;
                         p = tmp;
-                        j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                          ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                        j = JavaCompat.ToInt32Big(K_S, i);
+                        i += 4;
+                        //j =(int)( ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
+                        //  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff));
                         tmp = new byte[j]; Array.Copy(K_S, i, tmp, 0, j); i += j;
                         q = tmp;
-                        j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                          ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                        j = JavaCompat.ToInt32Big(K_S, i);
+                        i += 4;
+                        //j =(int)( ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
+                        //  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff));
                         tmp = new byte[j]; Array.Copy(K_S, i, tmp, 0, j); i += j;
                         g = tmp;
-                        j = ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
-                          ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff);
+                        j = JavaCompat.ToInt32Big(K_S, i);
+                        i += 4;
+                        //j =(int)( ((K_S[i++] << 24) & 0xff000000) | ((K_S[i++] << 16) & 0x00ff0000) |
+                        //  ((K_S[i++] << 8) & 0x0000ff00) | ((K_S[i++]) & 0x000000ff));
                         tmp = new byte[j]; Array.Copy(K_S, i, tmp, 0, j); i += j;
                         f = tmp;
 
@@ -301,9 +311,9 @@ namespace SharpSSH.NG
                             sig = (SignatureDSA)(c.newInstance());
                             sig.init();
                         }
-                        catch (Exception e)
+                        catch (Exception eeeeee)
                         {
-                            Console.Error.WriteLine(e);
+                            Console.Error.WriteLine(eeeeee);
                         }
 
                         sig.setPubKey(f, p, q, g);

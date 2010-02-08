@@ -70,7 +70,7 @@ namespace SharpSSH.NG
                 }
                 sendOpenConfirmation();
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 sendOpenFailure(SSH_OPEN_ADMINISTRATIVELY_PROHIBITED);
                 close = true;
@@ -107,7 +107,7 @@ namespace SharpSSH.NG
                     getSession().write(packet, this, i);
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine(e);
             }
@@ -116,7 +116,7 @@ namespace SharpSSH.NG
             disconnect();
         }
 
-        void getData(Buffer buf)
+        internal override void getData(Buffer buf)
         {
             setRecipient(buf.getInt());
             setRemoteWindowSize(buf.getInt());
@@ -138,7 +138,7 @@ namespace SharpSSH.NG
             {
                 _session = getSession();
             }
-            catch (JSchException e)
+            catch (JSchException)
             {
                 // session has been already down.
             }
@@ -245,7 +245,7 @@ namespace SharpSSH.NG
             {
                 _session = c.getSession();
             }
-            catch (JSchException e)
+            catch (JSchException )
             {
                 // session has been already down.
             }
@@ -299,7 +299,7 @@ namespace SharpSSH.NG
                 buf.putInt(rport);
                 session.write(packet);
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //    throw new JSchException(e.ToString());
             }

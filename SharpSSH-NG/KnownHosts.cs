@@ -35,16 +35,16 @@ namespace SharpSSH.NG
             try
             {
                 known_hosts = foo;
-                FileStream fis = new FileStream(foo);
+                FileStream fis = new FileStream(foo,FileMode.Open);
                 setKnownHosts(fis);
             }
-            catch (FileNotFoundException e)
+            catch (FileNotFoundException )
             {
             }
         }
         internal void setKnownHosts(Stream foo)
         {
-            pool.RemoveAll();
+            pool.Clear();
             StringBuilder sb = new StringBuilder();
             byte i;
             int j;
@@ -100,12 +100,12 @@ namespace SharpSSH.NG
                         goto loop;
                     }
 
-                    sb.setLength(0);
+                    sb.Length=0;
                     while (j < bufl)
                     {
                         i = buf[j++];
                         if (i == 0x20 || i == '\t') { break; }
-                        sb.append((char)i);
+                        sb.Append((char)i);
                     }
                     host = sb.ToString();
                     if (j >= bufl || host.Length == 0)
@@ -114,13 +114,13 @@ namespace SharpSSH.NG
                         goto loop;
                     }
 
-                    sb.setLength(0);
+                    sb.Length=0;
                     type = -1;
                     while (j < bufl)
                     {
                         i = buf[j++];
                         if (i == 0x20 || i == '\t') { break; }
-                        sb.append((char)i);
+                        sb.Append((char)i);
                     }
                     if (sb.ToString().Equals("ssh-dss")) { type = HostKey.SSHDSS; }
                     else if (sb.ToString().Equals("ssh-rsa")) { type = HostKey.SSHRSA; }
@@ -131,13 +131,13 @@ namespace SharpSSH.NG
                         goto loop;
                     }
 
-                    sb.setLength(0);
+                    sb.Length=0;
                     while (j < bufl)
                     {
                         i = buf[j++];
                         if (i == 0x0d) { continue; }
                         if (i == 0x0a) { break; }
-                        sb.append((char)i);
+                        sb.Append((char)i);
                     }
                     key = sb.ToString();
                     if (key.Length == 0)
@@ -150,7 +150,7 @@ namespace SharpSSH.NG
                     //Console.Error.WriteLine("|"+key+"|");
 
                     HostKey hk = null;
-                    hk = new HashedHostKey(host, type,
+                    hk = new HashedHostKey(this, host, type,
                                            Util.fromBase64(key.getBytes(), 0,
                                                            key.Length));
                     pool.Add(hk);
@@ -247,8 +247,8 @@ namespace SharpSSH.NG
             if (bar != null)
             {
                 bool foo = true;
-                File goo = new File(bar);
-                if (!goo.exists())
+                FileInfo goo = new FileInfo(bar);
+                if (!goo.Exists)
                 {
                     foo = false;
                     if (userinfo != null)
@@ -256,15 +256,15 @@ namespace SharpSSH.NG
                         foo = userinfo.promptYesNo(bar + " does not exist.\n" +
                                                  "Are you sure you want to create it?"
                                                  );
-                        goo = goo.getParentFile();
-                        if (foo && goo != null && !goo.exists())
+                        DirectoryInfo dgoo = Directory.GetParent(bar);
+                        if (foo && dgoo != null && !dgoo.Exists)
                         {
                             foo = userinfo.promptYesNo("The parent directory " + goo + " does not exist.\n" +
                                                      "Are you sure you want to create it?"
                                                      );
                             if (foo)
                             {
-                                if (!goo.mkdirs())
+                                if (!dgoo.mkdirs())
                                 {
                                     userinfo.showMessage(goo + " has not been created.");
                                     foo = false;
@@ -275,14 +275,14 @@ namespace SharpSSH.NG
                                 }
                             }
                         }
-                        if (goo == null) foo = false;
+                        if (dgoo == null) foo = false;
                     }
                 }
                 if (foo)
                 {
                     try
                     {
-                        sync(bar);
+                        Sync(bar);
                     }
                     catch (Exception e) { Console.Error.WriteLine("sync known_hosts: " + e); }
                 }
@@ -360,21 +360,21 @@ namespace SharpSSH.NG
             }
             if (sync)
             {
-                try { sync(); }
-                catch (Exception e) { };
+                try { Sync(); }
+                catch /*(Exception e)*/ { };
             }
         }
 
-        protected void sync()
+        protected void Sync()
         {
             if (known_hosts != null)
-                sync(known_hosts);
+                Sync(known_hosts);
         }
         [MethodImpl(MethodImplOptions.Synchronized)]
-        protected void sync(string foo)
+        protected void Sync(string foo)
         {
             if (foo == null) return;
-            FileStream fos = new FileStream(foo);
+            FileStream fos = new FileStream(foo,FileMode.Create);
             dump(fos);
             fos.Close();
         }
@@ -396,16 +396,16 @@ namespace SharpSSH.NG
                         string type = hk.getType();
                         if (type.Equals("UNKNOWN"))
                         {
-                            Out.write(host.getBytes());
-                            Out.write(cr);
+                            Out.Write(host.getBytes());
+                            Out.Write(cr);
                             continue;
                         }
-                        Out.write(host.getBytes());
-                        Out.write(space);
-                        Out.write(type.getBytes());
-                        Out.write(space);
-                        Out.write(hk.getKey().getBytes());
-                        Out.write(cr);
+                        Out.Write(host.getBytes());
+                        Out.Write(space);
+                        Out.Write(type.getBytes());
+                        Out.Write(space);
+                        Out.Write(hk.getKey().getBytes());
+                        Out.Write(cr);
                     }
                 }
             }
@@ -450,7 +450,7 @@ namespace SharpSSH.NG
             {
                 try
                 {
-                    Type c = Type.GetType(jsch.getConfig("hmac-sha1"));
+                    Type c = Type.GetType(JSch.getConfig("hmac-sha1"));
                     hmacsha1 = (MAC)(c.newInstance());
                 }
                 catch (Exception e)
@@ -463,8 +463,8 @@ namespace SharpSSH.NG
 
         internal HostKey createHashedHostKey(string host, byte[] key)
         {
-            HashedHostKey hhk = new HashedHostKey(host, key);
-            hhk.hash();
+            HashedHostKey hhk = new HashedHostKey(this,host, key);
+            hhk.Hash();
             return hhk;
         }
         class HashedHostKey : HostKey
@@ -475,17 +475,18 @@ namespace SharpSSH.NG
             private bool hashed = false;
             byte[] salt = null;
             byte[] hash = null;
+            KnownHosts mykh;
 
-
-            HashedHostKey(string host, byte[] key)
+            internal HashedHostKey(KnownHosts mykh, string host, byte[] key)
                 :
-                    this(host, GUESS, key)
+                    this(mykh, host, GUESS, key)
             {
             }
-            HashedHostKey(string host, int type, byte[] key) :
+            internal HashedHostKey(KnownHosts mykh, string host, int type, byte[] key) :
                 base(host, type, key)
             {
-                if (this.host.startsWith(HASH_MAGIC) &&
+                this.mykh = mykh;
+                if (this.host.StartsWith(HASH_MAGIC) &&
                    this.host.Substring(HASH_MAGIC.Length).IndexOf(HASH_DELIM) > 0)
                 {
                     string data = this.host.Substring(HASH_MAGIC.Length);
@@ -504,13 +505,13 @@ namespace SharpSSH.NG
                 }
             }
 
-            bool isMatched(string _host)
+            internal override bool isMatched(string _host)
             {
                 if (!hashed)
                 {
                     return base.isMatched(_host);
                 }
-                MAC macsha1 = getHMACSHA1();
+                MAC macsha1 = mykh.getHMACSHA1();
                 try
                 {
                     lock (macsha1)
@@ -525,28 +526,28 @@ namespace SharpSSH.NG
                 }
                 catch (Exception e)
                 {
-                    System.Out.WriteLine(e);
+                    Console.Out.WriteLine(e);
                 }
                 return false;
             }
 
-            bool isHashed()
+            internal bool isHashed()
             {
                 return hashed;
             }
 
-            void Hash()
+            internal void Hash()
             {
                 if (hashed)
                     return;
-                MAC macsha1 = getHMACSHA1();
+                MAC macsha1 = mykh.getHMACSHA1();
                 if (salt == null)
                 {
                     Random random = Session.random;
                     lock (random)
                     {
                         salt = new byte[macsha1.getBlockSize()];
-                        random.fill(salt, 0, saltLength);
+                        random.fill(salt, 0, salt.Length);
                     }
                 }
                 try
@@ -555,16 +556,16 @@ namespace SharpSSH.NG
                     {
                         macsha1.init(salt);
                         byte[] foo = host.getBytes();
-                        macsha1.update(foo, 0, fooLength);
+                        macsha1.update(foo, 0, foo.Length);
                         hash = new byte[macsha1.getBlockSize()];
                         macsha1.doFinal(hash, 0);
                     }
                 }
-                catch (Exception e)
+                catch //(Exception e)
                 {
                 }
-                host = HASH_MAGIC + Encoding.UTF8.GetString(Util.toBase64(salt, 0, saltLength)) +
-                  HASH_DELIM + Encoding.UTF8.GetString(Util.toBase64(hash, 0, hashLength));
+                host = HASH_MAGIC + Encoding.UTF8.GetString(Util.toBase64(salt, 0, salt.Length)) +
+                  HASH_DELIM + Encoding.UTF8.GetString(Util.toBase64(hash, 0, hash.Length));
                 hashed = true;
             }
         }

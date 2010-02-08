@@ -11,7 +11,7 @@ namespace SharpSSH.NG
         {
             setReply(true);
         }
-        public void request(Session session, Channel channel)
+        internal override void request(Session session, Channel channel)
         {
             base.request(session, channel);
 

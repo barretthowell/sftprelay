@@ -26,7 +26,7 @@ namespace SharpSSH.NG
             setLocalPacketSize(LOCAL_MAXIMUM_PACKET_SIZE);
         }
 
-        void init()
+        internal override void init()
         {
             try
             {
@@ -38,7 +38,7 @@ namespace SharpSSH.NG
             }
         }
 
-        public void connect()
+        public override void connect()
         {
             try
             {
@@ -81,7 +81,7 @@ namespace SharpSSH.NG
                         retry--;
                     }
                 }
-                catch (Exception ee)
+                catch // (Exception ee)
                 {
                 }
                 if (!_session.Connected)
@@ -124,7 +124,7 @@ namespace SharpSSH.NG
             }
         }
 
-        public void run()
+        public override void run()
         {
 
             Buffer buf = new Buffer(rmpsize);
@@ -159,18 +159,18 @@ namespace SharpSSH.NG
                     _session.write(packet, this, i);
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
             disconnect();
             //Console.Error.WriteLine("connect end");
         }
 
-        public void setInputStream(Stream In)
+        public override void setInputStream(Stream In)
         {
             io.setInputStream(In);
         }
-        public void setOutputStream(Stream Out)
+        public override void setOutputStream(Stream Out)
         {
             io.setOutputStream(Out);
         }

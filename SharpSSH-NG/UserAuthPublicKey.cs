@@ -12,7 +12,7 @@ namespace SharpSSH.NG
         {
             base.start(session);
 
-            Vector identities = session.jsch.identities;
+            List<Identity> identities = session.jsch.identities;
 
             byte[] passphrase = null;
             byte[] _username = null;
@@ -73,11 +73,11 @@ namespace SharpSSH.NG
                                 byte[] _message = buf.getString();
                                 byte[] lang = buf.getString();
                                 string message = null;
-                                try { message = Encoding.UTF8.GetString(_message); }
-                                catch (java.io.UnsupportedEncodingException e)
-                                {
+                                //try { message = Encoding.UTF8.GetString(_message); }
+                                //catch (.io.UnsupportedEncodingException e)
+                                //{
                                     message = Encoding.UTF8.GetString(_message);
-                                }
+                                //}
                                 if (userinfo != null)
                                 {
                                     userinfo.showMessage(message);
@@ -91,7 +91,7 @@ namespace SharpSSH.NG
                                 break;
                             }
                         loop1:
-                            null;
+                            new object();
                         }
 
                         if (command != SSH_MSG_USERAUTH_PK_OK)
@@ -197,7 +197,7 @@ namespace SharpSSH.NG
                             byte[] lang = buf.getString();
                             string message = null;
                             try { message = Encoding.UTF8.GetString(_message); }
-                            catch (Exception e)
+                            catch //(Exception e)
                             {
                                 message = Encoding.UTF8.GetString(_message);
                             }
@@ -224,7 +224,7 @@ namespace SharpSSH.NG
                         //throw new JSchException("USERAUTH fail ("+command+")");
                         break;
                     loop2:
-                        null;
+                        new object();
                     }
                 }
             }

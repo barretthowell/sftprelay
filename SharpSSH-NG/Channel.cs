@@ -132,7 +132,7 @@ namespace SharpSSH.NG
         {
         }
 
-        public void connect()
+        public virtual void connect()
         {
             connect(0);
         }
@@ -178,7 +178,7 @@ namespace SharpSSH.NG
                         }
                     }
                     try { Thread.Sleep(50); }
-                    catch (Exception ee) { }
+                    catch  { }
                     retry--;
                 }
                 if (!_session.Connected)
@@ -219,14 +219,14 @@ namespace SharpSSH.NG
 
         public bool isEOF() { return eof_remote; }
 
-        internal void getData(Buffer buf)
+        internal virtual void getData(Buffer buf)
         {
             setRecipient(buf.getInt());
             setRemoteWindowSize(buf.getInt());
             setRemotePacketSize(buf.getInt());
         }
 
-        public void setInputStream(Stream In)
+        public virtual void setInputStream(Stream In)
         {
             io.setInputStream(In, false);
         }
@@ -234,7 +234,7 @@ namespace SharpSSH.NG
         {
             io.setInputStream(In, dontclose);
         }
-        public void setOutputStream(Stream Out)
+        public virtual void setOutputStream(Stream Out)
         {
             io.setOutputStream(Out, false);
         }
@@ -384,7 +384,7 @@ namespace SharpSSH.NG
                     {
                         channel.init();
                     }
-                    catch (IOException e)
+                    catch (IOException )
                     {
                         // close should be finished silently.
                         return;
@@ -469,25 +469,25 @@ namespace SharpSSH.NG
         {
         }
 
-        internal void write(byte[] foo)
+        internal virtual void write(byte[] foo)
         {
             write(foo, 0, foo.Length);
         }
-        internal void write(byte[] foo, int s, int l)
+        internal virtual void write(byte[] foo, int s, int l)
         {
             try
             {
                 io.put(foo, s, l);
             }
-            catch (NullReferenceException e) { }
+            catch (NullReferenceException ) { }
         }
-        internal void write_ext(byte[] foo, int s, int l)
+        internal virtual void write_ext(byte[] foo, int s, int l)
         {
             try
             {
                 io.put_ext(foo, s, l);
             }
-            catch (NullReferenceException e) { }
+            catch (NullReferenceException ) { }
         }
 
         internal void EofRemote()
@@ -497,7 +497,7 @@ namespace SharpSSH.NG
             {
                 io.out_close();
             }
-            catch (NullReferenceException e) { }
+            catch (NullReferenceException ) { }
         }
 
         protected void eof()
@@ -516,7 +516,7 @@ namespace SharpSSH.NG
                 buf.putInt(getRecipient());
                 getSession().write(packet);
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine("Channel.eof");
                 //e.printStackTrace();
@@ -579,7 +579,7 @@ namespace SharpSSH.NG
                 buf.putInt(getRecipient());
                 getSession().write(packet);
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //e.printStackTrace();
             }
@@ -605,7 +605,7 @@ namespace SharpSSH.NG
                             channels[count++] = c;
                         }
                     }
-                    catch (Exception e)
+                    catch // (Exception e)
                     {
                     }
                 }
@@ -645,7 +645,7 @@ namespace SharpSSH.NG
                         io.Close();
                     }
                 }
-                catch (Exception e)
+                catch //(Exception e)
                 {
                     //e.printStackTrace();
                 }
@@ -741,7 +741,7 @@ namespace SharpSSH.NG
                 buf.putString("".getBytes());
                 getSession().write(packet);
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
         }

@@ -47,7 +47,7 @@ namespace SharpSSH.NG
 
         private byte[] I_C; // the payload of the client's SSH_MSG_KEXINIT
         private byte[] I_S; // the payload of the server's SSH_MSG_KEXINIT
-        private byte[] K_S; // the host key
+        //private byte[] K_S; // the host key
 
         private byte[] session_id;
 
@@ -84,8 +84,8 @@ namespace SharpSSH.NG
         private Thread connectThread = null;
         private object _lock = new object();
 
-        bool x11_forwarding = false;
-        bool agent_forwarding = false;
+        internal bool x11_forwarding = false;
+        internal bool agent_forwarding = false;
 
         internal Stream In = null;
         internal Stream Out = null;
@@ -111,8 +111,8 @@ namespace SharpSSH.NG
         internal string host = "127.0.0.1";
         internal int port = 22;
 
-        string username = null;
-        byte[] password = null;
+        internal string username = null;
+        internal byte[] password = null;
 
         internal JSch jsch;
 
@@ -435,7 +435,7 @@ namespace SharpSSH.NG
                                 ua = (UserAuth)(c.newInstance());
                             }
                         }
-                        catch (Exception e)
+                        catch
                         {
                             if (JSch.getLogger().isEnabled(Logger.WARN))
                             {
@@ -457,7 +457,7 @@ namespace SharpSSH.NG
                                                          "Authentication succeeded (" + method + ").");
                                 }
                             }
-                            catch (JSchAuthCancelException ee)
+                            catch (JSchAuthCancelException )
                             {
                                 auth_cancel = true;
                             }
@@ -475,7 +475,7 @@ namespace SharpSSH.NG
                             {
                                 throw ee;
                             }*/
-                            catch (Exception ee)
+                            catch //(Exception ee)
                             {
                                 //Console.Error.WriteLine("ee: "+ee); // SSH_MSG_DISCONNECT: 2 Too many authentication failures
                                 goto outloop;
@@ -535,7 +535,7 @@ namespace SharpSSH.NG
                         write(packet);
                         disconnect();
                     }
-                    catch (Exception ee)
+                    catch //(Exception ee)
                     {
                     }
                 }
@@ -851,7 +851,7 @@ namespace SharpSSH.NG
                 channel.init();
                 return channel;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //e.printStackTrace();
             }
@@ -919,10 +919,13 @@ namespace SharpSSH.NG
                 {
                     s2ccipher.update(buf.buffer, 0, s2ccipher_size, buf.buffer, 0);
                 }
-                j = unchecked((int)((uint)((((uint)buf.buffer[0] << 24) & 0xff000000) |
-                  ((buf.buffer[1] << 16) & 0x00ff0000) |
-                  ((buf.buffer[2] << 8) & 0x0000ff00) |
-                  ((buf.buffer[3]) & 0x000000ff))));
+
+                j = JavaCompat.ToInt32Big(buf.buffer, 0);
+
+                //j = unchecked((int)((uint)((((uint)buf.buffer[0] << 24) & 0xff000000U) |
+                //  ((buf.buffer[1] << 16) & 0x00ff0000U) |
+                //  ((buf.buffer[2] << 8) & 0x0000ff00U) |
+                //  ((buf.buffer[3]) & 0x000000ffU))));
                 // RFC 4253 6.1. Maximum Packet Length
                 if (j < 5 || j > (32768 - 4))
                 {
@@ -1076,7 +1079,7 @@ namespace SharpSSH.NG
             return buf;
         }
 
-        byte[] getSessionId()
+        internal byte[] getSessionId()
         {
             return session_id;
         }
@@ -1284,7 +1287,7 @@ namespace SharpSSH.NG
                         c.notifyme++;
                         Monitor.Wait(c, 100);
                     }
-                    catch (ThreadInterruptedException e)
+                    catch (ThreadInterruptedException )
                     {
                     }
                     finally
@@ -1317,7 +1320,7 @@ namespace SharpSSH.NG
                     break;
                 }
                 try { Thread.Sleep(10); }
-                catch (ThreadInterruptedException e) { };
+                catch (ThreadInterruptedException ) { };
             }
             _write(packet);
         }
@@ -1418,11 +1421,11 @@ namespace SharpSSH.NG
                             {
                                 channel.write(foo, start[0], length[0]);
                             }
-                            catch (Exception e)
+                            catch //(Exception e)
                             {
                                 //Console.Error.WriteLine(e);
                                 try { channel.disconnect(); }
-                                catch (Exception ee) { }
+                                catch /* (Exception ee)*/ { }
                                 break;
                             }
                             int len = length[0];
@@ -1680,12 +1683,12 @@ namespace SharpSSH.NG
             {
                 disconnect();
             }
-            catch (NullReferenceException e)
+            catch (NullReferenceException )
             {
                 //Console.Error.WriteLine("@1");
                 //e.printStackTrace();
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine("@2");
                 //e.printStackTrace();
@@ -1753,7 +1756,7 @@ namespace SharpSSH.NG
                     proxy = null;
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //      e.printStackTrace();
             }
@@ -1879,7 +1882,7 @@ namespace SharpSSH.NG
 
                 grr.setThread(Thread.CurrentThread);
                 try { Thread.Sleep(10000); }
-                catch (Exception e)
+                catch //(Exception e)
                 {
                 }
                 int reply = grr.getReply();
@@ -1914,7 +1917,7 @@ namespace SharpSSH.NG
                         deflater = (Compression)(c.newInstance());
                         int level = 6;
                         try { level = int.Parse(getConfig("compression_level")); }
-                        catch (Exception ee) { }
+                        catch /*(Exception ee)*/ { }
                         deflater.init(Compression.DEFLATER, level);
                     }
                     catch (Exception ee)
@@ -1953,7 +1956,7 @@ namespace SharpSSH.NG
             }
         }
 
-        void addChannel(Channel channel)
+        internal void addChannel(Channel channel)
         {
             channel.setSession(this);
         }
@@ -2156,7 +2159,7 @@ namespace SharpSSH.NG
             return foo;
         }
 
-        static bool checkCipher(string cipher)
+        internal static bool checkCipher(string cipher)
         {
             try
             {
@@ -2167,7 +2170,7 @@ namespace SharpSSH.NG
                         new byte[_c.getIVSize()]);
                 return true;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 return false;
             }

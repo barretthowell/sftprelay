@@ -83,8 +83,12 @@ namespace SharpSSH.NG
 
         public string getAtimeString()
         {
+            /*
+            NumberFormat nf;
             SimpleDateFormat locale = new SimpleDateFormat();
             return (locale.format(new Date(atime)));
+             */
+            return new DateTime(atime * TimeSpan.TicksPerSecond).ToShortDateString();
         }
 
         public string getMtimeString()
@@ -105,8 +109,8 @@ namespace SharpSSH.NG
 
         int flags = 0;
         long size;
-        int uid;
-        int gid;
+        internal int uid;
+        internal int gid;
         int permissions;
         int atime;
         int mtime;
@@ -116,7 +120,7 @@ namespace SharpSSH.NG
         {
         }
 
-        static SftpATTRS getATTR(Buffer buf)
+        internal static SftpATTRS getATTR(Buffer buf)
         {
             SftpATTRS attr = new SftpATTRS();
             attr.flags = buf.getInt();
@@ -153,7 +157,7 @@ namespace SharpSSH.NG
             return attr;
         }
 
-        int length()
+        internal int length()
         {
             int len = 4;
 
@@ -177,7 +181,7 @@ namespace SharpSSH.NG
             return len;
         }
 
-        void dump(Buffer buf)
+        internal void dump(Buffer buf)
         {
             buf.putInt(flags);
             if ((flags & SSH_FILEXFER_ATTR_SIZE) != 0) { buf.putLong(size); }
@@ -204,7 +208,7 @@ namespace SharpSSH.NG
                 }
             }
         }
-        void setFLAGS(int flags)
+        internal void setFLAGS(int flags)
         {
             this.flags = flags;
         }

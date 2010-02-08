@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 
 namespace SharpSSH.NG
 {
@@ -10,7 +11,7 @@ namespace SharpSSH.NG
         private bool reply = false;
         private Session session = null;
         private Channel channel = null;
-        internal void request(Session session, Channel channel)
+        internal virtual void request(Session session, Channel channel)
         {
             this.session = session;
             this.channel = channel;
@@ -19,9 +20,9 @@ namespace SharpSSH.NG
                 setReply(true);
             }
         }
-        bool waitForReply() { return reply; }
-        void setReply(bool reply) { this.reply = reply; }
-        void write(Packet packet)
+        protected bool waitForReply() { return reply; }
+        protected void setReply(bool reply) { this.reply = reply; }
+        protected void write(Packet packet)
         {
             if (reply)
             {
@@ -35,7 +36,7 @@ namespace SharpSSH.NG
                 while (channel.Connected && channel.reply == -1)
                 {
                     try { Thread.Sleep(10); }
-                    catch (Exception ee)
+                    catch //(Exception ee)
                     {
                     }
                     if (timeout > 0L &&
