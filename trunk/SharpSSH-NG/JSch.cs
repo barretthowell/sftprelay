@@ -107,7 +107,7 @@ namespace SharpSSH.NG
                     config.Add("hmac-sha1-96", "SharpSSH.NG.jcraft.HMACSHA196");
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
 

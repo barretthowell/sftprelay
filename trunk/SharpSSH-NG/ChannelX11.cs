@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net.Sockets;
+using System.Threading;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -18,7 +20,7 @@ namespace SharpSSH.NG
 
         private bool _init = true;
 
-        static byte[] cookie = null;
+        internal static byte[] cookie = null;
         private static byte[] cookie_hex = null;
 
         private static Dictionary<Session,byte[]> faked_cookie_pool = new Dictionary<Session,byte[]>();
@@ -53,7 +55,7 @@ namespace SharpSSH.NG
         {
             lock (faked_cookie_hex_pool)
             {
-                byte[] foo = (byte[])faked_cookie_hex_pool.get(session);
+                byte[] foo = faked_cookie_hex_pool[session] ;
                 if (foo == null)
                 {
                     Random random = Session.random;
@@ -120,7 +122,7 @@ namespace SharpSSH.NG
                 io.setOutputStream(socket.GetStream());
                 sendOpenConfirmation();
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 sendOpenFailure(SSH_OPEN_ADMINISTRATIVELY_PROHIBITED);
                 close = true;
@@ -128,7 +130,7 @@ namespace SharpSSH.NG
                 return;
             }
 
-            thread = Thread.currentThread();
+            thread = Thread.CurrentThread;
             Buffer buf = new Buffer(rmpsize);
             Packet packet = new Packet(buf);
             int i = 0;
@@ -157,7 +159,7 @@ namespace SharpSSH.NG
                     getSession().write(packet, this, i);
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine(e);
             }
@@ -175,11 +177,11 @@ namespace SharpSSH.NG
             return cache;
         }
 
-        void write(byte[] foo, int s, int l)
+        internal override void write(byte[] foo, int s, int l)
         {
             //if(eof_local)return;
 
-            if (init)
+            if (_init)
             {
 
                 Session _session = null;
@@ -189,7 +191,7 @@ namespace SharpSSH.NG
                 }
                 catch (JSchException e)
                 {
-                    throw new java.io.IOException(e.ToString());
+                    throw new IOException(e.Message,e);
                 }
 
                 foo = addCache(foo, s, l);
@@ -199,8 +201,8 @@ namespace SharpSSH.NG
                 if (l < 9)
                     return;
 
-                uint plen = (foo[s + 6] & 0xff) * 256 + (foo[s + 7] & 0xff);
-                uint dlen = (foo[s + 8] & 0xff) * 256 + (foo[s + 9] & 0xff);
+                uint plen = unchecked( (uint) ( (foo[s + 6] & 0xff) * 256 + (foo[s + 7] & 0xff)));
+                uint dlen =unchecked( (uint) ((foo[s + 8] & 0xff) * 256 + (foo[s + 9] & 0xff)));
 
                 if ((foo[s] & 0xff) == 0x42)
                 {
@@ -224,7 +226,7 @@ namespace SharpSSH.NG
 
                 lock (faked_cookie_pool)
                 {
-                    faked_cookie = (byte[])faked_cookie_pool.get(_session);
+                    faked_cookie = faked_cookie_pool[_session];
                 }
 
                 /*
@@ -253,7 +255,7 @@ namespace SharpSSH.NG
                     io.Close();
                     disconnect();
                 }
-                init = false;
+                _init = false;
                 io.put(foo, s, l);
                 cache = null;
                 return;

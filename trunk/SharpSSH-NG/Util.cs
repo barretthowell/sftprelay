@@ -257,7 +257,7 @@ namespace SharpSSH.NG
                 }
                 return sb.ToString();
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 return "???";
             }
@@ -307,7 +307,7 @@ namespace SharpSSH.NG
                         {
                             sockp[0].Close();
                         }
-                        catch (Exception eee) { }
+                        catch /*(Exception eee)*/ { }
                     }
                     sockp[0] = null;
                 }
@@ -345,8 +345,8 @@ namespace SharpSSH.NG
         {
             if (str == null)
                 return null;
-            try { return str.getBytes(encoding); }
-            catch (java.io.UnsupportedEncodingException e)
+            try { return str.getBytes(Encoding.GetEncoding(encoding)); }
+            catch //(Exception e)
             {
                 return str.getBytes();
             }
@@ -359,8 +359,8 @@ namespace SharpSSH.NG
 
         public static string byte2str(byte[] str, string encoding)
         {
-            try { return Encoding.UTF8.GetString(str, encoding); }
-            catch (java.io.UnsupportedEncodingException e)
+            try { return Encoding.GetEncoding(encoding).GetString(str); }
+            catch //(Exception e)
             {
                 return Encoding.UTF8.GetString(str);
             }
@@ -415,7 +415,7 @@ namespace SharpSSH.NG
                 if (result == null) { result = stra[i]; }
                 else { result = result + "," + stra[i]; }
             loop:
-                false;
+                new object();
             }
             return result;
         }

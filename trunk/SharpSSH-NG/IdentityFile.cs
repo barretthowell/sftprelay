@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -29,7 +30,7 @@ namespace SharpSSH.NG
         private byte[] d_array;   // private exponent
 
         //  private string algname="ssh-dss";
-        private string algname = "ssh-rsa";
+        //private string algname = "ssh-rsa";
 
         private const int ERROR = 0;
         private const int RSA = 1;
@@ -52,13 +53,13 @@ namespace SharpSSH.NG
             byte[] prvkey = null;
             byte[] pubkey = null;
 
-            File file = null;
+            FileInfo file = null;
             FileStream fis = null;
             try
             {
-                file = new File(prvfile);
-                fis = new FileStream(prvfile);
-                prvkey = new byte[(int)(file.length())];
+                file = new FileInfo(prvfile);
+                fis = new FileStream(prvfile,FileMode.Open);
+                prvkey = new byte[(int)(file.Length)];
                 int len = 0;
                 while (true)
                 {
@@ -72,7 +73,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 try { if (fis != null) fis.Close(); }
-                catch (Exception ee) { }
+                catch /*(Exception ee)*/ { }
                 throw new JSchException(e.Message,e);
             }
 
@@ -84,9 +85,9 @@ namespace SharpSSH.NG
 
             try
             {
-                file = new File(_pubfile);
-                fis = new FileStream(_pubfile);
-                pubkey = new byte[(int)(file.length())];
+                file = new FileInfo(_pubfile);
+                fis = new FileStream(_pubfile,FileMode.Open);
+                pubkey = new byte[(int)(file.Length)];
                 int len = 0;
                 while (true)
                 {
@@ -100,7 +101,7 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 try { if (fis != null) fis.Close(); }
-                catch (Exception ee) { }
+                catch /*(Exception ee)*/ { }
                 if (pubfile != null)
                 {
                     // The pubfile is explicitry given, but not accessible.
@@ -129,11 +130,11 @@ namespace SharpSSH.NG
             try
             {
                 Type c;
-                c = Type.GetType((string)jsch.getConfig("3des-cbc"));
+                c = Type.GetType((string)JSch.getConfig("3des-cbc"));
                 cipher = (Cipher)(c.newInstance());
                 key = new byte[cipher.getBlockSize()];   // 24
                 iv = new byte[cipher.getIVSize()];       // 8
-                c = Type.GetType((string)jsch.getConfig("md5"));
+                c = Type.GetType((string)JSch.getConfig("md5"));
                 hash = (HASH)(c.newInstance());
                 hash.init();
 
@@ -165,9 +166,9 @@ namespace SharpSSH.NG
                        buf[i + 4] == '2' && buf[i + 5] == '5' && buf[i + 6] == '6' && buf[i + 7] == '-')
                     {
                         i += 8;
-                        if (Session.checkCipher((string)jsch.getConfig("aes256-cbc")))
+                        if (Session.checkCipher((string)JSch.getConfig("aes256-cbc")))
                         {
-                            c = Type.GetType((string)jsch.getConfig("aes256-cbc"));
+                            c = Type.GetType((string)JSch.getConfig("aes256-cbc"));
                             cipher = (Cipher)(c.newInstance());
                             key = new byte[cipher.getBlockSize()];
                             iv = new byte[cipher.getIVSize()];
@@ -257,9 +258,9 @@ namespace SharpSSH.NG
                     byte[] _type = _buf.getString();
                     //Console.Error.WriteLine("type: "+Encoding.UTF8.GetString(_type)); 
                     byte[] _cipher = _buf.getString();
-                    string cipher = Encoding.UTF8.GetString(_cipher);
+                    string scipher = Encoding.UTF8.GetString(_cipher);
                     //Console.Error.WriteLine("cipher: "+cipher); 
-                    if (cipher.Equals("3des-cbc"))
+                    if (scipher.Equals("3des-cbc"))
                     {
                         _buf.getInt();
                         byte[] foo = new byte[encoded_data.Length - _buf.getOffSet()];
@@ -268,7 +269,7 @@ namespace SharpSSH.NG
                         encrypted = true;
                         throw new JSchException("unknown privatekey format: " + identity);
                     }
-                    else if (cipher.Equals("none"))
+                    else if (scipher.Equals("none"))
                     {
                         _buf.getInt();
                         //_buf.getInt();
@@ -481,7 +482,7 @@ namespace SharpSSH.NG
         {
             try
             {
-                Type c = Type.GetType((string)jsch.getConfig("signature.rsa"));
+                Type c = Type.GetType((string)JSch.getConfig("signature.rsa"));
                 SignatureRSA rsa = (SignatureRSA)(c.newInstance());
 
                 rsa.init();
@@ -495,7 +496,7 @@ namespace SharpSSH.NG
                 buf.putString(sig);
                 return buf.buffer;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
             return null;
@@ -528,7 +529,7 @@ namespace SharpSSH.NG
 
             try
             {
-                Type c = Type.GetType((string)jsch.getConfig("signature.dss"));
+                Type c = Type.GetType((string)JSch.getConfig("signature.dss"));
                 SignatureDSA dsa = (SignatureDSA)(c.newInstance());
                 dsa.init();
                 dsa.setPrvKey(prv_array, P_array, Q_array, G_array);
@@ -541,7 +542,7 @@ namespace SharpSSH.NG
                 buf.putString(sig);
                 return buf.buffer;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine("e "+e);
             }
@@ -772,7 +773,7 @@ namespace SharpSSH.NG
                 Console.Error.WriteLine("");
                 */
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine(e);
                 return false;
@@ -908,7 +909,7 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, prv_array, 0, length);
                 index += length;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine(e);
                 //e.printStackTrace();

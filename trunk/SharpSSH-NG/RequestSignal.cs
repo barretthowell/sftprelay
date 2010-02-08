@@ -9,7 +9,7 @@ namespace SharpSSH.NG
     {
         private string signal = "KILL";
         public void setSignal(string foo) { signal = foo; }
-        public void request(Session session, Channel channel)
+        internal override void request(Session session, Channel channel)
         {
             base.request(session, channel);
 

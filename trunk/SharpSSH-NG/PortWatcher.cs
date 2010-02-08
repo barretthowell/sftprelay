@@ -5,6 +5,7 @@ using System.Text;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using System.IO;
 
 namespace SharpSSH.NG
 {
@@ -30,7 +31,7 @@ namespace SharpSSH.NG
                 {
                     if (pool[i].session == session)
                     {
-                        foo.Add(p.lport + ":" + p.host + ":" + p.rport);
+                        foo.Add(pool[i].lport + ":" + pool[i].host + ":" + pool[i].rport);
                     }
                 }
             }
@@ -143,8 +144,8 @@ namespace SharpSSH.NG
                 {
                     TcpClient socket = ss.AcceptTcpClient();
                     socket.NoDelay=true;
-                    Stream In = socket.getStream();
-                    Stream Out = socket.getStream();
+                    Stream In = socket.GetStream();
+                    Stream Out = socket.GetStream();
                     ChannelDirectTCPIP channel = new ChannelDirectTCPIP();
                     channel.init();
                     channel.setInputStream(In);
@@ -160,7 +161,7 @@ namespace SharpSSH.NG
                     }
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine("! "+e);
             }
@@ -173,10 +174,10 @@ namespace SharpSSH.NG
             thread = null;
             try
             {
-                if (ss != null) ss.Close();
+                if (ss != null) ss.Stop();
                 ss = null;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
         }

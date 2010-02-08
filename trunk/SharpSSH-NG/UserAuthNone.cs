@@ -75,23 +75,24 @@ namespace SharpSSH.NG
                     byte[] _message = buf.getString();
                     byte[] lang = buf.getString();
                     string message = null;
-                    try
-                    {
+                    
+                    //try
+                    //{
                         message = Encoding.UTF8.GetString(_message);
-                    }
-                    catch (java.io.UnsupportedEncodingException e)
-                    {
-                        message = Encoding.UTF8.GetString(_message);
-                    }
+                    //}
+                    //catch (DecoderFallbackException e)
+                    //{
+                    //    message = Encoding.UTF8.GetString(_message);
+                    //}
                     if (userinfo != null)
                     {
-                        try
-                        {
+                        //try
+                        //{
                             userinfo.showMessage(message);
-                        }
-                        catch (RuntimeException ee)
-                        {
-                        }
+                        //}
+                        //catch (RuntimeException ee)
+                        //{
+                        //}
                     }
                     goto loop;
                 }
@@ -115,7 +116,7 @@ namespace SharpSSH.NG
                     throw new JSchException("USERAUTH fail (" + command + ")");
                 }
             loop:
-                true;
+                new object();
             }
             //throw new JSchException("USERAUTH fail");
             return false;

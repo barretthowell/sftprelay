@@ -20,7 +20,7 @@ namespace SharpSSH.NG
         private const int SSH2_AGENTC_REMOVE_ALL_IDENTITIES = 19;
         private const int SSH2_AGENT_FAILURE = 30;
 
-        bool _init = true;
+        //bool _init = true;
 
         private Buffer rbuf = null;
         private Buffer wbuf = null;
@@ -51,14 +51,14 @@ namespace SharpSSH.NG
             {
                 sendOpenConfirmation();
             }
-            catch (Exception e)
+            catch
             {
                 close = true;
                 disconnect();
             }
         }
 
-        void write(byte[] foo, int s, int l)
+        internal override void write(byte[] foo, int s, int l)
         {
 
             if (packet == null)
@@ -175,7 +175,7 @@ namespace SharpSSH.NG
                                         break;
                                     }
                                 }
-                                catch (JSchException e)
+                                catch (JSchException )
                                 {
                                     break;
                                 }
@@ -227,7 +227,7 @@ namespace SharpSSH.NG
             {
                 getSession().write(packet, this, 4 + message.Length);
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
         }

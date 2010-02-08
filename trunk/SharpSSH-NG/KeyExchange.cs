@@ -24,17 +24,17 @@ namespace SharpSSH.NG
         //                       ",diffie-hellman-group1-sha1";
 
         //static string kex="diffie-hellman-group-exchange-sha1";
-        static string kex = "diffie-hellman-group1-sha1";
-        static string server_host_key = "ssh-rsa,ssh-dss";
-        static string enc_c2s = "blowfish-cbc";
-        static string enc_s2c = "blowfish-cbc";
-        static string mac_c2s = "hmac-md5";     // hmac-md5,hmac-sha1,hmac-ripemd160,
+        //static string kex = "diffie-hellman-group1-sha1";
+        //static string server_host_key = "ssh-rsa,ssh-dss";
+        //static string enc_c2s = "blowfish-cbc";
+        //static string enc_s2c = "blowfish-cbc";
+        //static string mac_c2s = "hmac-md5";     // hmac-md5,hmac-sha1,hmac-ripemd160,
         // hmac-sha1-96,hmac-md5-96
-        static string mac_s2c = "hmac-md5";
+        //static string mac_s2c = "hmac-md5";
         //static string comp_c2s="none";        // zlib
         //static string comp_s2c="none";
-        static string lang_c2s = "";
-        static string lang_s2c = "";
+        //static string lang_c2s = "";
+        //static string lang_s2c = "";
 
         public const int STATE_END = 0;
 

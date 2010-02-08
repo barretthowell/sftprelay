@@ -26,7 +26,7 @@ namespace SharpSSH.NG
             this.key_size = key_size;
             try
             {
-                Type c = Type.GetType(jsch.getConfig("keypairgen.dsa"));
+                Type c = Type.GetType(JSch.getConfig("keypairgen.dsa"));
                 KeyPairGenDSA keypairgen = (KeyPairGenDSA)(c.newInstance());
                 keypairgen.init(key_size);
                 P_array = keypairgen.getP();
@@ -173,7 +173,7 @@ namespace SharpSSH.NG
                 Array.Copy(plain, index, prv_array, 0, length);
                 index += length;
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine(e);
                 //e.printStackTrace();

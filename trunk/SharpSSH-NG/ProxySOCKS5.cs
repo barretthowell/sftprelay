@@ -29,7 +29,7 @@ namespace SharpSSH.NG
                     host = proxy_host.Substring(0, proxy_host.IndexOf(':'));
                     port = int.Parse(proxy_host.Substring(proxy_host.IndexOf(':') + 1));
                 }
-                catch (Exception e)
+                catch //(Exception e)
                 {
                 }
             }
@@ -54,13 +54,13 @@ namespace SharpSSH.NG
                 {
                     socket = Util.createSocket(proxy_host, proxy_port, timeout);
                     //socket=new Socket(proxy_host, proxy_port);    
-                    In = socket.getInputStream();
-                    Out = socket.getOutputStream();
+                    In = socket.GetStream();
+                    Out = socket.GetStream();
                 }
                 else
                 {
                     socket = socket_factory.createSocket(proxy_host, proxy_port);
-                    In = socket_factory.getInputStream(socket);
+                    In = socket_factory.GetStream(socket);
                     Out = socket_factory.GetStream(socket);
                 }
                 if (timeout > 0)
@@ -99,7 +99,7 @@ namespace SharpSSH.NG
                 buf[index++] = 0;           // NO AUTHENTICATION REQUIRED
                 buf[index++] = 2;           // USERNAME/PASSWORD
 
-                Out.write(buf, 0, index);
+                Out.Write(buf, 0, index);
 
                 /*
                     The server selects from one of the methods given in METHODS, and
@@ -151,7 +151,7 @@ namespace SharpSSH.NG
                         Array.Copy(passwd.getBytes(), 0, buf, index, passwd.Length);
                         index += passwd.Length;
 
-                        Out.write(buf, 0, index);
+                        Out.Write(buf, 0, index);
 
                         /*
                            The server verifies the supplied UNAME and PASSWD, and sends the
@@ -173,12 +173,13 @@ namespace SharpSSH.NG
                             check = true;
                         break;
                     default:
+                        break;
                 }
 
                 if (!check)
                 {
                     try { socket.Close(); }
-                    catch (Exception eee)
+                    catch //(Exception eee)
                     {
                     }
                     throw new JSchException("fail in SOCKS5 proxy");
@@ -224,7 +225,7 @@ namespace SharpSSH.NG
                 buf[index++] = (byte)(port >> 8);
                 buf[index++] = (byte)(port & 0xff);
 
-                Out.write(buf, 0, index);
+                Out.Write(buf, 0, index);
 
                 /*
                    The SOCKS request information is sent by the client as soon as it has
@@ -267,7 +268,7 @@ namespace SharpSSH.NG
                 if (buf[1] != 0)
                 {
                     try { socket.Close(); }
-                    catch (Exception eee)
+                    catch //(Exception eee)
                     {
                     }
                     throw new JSchException("ProxySOCKS5: server returns " + buf[1]);
@@ -290,16 +291,19 @@ namespace SharpSSH.NG
                         fill(In, buf, 18);
                         break;
                     default:
+                        break;
                 }
             }
+                /*
             catch (RuntimeException e)
             {
                 throw e;
             }
+                 */
             catch (Exception e)
             {
                 try { if (socket != null)socket.Close(); }
-                catch (Exception eee)
+                catch //(Exception eee)
                 {
                 }
                 string message = "ProxySOCKS5: " + e.ToString();
@@ -317,7 +321,7 @@ namespace SharpSSH.NG
                 if (Out != null) Out.Close();
                 if (socket != null) socket.Close();
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
             In = null;

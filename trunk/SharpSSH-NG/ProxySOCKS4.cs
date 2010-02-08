@@ -30,7 +30,7 @@ namespace SharpSSH.NG
                     host = proxy_host.Substring(0, proxy_host.IndexOf(':'));
                     port = int.Parse(proxy_host.Substring(proxy_host.IndexOf(':') + 1));
                 }
-                catch (Exception e)
+                catch //(Exception e)
                 {
                 }
             }
@@ -165,7 +165,7 @@ namespace SharpSSH.NG
                 if (buf[1] != 90)
                 {
                     try { socket.Close(); }
-                    catch (Exception eee)
+                    catch //(Exception eee)
                     {
                     }
                     string message = "ProxySOCKS4: server returns CD " + buf[1];
@@ -181,10 +181,10 @@ namespace SharpSSH.NG
             catch (Exception e)
             {
                 try { if (socket != null)socket.Close(); }
-                catch (Exception eee)
+                catch //(Exception eee)
                 {
                 }
-                throw new JSchException("ProxySOCKS4: " + e.ToString());
+                throw new JSchException("ProxySOCKS4: " + e.Message, e);
             }
         }
         public Stream getInputStream() { return In; }
@@ -198,7 +198,7 @@ namespace SharpSSH.NG
                 if (Out != null) Out.Close();
                 if (socket != null) socket.Close();
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
             }
             In = null;

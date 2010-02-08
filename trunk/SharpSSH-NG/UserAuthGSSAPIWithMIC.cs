@@ -46,7 +46,7 @@ namespace SharpSSH.NG
             buf.putInt(supported_oid.Length);
             for (int i = 0; i < supported_oid.Length; i++)
             {
-                buf.putString(supported_oid[i]);
+                buf.putString(supported_oid.getRow(i));
             }
             session.write(packet);
 
@@ -69,7 +69,7 @@ namespace SharpSSH.NG
 
                     for (int i = 0; i < supported_oid.Length; i++)
                     {
-                        if (Util.array_equals(message, supported_oid[i]))
+                        if (Util.array_equals(message, supported_oid.getRow(i)))
                         {
                             method = supported_method[i];
                             break;
@@ -105,7 +105,7 @@ namespace SharpSSH.NG
                 Type c = Type.GetType(session.getConfig(method));
                 context = (GSSContext)(c.newInstance());
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 return false;
             }
@@ -114,7 +114,7 @@ namespace SharpSSH.NG
             {
                 context.create(username, session.host);
             }
-            catch (JSchException e)
+            catch (JSchException )
             {
                 return false;
             }
@@ -127,7 +127,7 @@ namespace SharpSSH.NG
                 {
                     token = context.init(token, 0, token.Length);
                 }
-                catch (JSchException e)
+                catch (JSchException )
                 {
                     // TODO
                     // ERRTOK should be sent?

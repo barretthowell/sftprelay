@@ -7,7 +7,7 @@ namespace SharpSSH.NG
 {
     class UserAuthKeyboardInteractive : UserAuth
     {
-        public bool start(Session session)
+        public override bool start(Session session)
         {
             base.start(session);
 
@@ -64,7 +64,7 @@ namespace SharpSSH.NG
                         byte[] lang = buf.getString();
                         string message = null;
                         try { message = Encoding.UTF8.GetString(_message); }
-                        catch (Exception e)
+                        catch //(Exception e)
                         {
                             message = Encoding.UTF8.GetString(_message);
                         }
@@ -104,7 +104,7 @@ namespace SharpSSH.NG
                         string languate_tag = Encoding.UTF8.GetString(buf.getString());
                         int num = buf.getInt();
                         string[] prompt = new string[num];
-                        boolean[] echo = new boolean[num];
+                        bool[] echo = new bool[num];
                         for (int i = 0; i < num; i++)
                         {
                             prompt[i] = Encoding.UTF8.GetString(buf.getString());
@@ -196,7 +196,7 @@ namespace SharpSSH.NG
                     //throw new JSchException("USERAUTH fail ("+command+")");
                     return false;
                 loop:
-                    null;
+                    new object();
                 }
                 if (cancel)
                 {

@@ -106,7 +106,7 @@ namespace SharpSSH.NG
                             string[] response;
                             string name = "Password Change Required";
                             string[] prompt = { "New Password: " };
-                            boolean[] echo = { false };
+                            bool[] echo = { false };
                             response = kbi.promptKeyboardInteractive(dest,
                                                                    name,
                                                                    Encoding.UTF8.GetString(instruction),
@@ -160,7 +160,7 @@ namespace SharpSSH.NG
                             return false;
                         }
                     loop:
-                        null;
+                        new object();
                     }
 
                     if (password != null)

@@ -146,7 +146,7 @@ namespace SharpSSH.NG
                 request.setSize(col, row, wp, hp);
                 request.request(getSession(), this);
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine("ChannelSessio.setPtySize: "+e);
             }
@@ -257,7 +257,7 @@ namespace SharpSSH.NG
                     getSession().write(packet, this, i);
                 }
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine("# ChannelExec.run");
                 //e.printStackTrace();

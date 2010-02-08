@@ -14,7 +14,7 @@ namespace SharpSSH.NG
             this.name = name;
             this.value = value;
         }
-        public void request(Session session, Channel channel)
+        internal override void request(Session session, Channel channel)
         {
             base.request(session, channel);
 

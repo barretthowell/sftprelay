@@ -83,7 +83,7 @@ namespace SharpSSH.NG
                 if (Out != null && !out_dontclose) Out.Close();
                 Out = null;
             }
-            catch (Exception ee) { }
+            catch /*(Exception ee)*/ { }
         }
 
         public void Close()
@@ -93,7 +93,7 @@ namespace SharpSSH.NG
                 if (In != null && !in_dontclose) In.Close();
                 In = null;
             }
-            catch (Exception ee) { }
+            catch /*(Exception ee)*/ { }
 
             out_close();
 
@@ -102,7 +102,7 @@ namespace SharpSSH.NG
                 if (out_ext != null && !out_ext_dontclose) out_ext.Close();
                 out_ext = null;
             }
-            catch (Exception ee) { }
+            catch /*(Exception ee)*/ { }
         }
 
         /*

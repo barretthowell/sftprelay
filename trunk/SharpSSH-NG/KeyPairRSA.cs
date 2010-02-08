@@ -30,7 +30,7 @@ namespace SharpSSH.NG
             this.key_size = key_size;
             try
             {
-                Type c = Type.GetType(jsch.getConfig("keypairgen.rsa"));
+                Type c = Type.GetType(JSch.getConfig("keypairgen.rsa"));
                 KeyPairGenRSA keypairgen = (KeyPairGenRSA)(c.newInstance());
                 keypairgen.init(key_size);
                 pub_array = keypairgen.getE();
@@ -279,7 +279,7 @@ namespace SharpSSH.NG
                 Console.Error.WriteLine("");
                 */
             }
-            catch (Exception e)
+            catch //(Exception e)
             {
                 //Console.Error.WriteLine(e);
                 return false;
