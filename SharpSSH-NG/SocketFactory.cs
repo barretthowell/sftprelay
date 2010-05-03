@@ -7,7 +7,7 @@ using System.IO;
 
 namespace SharpSSH.NG
 {
-    interface SocketFactory
+    public interface SocketFactory
     {
         TcpClient createSocket(string host, int port);
         Stream GetStream(TcpClient socket);

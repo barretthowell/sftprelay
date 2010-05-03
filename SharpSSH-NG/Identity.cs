@@ -2,7 +2,7 @@
 
 namespace SharpSSH.NG
 {
-    interface Identity
+    public interface Identity
     {
         bool setPassphrase(byte[] passphrase);
         byte[] getPublicKeyBlob();

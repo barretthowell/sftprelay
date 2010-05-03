@@ -45,7 +45,7 @@ namespace SharpSSH.NG
                     Type c = Type.GetType(target);
                     daemon = (ForwardedTCPIPDaemon)c.newInstance();
 
-                    MemoryStream Out = new MemoryStream(32 * 1024);
+                    PipedMemoryStream Out = new PipedMemoryStream(32 * 1024);
                     /*
                     PipedOutputStream Out = new PipedOutputStream();
                     io.setInputStream(new PassiveInputStream(Out

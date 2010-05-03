@@ -2,7 +2,7 @@
 
 namespace SharpSSH.NG
 {
-    abstract class Logger
+    public abstract class Logger
     {
         public const int DEBUG = 0;
         public const int INFO = 1;

@@ -158,7 +158,7 @@ namespace SharpSSH.NG
             try
             {
 
-                MemoryStream pois = new MemoryStream(32 * 1024);
+                PipedMemoryStream pois = new PipedMemoryStream(32 * 1024);
                 io.setOutputStream(pois);
                 io.setInputStream(pois);
 

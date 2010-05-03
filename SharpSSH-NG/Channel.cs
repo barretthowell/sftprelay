@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 namespace SharpSSH.NG
 {
-    class Channel
+    public class Channel
     {
         internal const int SSH_MSG_CHANNEL_OPEN_CONFIRMATION = 91;
         internal const int SSH_MSG_CHANNEL_OPEN_FAILURE = 92;
@@ -252,7 +252,7 @@ namespace SharpSSH.NG
         }
         public Stream getInputStream()
         {
-            MemoryStream In = new MemoryStream(
+            PipedMemoryStream In = new PipedMemoryStream(
                                      32 * 1024  // this value should be customizable.
                                      );
             io.setOutputStream(In, false);
@@ -260,7 +260,7 @@ namespace SharpSSH.NG
         }
         public Stream getExtInputStream()
         {
-            MemoryStream In = new MemoryStream(
+            PipedMemoryStream In = new PipedMemoryStream(
                                      32 * 1024  // this value should be customizable.
                                      );
             io.setExtOutputStream(In, false);

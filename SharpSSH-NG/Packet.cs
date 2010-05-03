@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    class Packet
+    public class Packet
     {
         private static Random random = null;
         internal static void setRandom(Random foo) { random = foo; }

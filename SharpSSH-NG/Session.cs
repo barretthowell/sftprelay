@@ -8,7 +8,7 @@ using System.Threading;
 
 namespace SharpSSH.NG
 {
-    class Session
+    public class Session
     {
         private const string version = "JSCH-0.1.42";
 

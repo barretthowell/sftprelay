@@ -7,7 +7,7 @@ using System.Net.Sockets;
 
 namespace SharpSSH.NG
 {
-    interface ServerSocketFactory
+    public interface ServerSocketFactory
     {
         TcpListener createServerSocket(int port, int backlog, IPAddress bindAddr);
     }
