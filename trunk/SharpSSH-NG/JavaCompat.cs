@@ -88,9 +88,9 @@ namespace SharpSSH.NG
                 res[i] = buf[row, i];
             return res;
         }
-        public static int Available(this Stream s)
+        public static long Available(this Stream s)
         {
-            //TODO
+            if (s is PipedMemoryStream) return ((PipedMemoryStream)s).Available();
             return 0;
         }
         public static void setSoTimeout(this TcpClient t, int timeout)
@@ -147,6 +147,71 @@ namespace SharpSSH.NG
             {
                 return BitConverter.ToInt64(K_S, i);
             }
+        }
+        internal static ulong ToUInt64Big(byte[] K_S, int i)
+        {
+            if (BitConverter.IsLittleEndian)
+            {
+                byte[] tmp = new byte[8];
+                tmp[0] = K_S[i + 7];
+                tmp[1] = K_S[i + 6];
+                tmp[2] = K_S[i + 5];
+                tmp[3] = K_S[i + 4];
+                tmp[4] = K_S[i + 3];
+                tmp[5] = K_S[i + 2];
+                tmp[6] = K_S[i + 1];
+                tmp[7] = K_S[i];
+                return BitConverter.ToUInt64(tmp, 0);
+            }
+            else
+            {
+                return BitConverter.ToUInt64(K_S, i);
+            }
+        }
+        internal static byte[] GetBytesBig(ushort k)
+        {
+            byte[] tmp = BitConverter.GetBytes(k);
+            if (BitConverter.IsLittleEndian)
+            {
+                tmp[1] ^= tmp[0];
+                tmp[0] ^= tmp[1];
+                tmp[1] ^= tmp[0];
+            }
+            return tmp;
+        }
+        internal static byte[] GetBytesBig(uint k)
+        {
+            byte[] tmp = BitConverter.GetBytes(k);
+            if (BitConverter.IsLittleEndian)
+            {
+                tmp[3] ^= tmp[0];
+                tmp[0] ^= tmp[3];
+                tmp[3] ^= tmp[0];
+                tmp[2] ^= tmp[1];
+                tmp[1] ^= tmp[2];
+                tmp[2] ^= tmp[1];
+            }
+            return tmp;
+        }
+        internal static byte[] GetBytesBig(ulong k)
+        {
+            byte[] tmp = BitConverter.GetBytes(k);
+            if (BitConverter.IsLittleEndian)
+            {
+                tmp[0] ^= tmp[7];
+                tmp[7] ^= tmp[0];
+                tmp[0] ^= tmp[7];
+                tmp[1] ^= tmp[6];
+                tmp[6] ^= tmp[1];
+                tmp[1] ^= tmp[6];
+                tmp[2] ^= tmp[5];
+                tmp[5] ^= tmp[2];
+                tmp[2] ^= tmp[5];
+                tmp[3] ^= tmp[4];
+                tmp[4] ^= tmp[3];
+                tmp[3] ^= tmp[4];
+            }
+            return tmp;
         }
         internal static byte[] GetBytesBig(short k)
         {

@@ -7,7 +7,7 @@ using System.Net.Sockets;
 
 namespace SharpSSH.NG
 {
-    interface Proxy
+    public interface Proxy
     {
         void connect(SocketFactory socket_factory, string host, int port, int timeout);
         Stream getInputStream();

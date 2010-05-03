@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,6 +30,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -71,6 +73,27 @@
     <Compile Include="IdentityFile.cs" />
     <Compile Include="IO.cs" />
     <Compile Include="JavaCompat.cs" />
+    <Compile Include="jce\AES128CBC.cs" />
+    <Compile Include="jce\AES128CTR.cs" />
+    <Compile Include="jce\AES192CBC.cs" />
+    <Compile Include="jce\AES192CTR.cs" />
+    <Compile Include="jce\AES256CBC.cs" />
+    <Compile Include="jce\AES256CTR.cs" />
+    <Compile Include="jce\AESCBC.cs" />
+    <Compile Include="jce\AESCTR.cs" />
+    <Compile Include="jce\BlowfishCBC.cs" />
+    <Compile Include="jce\DH.cs" />
+    <Compile Include="jce\HMACMD5.cs" />
+    <Compile Include="jce\HMACMD596.cs" />
+    <Compile Include="jce\HMACSHA1.cs" />
+    <Compile Include="jce\HMACSHA196.cs" />
+    <Compile Include="jce\MD5.cs" />
+    <Compile Include="jce\Random.cs" />
+    <Compile Include="jce\SHA1.cs" />
+    <Compile Include="jce\SignatureDSA.cs" />
+    <Compile Include="jce\SignatureRSA.cs" />
+    <Compile Include="jce\TripleDESCBC.cs" />
+    <Compile Include="jce\TripleDESCTR.cs" />
     <Compile Include="JSch.cs" />
     <Compile Include="JSchAuthCancelException.cs" />
     <Compile Include="JSchException.cs" />
@@ -85,6 +108,7 @@
     <Compile Include="Logger.cs" />
     <Compile Include="MAC.cs" />
     <Compile Include="Packet.cs" />
+    <Compile Include="PipedMemoryStream.cs" />
     <Compile Include="PortWatcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proxy.cs" />
@@ -111,6 +135,18 @@
     <Compile Include="SignatureDSA.cs" />
     <Compile Include="SignatureRSA.cs" />
     <Compile Include="SocketFactory.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\DHKeyGeneration.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\DHParameters.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\DiffieHellman.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\DiffieHellmanManaged.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\BigInteger.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\ConfidenceFactor.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\MiniParser.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\NextPrimeFinder.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\PrimalityTests.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\PrimeGeneratorBase.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\SecurityParser.cs" />
+    <Compile Include="ThirdParty\Mentalis-DH\Mono\SequentialSearchPrimeGeneratorBase.cs" />
     <Compile Include="UIKeyboardInteractive.cs" />
     <Compile Include="UserAuth.cs" />
     <Compile Include="UserAuthGSSAPIWithMIC.cs" />

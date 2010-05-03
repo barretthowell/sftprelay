@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    interface UserInfo
+    public interface UserInfo
     {
         string getPassphrase();
         string getPassword();

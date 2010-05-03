@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    class Buffer
+    public class Buffer
     {
         readonly byte[] tmp = new byte[4];
         internal byte[] buffer;

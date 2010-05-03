@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SharpSSH.NG
 {
-    class JSch
+    public class JSch
     {
         static Dictionary<string, string> config = new Dictionary<string, string>();
         static JSch()
@@ -74,8 +74,8 @@ namespace SharpSSH.NG
             config.Add("userauth.gssapi-with-mic", "SharpSSH.NG.UserAuthGSSAPIWithMIC");
             config.Add("gssapi-with-mic.krb5", "SharpSSH.NG.jgss.GSSContextKrb5");
 
-            config.Add("zlib", "SharpSSH.NG.jcraft.Compression");
-            config.Add("zlib@openssh.com", "SharpSSH.NG.jcraft.Compression");
+            config.Add("zlib", "SharpSSH.NG.Compression");
+            config.Add("zlib@openssh.com", "SharpSSH.NG.Compression");
 
             config.Add("StrictHostKeyChecking", "ask");
             config.Add("HashKnownHosts", "no");

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    abstract class HostKeyRepository
+    public abstract class HostKeyRepository
     {
         public const int OK = 0;
         public const int NOT_INCLUDED = 1;

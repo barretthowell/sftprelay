@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    class HostKey
+    public class HostKey
     {
         private static readonly byte[] sshdss = "ssh-dss".getBytes();
         private static readonly byte[] sshrsa = "ssh-rsa".getBytes();
