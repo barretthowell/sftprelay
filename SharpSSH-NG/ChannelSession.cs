@@ -6,7 +6,7 @@ using System.Threading;
 
 namespace SharpSSH.NG
 {
-    class ChannelSession : Channel
+    public class ChannelSession : Channel
     {
         private static byte[] _session = "session".getBytes();
 

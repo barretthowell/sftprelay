@@ -8,7 +8,7 @@ using System.IO;
 
 namespace SharpSSH.NG.jce
 {
-    class HMACMD5:MAC
+    public class HMACMD5:MAC
     {
 
         private const string name = "hmac-md5";
@@ -51,14 +51,22 @@ namespace SharpSSH.NG.jce
 
         public void update(int foo)
         {
+            /*
+            byte[] b = JavaCompat.GetBytesBig(foo);
+            Console.Error.Write("HMAC: ");
+            for (int i = 0; i < b.Length; i++)
+            {
+                Console.Error.Write(b[i].ToString("X2"));
+            }
+            Console.Error.WriteLine(" (" + foo.ToString() + ")");*/
             cs.Write(JavaCompat.GetBytesBig(foo));
         }
 
         public void doFinal(byte[] buf, int offset)
         {
             cs.Close();
-            Array.Copy(mac.Hash, 0, buf, offset, buf.Length);
-            byte[] key = (byte[])mac.Key.Clone();
+            Array.Copy(mac.Hash, 0, buf, offset, mac.Hash.Length);
+            byte[] key = mac.Key; // (byte[])mac.Key.Clone();
             mac.Clear();
             init(key);
         }

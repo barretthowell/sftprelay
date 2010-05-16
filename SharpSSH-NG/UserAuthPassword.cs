@@ -19,7 +19,6 @@ namespace SharpSSH.NG
             {
                 dest += (":" + session.port);
             }
-
             try
             {
 

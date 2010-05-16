@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    interface UIKeyboardInteractive
+    public interface UIKeyboardInteractive
     {
         string[] promptKeyboardInteractive(string destination,
                            string name,

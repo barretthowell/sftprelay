@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SharpSSH.NG
 {
-    class ChannelSftp : ChannelSession
+    public class ChannelSftp : ChannelSession
     {
         private const byte SSH_FXP_INIT = 1;
         private const byte SSH_FXP_VERSION = 2;
@@ -2767,11 +2767,11 @@ namespace SharpSSH.NG
             while (len > 0)
             {
                 i = io_in.Read(buf, s, len);
-                if (i <= 0)
-                {
-                    throw new IOException("inputstream is closed");
+                //if (i <= 0)
+                //{
+                    //throw new IOException("inputstream is closed");
                     //return (s-foo)==0 ? i : s-foo;
-                }
+                //}
                 s += i;
                 len -= i;
             }
