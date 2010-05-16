@@ -387,7 +387,6 @@ namespace SharpSSH.NG
                 {
 
                 loop:
-                    //Console.Error.WriteLine("methods: "+methods);
 
                     while (!auth &&
                           cmethoda != null && methodi < cmethoda.Length)
@@ -397,6 +396,7 @@ namespace SharpSSH.NG
                         bool acceptable = false;
                         for (int k = 0; k < smethoda.Length; k++)
                         {
+                            
                             if (smethoda[k].Equals(method))
                             {
                                 acceptable = true;
@@ -405,10 +405,10 @@ namespace SharpSSH.NG
                         }
                         if (!acceptable)
                         {
+
                             continue;
                         }
 
-                        //Console.Error.WriteLine("  method: "+method);
 
                         if (JSch.getLogger().isEnabled(Logger.INFO))
                         {
@@ -975,7 +975,7 @@ namespace SharpSSH.NG
 
                     s2cmac.doFinal(s2cmac_result1, 0);
                     io.getByte(s2cmac_result2, 0, s2cmac_result2.Length);
-                    if (!Array.Equals(s2cmac_result1, s2cmac_result2))
+                    if (!Util.array_equals(s2cmac_result1, s2cmac_result2))
                     {
                         throw new IOException("MAC Error");
                     }

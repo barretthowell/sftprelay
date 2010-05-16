@@ -19,26 +19,26 @@ namespace SharpSSH.NG
         ...      more extended data (extended_type - extended_data pairs),
                  so that number of pairs equals extended_count
     */
-    class SftpATTRS
+    public class SftpATTRS
     {
-        const int S_ISUID = 04000; // set user ID on execution
-        const int S_ISGID = 02000; // set group ID on execution
-        const int S_ISVTX = 01000; // sticky bit   ****** NOT DOCUMENTED *****
+        const int S_ISUID =0x800; // 04000; // set user ID on execution
+        const int S_ISGID = 0x400; //02000; // set group ID on execution
+        const int S_ISVTX = 0x200; // sticky bit   ****** NOT DOCUMENTED *****
 
-        const int S_IRUSR = 00400; // read by owner
-        const int S_IWUSR = 00200; // write by owner
-        const int S_IXUSR = 00100; // execute/search by owner
-        const int S_IREAD = 00400; // read by owner
-        const int S_IWRITE = 00200; // write by owner
-        const int S_IEXEC = 00100; // execute/search by owner
+        const int S_IRUSR = 0x100; // read by owner
+        const int S_IWUSR = 0x80; // write by owner
+        const int S_IXUSR = 0x40; // execute/search by owner
+        const int S_IREAD = 0x100; // read by owner
+        const int S_IWRITE = 0x80; // write by owner
+        const int S_IEXEC = 0x40; // execute/search by owner
 
-        const int S_IRGRP = 00040; // read by group
-        const int S_IWGRP = 00020; // write by group
-        const int S_IXGRP = 00010; // execute/search by group
+        const int S_IRGRP = 0x20; // read by group
+        const int S_IWGRP = 0x10; // write by group
+        const int S_IXGRP = 0x8; // execute/search by group
 
-        const int S_IROTH = 00004; // read by others
-        const int S_IWOTH = 00002; // write by others
-        const int S_IXOTH = 00001; // execute/search by others
+        const int S_IROTH = 0x4; // read by others
+        const int S_IWOTH = 0x2; // write by others
+        const int S_IXOTH = 0x1; // execute/search by others
 
         private const int pmask = 0xFFF;
 

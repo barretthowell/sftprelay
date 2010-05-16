@@ -28,7 +28,7 @@ namespace SharpSSH.NG.jce
 
         public void setPubKey(byte[] e, byte[] n)
         {
-            RSAparams.Modulus = n;
+            RSAparams.Modulus = Util.stripLeadingZeros(n);
             RSAparams.Exponent = e;
         }
 
@@ -75,7 +75,8 @@ namespace SharpSSH.NG.jce
             SSC.RSAPKCS1SignatureDeformatter verifier = new SSC.RSAPKCS1SignatureDeformatter(rsa);
             verifier.SetHashAlgorithm("SHA1");
             sc.Close();
-            return verifier.VerifySignature(md.Hash, sig);
+            bool res = verifier.VerifySignature(md, sig);
+            return res;
         }
 
         public byte[] sign()

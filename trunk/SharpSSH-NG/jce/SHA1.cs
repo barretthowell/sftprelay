@@ -35,7 +35,9 @@ namespace SharpSSH.NG.jce
         public byte[] digest()
         {
             sc.Close();
-            return md.Hash;
+            byte[] res = md.Hash;
+            init();
+            return res;
         }
 
         #endregion

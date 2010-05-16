@@ -43,7 +43,6 @@ namespace SharpSSH.NG.jce
         public override void init(int mode, byte[] key, byte[] iv)
         {
             desm = TripleDES.Create();
-            Console.Error.WriteLine("BLOCK SIZE: " + BlockSize.ToString());
             //desm.BlockSize = blockSize*8;
             desm.KeySize = BlockSize * 8;
             desm.Key = key;

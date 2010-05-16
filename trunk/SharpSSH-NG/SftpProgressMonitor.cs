@@ -5,7 +5,7 @@ using System.Text;
 
 namespace SharpSSH.NG
 {
-    abstract class SftpProgressMonitor
+    public abstract class SftpProgressMonitor
     {
         public const int PUT = 0;
         public const int GET = 1;

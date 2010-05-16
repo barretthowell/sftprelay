@@ -264,10 +264,9 @@ namespace SharpSSH.NG
         }
         public static bool array_equals(byte[] foo, byte[] bar)
         {
-            int i = foo.Length;
-            if (i != bar.Length) return false;
-            for (int j = 0; j < i; j++) { if (foo[j] != bar[j]) return false; }
-            //try{while(true){i--; if(foo[i]!=bar[i])return false;}}catch(Exception e){}
+            if (foo.Length != bar.Length) return false;
+            for (int i = 0; i < foo.Length; i++)
+                if (foo[i] != bar[i]) return false;
             return true;
         }
         public static TcpClient createSocket(string host, int port, int timeout)
@@ -426,6 +425,34 @@ namespace SharpSSH.NG
             if ((byte)(b & 0xe0) == (byte)0xc0) return 2;
             if ((byte)(b & 0xf0) == (byte)0xe0) return 3;
             return 1;
+        }
+
+        public static bool CompareBytes(byte[] a, byte[] b)
+        {
+            if (a.Length != b.Length) return false;
+            for (int i = 0; i < a.Length; i++)
+                if (a[i] != b[i]) return false;
+            return true;
+        }
+
+        public static byte[] stripLeadingZeros(byte[] a)
+        {
+            int lastZero = -1;
+            for (int i = 0; i < a.Length; i++)
+            {
+                if (a[i] == 0)
+                {
+                    lastZero = i;
+                }
+                else
+                {
+                    break;
+                }
+            }
+            lastZero++;
+            byte[] result = new byte[a.Length - lastZero];
+            Array.Copy(a, lastZero, result, 0, result.Length);
+            return result;
         }
     }
 }

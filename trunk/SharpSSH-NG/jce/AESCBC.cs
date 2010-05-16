@@ -39,6 +39,18 @@ namespace SharpSSH.NG.jce
             aesm.BlockSize = blockSize * 8;
             aesm.Padding = PaddingMode.None;
             ICryptoTransform ict;
+            if (key.Length > blockSize)
+            {
+                byte[] tmp = new byte[blockSize];
+                Array.Copy(key, 0, tmp, 0, tmp.Length);
+                key = tmp;
+            }
+            if (iv.Length > ivSize)
+            {
+                byte[] tmp = new byte[ivSize];
+                Array.Copy(iv, 0, tmp, 0, tmp.Length);
+                iv = tmp;
+            }
             if (mode == ENCRYPT_MODE)
             {
                 ict = aesm.CreateEncryptor(key, iv);

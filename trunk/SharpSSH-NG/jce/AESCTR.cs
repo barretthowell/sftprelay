@@ -43,8 +43,11 @@ namespace SharpSSH.NG.jce
 
         public override void init(int mode, byte[] key, byte[] iv)
         {
+            for (int i = 0; i < counter.Length; i++)
+                counter[i] = 0;
+            for (int i = 0; i < counterBytes.Length; i++)
+                counterBytes[i] = 0;
             aesm = AesManaged.Create();
-            Console.Error.WriteLine("BLOCK SIZE: " + blockSize.ToString());
             aesm.BlockSize = blockSize*8;
             //aesm.KeySize = blockSize*8;
             aesm.Key = key;
